@@ -1,4 +1,5 @@
-
+const ACTIONS = Object.freeze({
+const ACTIONS = require("./comparisonActions");
 const fieldComparer = require("./fieldComparer");
 const differenceEngine = require("./differenceEngine");
 
@@ -43,11 +44,11 @@ class ComparisonService {
 
             const airtableField = context.getField(localField.name);
 
-            // Nieuw veld
+            // Veld bestaat nog niet
             if (!airtableField) {
 
                 results.push({
-                    action: "create",
+                    action: ACTIONS.CREATE,
                     field: localField,
                     airtableField: null,
                     comparison: null
@@ -62,11 +63,11 @@ class ComparisonService {
                 airtableField
             );
 
-            // Bestaand veld zonder verschillen
+            // Geen verschillen
             if (!comparison.hasDifferences) {
 
                 results.push({
-                    action: "skip",
+                    action: ACTIONS.SKIP,
                     field: localField,
                     airtableField,
                     comparison
@@ -76,9 +77,9 @@ class ComparisonService {
 
             }
 
-            // Bestaand veld met verschillen
+            // Wel verschillen
             results.push({
-                action: "update",
+                action: ACTIONS.UPDATE,
                 field: localField,
                 airtableField,
                 comparison

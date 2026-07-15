@@ -3,6 +3,8 @@ const airtable = require("../services/airtableAdapter");
 const logger = require("../services/logger");
 const schemaValidator = require("../services/schemaValidator");
 const BuilderContext = require("../services/builderContext");
+const comparisonService = require("../services/comparisonService");
+const reportFormatter = require("../services/reportFormatter");
 
 async function buildModule(moduleName, options = {}) {
 
@@ -10,7 +12,7 @@ async function buildModule(moduleName, options = {}) {
 
     console.log("");
     console.log("================================");
-    console.log("RZD Builder v1.4");
+    console.log("RZD Builder v1.5");
     console.log("================================");
     console.log("");
 
@@ -72,53 +74,39 @@ async function buildModule(moduleName, options = {}) {
         options
     });
 
-    const existingFields = airtableFields.map(field => field.name);
-
     console.log(`Controle van module '${moduleName}'...`);
-    console.log("");
 
-    logger.write(`Controle module: ${moduleName}`);
-    logger.write("");
+    const results = comparisonService.compareModule(context);
 
-    context.getExistingFields().forEach(field => {
+    reportFormatter.printModuleComparison(results);
 
-        console.log(`✓ ${field.name}`);
-        logger.write(`BESTAAT : ${field.name}`);
+    const existing = results.filter(r => r.action !== "create").length;
+    const missing = results.filter(r => r.action === "create").length;
+    const changed = results.filter(r => r.action === "update").length;
 
-    });
-
-    context.getMissingFields().forEach(field => {
-
-        console.log(`➕ ${field.name} (${field.type})`);
-        logger.write(`ONTBREEKT : ${field.name} (${field.type})`);
-
-    });
-
-    const exists = context.getExistingFields().length;
-    const missing = context.getMissingFields().length;
-
-    console.log("");
     console.log("--------------------------------");
     console.log("Samenvatting");
     console.log("--------------------------------");
     console.log(`Totaal      : ${module.fields.length}`);
-    console.log(`Bestaan     : ${exists}`);
+    console.log(`Bestaan     : ${existing}`);
     console.log(`Ontbreken   : ${missing}`);
+    console.log(`Gewijzigd   : ${changed}`);
     console.log("");
 
     logger.write("");
     logger.write("Samenvatting");
     logger.write(`Totaal      : ${module.fields.length}`);
-    logger.write(`Bestaan     : ${exists}`);
+    logger.write(`Bestaan     : ${existing}`);
     logger.write(`Ontbreken   : ${missing}`);
+    logger.write(`Gewijzigd   : ${changed}`);
     logger.write("");
 
     if (missing === 0) {
 
-        console.log("✅ Alle velden bestaan al.");
+        console.log("✅ Geen nieuwe velden om aan te maken.");
         console.log("");
 
-        logger.end(0, exists);
+        logger.end(0, existing);
 
         return;
 
@@ -131,29 +119,35 @@ async function buildModule(moduleName, options = {}) {
         console.log("================================");
         console.log("");
 
-        context.getMissingFields().forEach(field => {
+        results
+            .filter(r => r.action === "create")
+            .forEach(r => {
 
-            console.log(`➕ ${field.name} (${field.type})`);
-            logger.write(`DRY RUN : ${field.name} (${field.type})`);
+                console.log(`➕ ${r.field.name} (${r.field.type})`);
+                logger.write(`DRY RUN : ${r.field.name}`);
 
-        });
+            });
 
         console.log("");
         console.log("Geen wijzigingen uitgevoerd.");
         console.log("");
 
-        logger.end(0, exists);
+        logger.end(0, existing);
 
         return;
 
     }
 
-    console.log("Ontbrekende velden worden aangemaakt...");
+    console.log("Nieuwe velden worden aangemaakt...");
     console.log("");
+
+    const fieldsToCreate = results
+        .filter(r => r.action === "create")
+        .map(r => r.field);
 
     const result = await airtable.createMissingFields(
         tableName,
-        context.getMissingFields()
+        fieldsToCreate
     );
 
     logger.end(result.created, result.skipped);

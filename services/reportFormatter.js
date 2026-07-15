@@ -1,9 +1,9 @@
+
 class ReportFormatter {
 
-    createDifferenceReport(fieldName, report) {
+    printComparison(fieldName, report) {
 
         console.log("");
-
         console.log("================================");
         console.log(`Veld: ${fieldName}`);
         console.log("================================");
@@ -37,6 +37,43 @@ class ReportFormatter {
             console.log("");
 
         });
+
+    }
+
+    printModuleComparison(results) {
+
+        console.log("");
+        console.log("================================");
+        console.log("Vergelijkingsrapport");
+        console.log("================================");
+        console.log("");
+
+        results.forEach(result => {
+
+            if (result.action === "create") {
+
+                console.log(`➕ ${result.field.name} (nieuw veld)`);
+                return;
+
+            }
+
+            if (!result.comparison.hasDifferences) {
+
+                console.log(`✓ ${result.field.name}`);
+                return;
+
+            }
+
+            console.log(`⚠ ${result.field.name}`);
+
+            this.printComparison(
+                result.field.name,
+                result.comparison.report
+            );
+
+        });
+
+        console.log("");
 
     }
 
