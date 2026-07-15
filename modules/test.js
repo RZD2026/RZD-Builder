@@ -2,12 +2,17 @@
 const FieldTypes = require("../config/fieldTypes");
 
 module.exports = {
+
     table: "Accommodaties",
 
     fields: [
+
         {
-            name: "Dry Run Test",
-            type: FieldTypes.TEXT
+            name: "Description Test",
+            type: FieldTypes.TEXT,
+            description: "Controle of descriptions via de Metadata Write API worden aangemaakt."
         }
+
     ]
+
 };

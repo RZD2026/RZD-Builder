@@ -2,7 +2,7 @@
 const airtable = require("../services/airtableAdapter");
 const logger = require("../services/logger");
 const schemaValidator = require("../services/schemaValidator");
-const BuilderContext = require("../services/builderContext");
+const FieldDefinition = require("../services/fieldDefinition");
 
 async function buildModule(moduleName, options = {}) {
 
@@ -20,7 +20,6 @@ async function buildModule(moduleName, options = {}) {
 
     try {
 
-        delete require.cache[require.resolve(`../modules/${moduleName}`)];
         module = require(`../modules/${moduleName}`);
 
     } catch (err) {
@@ -30,6 +29,11 @@ async function buildModule(moduleName, options = {}) {
         return;
 
     }
+
+    // Alle velden normaliseren
+    module.fields = module.fields.map(field =>
+        FieldDefinition.create(field)
+    );
 
     const tableName = module.table || "Accommodaties";
 
@@ -46,10 +50,8 @@ async function buildModule(moduleName, options = {}) {
         logger.write("SCHEMA VALIDATIE FOUTEN");
 
         errors.forEach(error => {
-
-            console.log("❌ " + error);
+            console.log(`❌ ${error}`);
             logger.write(error);
-
         });
 
         console.log("");
@@ -62,17 +64,10 @@ async function buildModule(moduleName, options = {}) {
 
     }
 
-    const airtableFields = await airtable.getFields(tableName);
+    const existingFields = await airtable.getFieldNames(tableName);
 
-    const context = new BuilderContext({
-        module,
-        tableName,
-        airtableFields,
-        logger,
-        options
-    });
-
-    const existingFields = airtableFields.map(field => field.name);
+    let exists = 0;
+    let missing = 0;
 
     console.log(`Controle van module '${moduleName}'...`);
     console.log("");
@@ -80,22 +75,23 @@ async function buildModule(moduleName, options = {}) {
     logger.write(`Controle module: ${moduleName}`);
     logger.write("");
 
-    context.getExistingFields().forEach(field => {
+    for (const field of module.fields) {
 
-        console.log(`✓ ${field.name}`);
-        logger.write(`BESTAAT : ${field.name}`);
+        if (existingFields.includes(field.name)) {
 
-    });
+            console.log(`✓ ${field.name}`);
+            logger.write(`BESTAAT : ${field.name}`);
+            exists++;
 
-    context.getMissingFields().forEach(field => {
+        } else {
 
-        console.log(`➕ ${field.name} (${field.type})`);
-        logger.write(`ONTBREEKT : ${field.name} (${field.type})`);
+            console.log(`➕ ${field.name} (${field.type})`);
+            logger.write(`ONTBREEKT : ${field.name} (${field.type})`);
+            missing++;
 
-    });
+        }
 
-    const exists = context.getExistingFields().length;
-    const missing = context.getMissingFields().length;
+    }
 
     console.log("");
     console.log("--------------------------------");
@@ -119,7 +115,6 @@ async function buildModule(moduleName, options = {}) {
         console.log("");
 
         logger.end(0, exists);
-
         return;
 
     }
@@ -131,12 +126,17 @@ async function buildModule(moduleName, options = {}) {
         console.log("================================");
         console.log("");
 
-        context.getMissingFields().forEach(field => {
+        console.log("De volgende velden zouden worden aangemaakt:");
+        console.log("");
 
-            console.log(`➕ ${field.name} (${field.type})`);
-            logger.write(`DRY RUN : ${field.name} (${field.type})`);
+        module.fields
+            .filter(field => !existingFields.includes(field.name))
+            .forEach(field => {
 
-        });
+                console.log(`➕ ${field.name} (${field.type})`);
+                logger.write(`DRY RUN : ${field.name} (${field.type})`);
+
+            });
 
         console.log("");
         console.log("Geen wijzigingen uitgevoerd.");
@@ -153,7 +153,7 @@ async function buildModule(moduleName, options = {}) {
 
     const result = await airtable.createMissingFields(
         tableName,
-        context.getMissingFields()
+        module.fields
     );
 
     logger.end(result.created, result.skipped);

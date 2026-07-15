@@ -55,6 +55,14 @@ class AirtableAdapter {
 
     }
 
+    async getFields(tableName) {
+
+        const table = await this.getTable(tableName);
+
+        return table.fields;
+
+    }
+
     async createField(tableName, field) {
 
         const tableId = await this.getTableId(tableName);
@@ -63,6 +71,10 @@ class AirtableAdapter {
             name: field.name,
             type: field.type
         };
+
+        if (field.description && field.description.trim() !== "") {
+            payload.description = field.description;
+        }
 
         const options = FieldOptionsFactory.get(field);
 

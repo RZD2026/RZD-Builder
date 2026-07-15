@@ -1,0 +1,275 @@
+◇ injected env (2) from .env // tip: ⌘ override existing { override: true }
+
+================================
+RZD Metadata Inspector
+================================
+
+{
+  tables: [
+    {
+      id: 'tblmTpmjPjt9xFoy5',
+      name: 'Accommodaties',
+      primaryFieldId: 'fldMegC7QPmp8Mv15',
+      fields: [
+        {
+          type: 'singleLineText',
+          id: 'fldMegC7QPmp8Mv15',
+          name: 'Naam'
+        },
+        {
+          type: 'singleSelect',
+          options: {
+            choices: [
+              {
+                id: 'selEs9S8Dkv2kLOaB',
+                name: 'Camping',
+                color: 'grayLight2'
+              },
+              {
+                id: 'seldj1XchmdQkKD7z',
+                name: 'Hotel',
+                color: 'grayLight2'
+              },
+              {
+                id: 'selGgV8EQbEV2wGlK',
+                name: 'Vakantiepark',
+                color: 'grayLight2'
+              },
+              {
+                id: 'sel3veaiSTrZh86Fl',
+                name: 'Appartement',
+                color: 'grayLight2'
+              },
+              {
+                id: 'seltbziMgBlb0bNnm',
+                name: 'Camperplaats',
+                color: 'grayLight2'
+              },
+              {
+                id: 'selqBjgTVHJWNX393',
+                name: 'B&B',
+                color: 'grayLight2'
+              }
+            ]
+          },
+          id: 'fldDGMV2deef20MI9',
+          name: 'Type accommodatie'
+        },
+        {
+          type: 'singleLineText',
+          id: 'fldFUdTow07xhCSss',
+          name: 'Land'
+        },
+        {
+          type: 'singleLineText',
+          id: 'fldrzlllwMYZSGQva',
+          name: 'Regio'
+        },
+        {
+          type: 'singleLineText',
+          id: 'fld54PeuTUgIFoX90',
+          name: 'Plaats'
+        },
+        {
+          type: 'singleLineText',
+          id: 'fldOwARUpfaqXw5em',
+          name: 'Adres'
+        },
+        { type: 'url', id: 'fldtx8S5hCYZHBErH', name: 'Website' },
+        {
+          type: 'phoneNumber',
+          id: 'fldztTzj3EtmclZE9',
+          name: 'Telefoon'
+        },
+        { type: 'email', id: 'fld34oqiAIcVWVqKI', name: 'E-mail' },
+        {
+          type: 'singleLineText',
+          id: 'flduy1OgspNpj8KBw',
+          name: 'GPS'
+        },
+        {
+          type: 'richText',
+          id: 'fldNVseT9vhZgnz6i',
+          name: 'Toegang & Entree',
+          description: 'Module voor toegankelijkheid van toegang en entree. Voeg bevindingen, afmetingen, drempels, deuren, helling, automatische deur, receptie en overige opmerkingen toe.'
+        },
+        {
+          type: 'number',
+          options: { precision: 1 },
+          id: 'fldEIvyn1eBSbCVRO',
+          name: 'Entree drempel (cm)'
+        },
+        {
+          type: 'number',
+          options: { precision: 1 },
+          id: 'flddyGogiHhLMdFGv',
+          name: 'Vrije doorgang deur (cm)'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fld7tjfQuC2gbcOqt',
+          name: 'Automatische deur'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fldmKIHHun33H1RWm',
+          name: 'Helling aanwezig'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fldI7UdkCsj2EtgmB',
+          name: 'Receptie toegankelijk'
+        },
+        {
+          type: 'singleSelect',
+          options: {
+            choices: [
+              {
+                id: 'selfZ9vO6uEYrZAwB',
+                name: 'Gelijkvloers',
+                color: 'grayLight2'
+              },
+              {
+                id: 'selmY6toJ8JKiuXjG',
+                name: 'Helling',
+                color: 'grayLight2'
+              },
+              {
+                id: 'selG4lHpgKunLRF5Z',
+                name: 'Lift',
+                color: 'grayLight2'
+              },
+              {
+                id: 'selZYrXABj8IxNOg8',
+                name: 'Trap',
+                color: 'grayLight2'
+              }
+            ]
+          },
+          id: 'fldpfgIM85qkT89vP',
+          name: 'Type entree'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fldETMdiCJ5TqvqHu',
+          name: 'Toegangspad verhard'
+        },
+        {
+          type: 'multilineText',
+          id: 'fldui7AMv2DQzodbq',
+          name: 'Opmerkingen entree'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fld3eF9OLFLssKYQ7',
+          name: 'Rolstoelparkeerplaats'
+        },
+        {
+          type: 'number',
+          options: { precision: 0 },
+          id: 'fldFJ58OS4FFfZ9y5',
+          name: 'Afstand parkeren → entree (m)'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fldLHOadL3igU9rys',
+          name: 'Uitstapruimte voldoende'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fld2HEwc5XLrByqHO',
+          name: 'Rolstoeltoilet'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fldizuDOZJhFpBa3r',
+          name: 'Inrijdbare douche'
+        },
+        {
+          type: 'number',
+          options: { precision: 0 },
+          id: 'fld7o8XjuxohWnF6W',
+          name: 'Draaicirkel badkamer (cm)'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fld2uhCEBybfd7Ykc',
+          name: 'Test checkbox'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fldKqLZlDc3FCwnGA',
+          name: 'Parkeerplaats'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fldT19QTFR5Bl9gr2',
+          name: 'Gehandicaptenparkeerplaats'
+        },
+        {
+          type: 'number',
+          options: { precision: 1 },
+          id: 'fldQvqtbXQMzK8SEj',
+          name: 'Afstand parkeerplaats tot ingang'
+        },
+        {
+          type: 'singleLineText',
+          id: 'fldz3ukOdkSC895Uo',
+          name: 'Ondergrond parkeerplaats'
+        },
+        {
+          type: 'singleLineText',
+          id: 'fld1a3KN0VMATimGv',
+          name: 'Route naar ingang'
+        },
+        {
+          type: 'number',
+          options: { precision: 1 },
+          id: 'fld9AhCeZEM0C8Ew4',
+          name: 'Hellingspercentage route'
+        },
+        {
+          type: 'number',
+          options: { precision: 1 },
+          id: 'fldJXTVSaymEIITmK',
+          name: 'Drempel ingang'
+        },
+        {
+          type: 'checkbox',
+          options: { icon: 'check', color: 'greenBright' },
+          id: 'fldvxRcWenA0C1eGn',
+          name: 'Hoofdingang toegankelijk'
+        },
+        {
+          type: 'number',
+          options: { precision: 1 },
+          id: 'fldqCdVZBTl2sNjY2',
+          name: 'Draaicirkel entree'
+        },
+        {
+          type: 'singleLineText',
+          id: 'fldTe7BZ2S7shFsOX',
+          name: 'Description Test',
+          description: 'Controle of descriptions via de Metadata Write API worden aangemaakt.'
+        }
+      ],
+      views: [ { id: 'viwMVqfEgPRN4XH0g', name: 'Grid view', type: 'grid' } ]
+    }
+  ]
+}
+
+================================
+Einde metadata
+================================
+
