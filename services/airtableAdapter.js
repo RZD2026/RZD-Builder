@@ -64,7 +64,7 @@ class AirtableAdapter {
             type: field.type
         };
 
-        const options = FieldOptionsFactory.get(field.type);
+        const options = FieldOptionsFactory.get(field);
 
         if (options) {
             payload.options = options;

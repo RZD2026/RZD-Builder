@@ -9,17 +9,17 @@ const FieldTypes = {
 
     LONGTEXT: "multilineText",
 
-    SINGLESELECT: "singleSelect",
-
-    MULTISELECT: "multipleSelect",
-
     DATE: "date",
 
     EMAIL: "email",
 
     URL: "url",
 
-    PHONE: "phoneNumber"
+    PHONE: "phoneNumber",
+
+    SINGLESELECT: "singleSelect",
+
+    MULTISELECT: "multipleSelect"
 
 };
 

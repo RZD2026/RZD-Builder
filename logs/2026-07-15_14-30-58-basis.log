@@ -1,0 +1,30 @@
+================================
+RZD Builder
+================================
+Module : basis
+Datum  : 15-7-2026, 14:30:58
+
+Controle module: basis
+
+BESTAAT : Naam
+BESTAAT : Type accommodatie
+BESTAAT : Land
+BESTAAT : Regio
+BESTAAT : Plaats
+BESTAAT : Adres
+BESTAAT : Website
+BESTAAT : Telefoon
+BESTAAT : E-mail
+BESTAAT : GPS
+
+Samenvatting
+Totaal      : 10
+Bestaan     : 10
+Ontbreken   : 0
+
+
+================================
+Resultaat
+================================
+Aangemaakt : 0
+Overgeslagen : 10
