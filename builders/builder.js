@@ -57,6 +57,23 @@ async function buildModule(moduleName) {
     console.log("Ontbreken   : " + missing);
     console.log("");
 
+    if (missing > 0) {
+
+        console.log("Ontbrekende velden worden aangemaakt...");
+        console.log("");
+
+        await airtable.createMissingFields(
+            "Accommodaties",
+            module.fields
+        );
+
+    } else {
+
+        console.log("✅ Alle velden bestaan al.");
+        console.log("");
+
+    }
+
 }
 
 module.exports = {
