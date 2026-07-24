@@ -1,5 +1,7 @@
 
 const compileTables = require("./compileTables");
+const compileLists = require("./compileLists");
+const compileRegistry = require("./compileRegistry");
 
 async function compiler(canon) {
 
@@ -8,13 +10,18 @@ async function compiler(canon) {
     console.log("");
 
     const build = {
+
         modules: [],
-        lists: canon.lists || [],
+        registry: [],
+        lists: [],
         schema: [],
         translations: []
+
     };
 
     build.modules = await compileTables(canon);
+    build.registry = await compileRegistry(canon);
+    build.lists = await compileLists(canon);
 
     console.log("");
     console.log("Compiler gereed.");
