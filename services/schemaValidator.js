@@ -23,17 +23,9 @@ class SchemaValidator {
 
             const prefix = `Veld ${index + 1}`;
 
-            // ------------------------
-            // Naam
-            // ------------------------
-
             if (!field.name || field.name.trim() === "") {
                 errors.push(`${prefix}: naam ontbreekt.`);
             }
-
-            // ------------------------
-            // Type
-            // ------------------------
 
             if (!field.type || field.type.trim() === "") {
 
@@ -47,10 +39,6 @@ class SchemaValidator {
 
             }
 
-            // ------------------------
-            // Description
-            // ------------------------
-
             if (
                 field.description !== undefined &&
                 typeof field.description !== "string"
@@ -61,10 +49,6 @@ class SchemaValidator {
                 );
 
             }
-
-            // ------------------------
-            // Group
-            // ------------------------
 
             if (
                 field.group !== undefined &&
@@ -77,10 +61,6 @@ class SchemaValidator {
 
             }
 
-            // ------------------------
-            // HelpText
-            // ------------------------
-
             if (
                 field.helpText !== undefined &&
                 typeof field.helpText !== "string"
@@ -91,10 +71,6 @@ class SchemaValidator {
                 );
 
             }
-
-            // ------------------------
-            // Required
-            // ------------------------
 
             if (
                 field.required !== undefined &&
@@ -107,19 +83,21 @@ class SchemaValidator {
 
             }
 
-            // ------------------------
-            // Choices
-            // ------------------------
-
             if (
                 field.type === FieldTypes.SINGLESELECT ||
                 field.type === FieldTypes.MULTISELECT
             ) {
 
+                const choices =
+                    field.choices ||
+                    field.listDefinition?.values?.map(value => ({
+                        name: value
+                    }));
+
                 if (
-                    !field.choices ||
-                    !Array.isArray(field.choices) ||
-                    field.choices.length === 0
+                    !choices ||
+                    !Array.isArray(choices) ||
+                    choices.length === 0
                 ) {
 
                     errors.push(

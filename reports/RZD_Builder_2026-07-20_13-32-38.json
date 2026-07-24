@@ -1,0 +1,593 @@
+{
+    "metadata": {
+        "builder": "RZD Builder",
+        "version": "2.0.0-rc1",
+        "module": "accommodations",
+        "table": "Accommodaties",
+        "runId": "66c5adf5-36cd-48f6-ac8f-dbc3a78705bc",
+        "startedAt": "2026-07-20T11:31:56.331Z",
+        "finishedAt": "2026-07-20T11:32:38.673Z",
+        "duration": 42.342,
+        "dryRun": false,
+        "environment": {
+            "node": "v24.18.0",
+            "platform": "win32",
+            "architecture": "x64",
+            "hostname": "DESKTOP-LJ4J1OM",
+            "user": "pvroe"
+        }
+    },
+    "summary": {
+        "create": 0,
+        "update": 6,
+        "skip": 0,
+        "warning": 0,
+        "error": 1
+    },
+    "synchronizationPlan": [
+        {
+            "action": "update",
+            "field": {
+                "id": "ACC-F001",
+                "name": "Naam",
+                "type": "singleLineText",
+                "description": "Naam van de accommodatie",
+                "group": "Basisgegevens",
+                "required": true,
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fldMegC7QPmp8Mv15",
+                "name": "Naam"
+            },
+            "update": {
+                "description": "Naam van de accommodatie"
+            },
+            "rollback": {
+                "description": "",
+                "options": {}
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "id": "ACC-F002",
+                "name": "Type accommodatie",
+                "type": "singleSelect",
+                "list": "accommodation-types",
+                "description": "Type accommodatie",
+                "group": "Basisgegevens",
+                "required": true,
+                "listDefinition": {
+                    "meta": {
+                        "id": "ACC-L001",
+                        "version": "1.0.0",
+                        "status": "active"
+                    },
+                    "id": "accommodation-types",
+                    "name": {
+                        "nl": "Type accommodatie",
+                        "en": "Accommodation type"
+                    },
+                    "values": [
+                        "Camping",
+                        "Hotel",
+                        "Appartement",
+                        "Vakantiepark",
+                        "Camperplaats",
+                        "B&B"
+                    ]
+                }
+            },
+            "airtableField": {
+                "type": "singleSelect",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                },
+                "id": "fldDGMV2deef20MI9",
+                "name": "Type accommodatie"
+            },
+            "update": {
+                "description": "Type accommodatie",
+                "options": {
+                    "choices": []
+                }
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "id": "ACC-F003",
+                "name": "Land",
+                "type": "singleLineText",
+                "description": "Land",
+                "group": "Locatie",
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fldFUdTow07xhCSss",
+                "name": "Land"
+            },
+            "update": {
+                "description": "Land"
+            },
+            "rollback": {
+                "description": "",
+                "options": {}
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "id": "ACC-F004",
+                "name": "Regio",
+                "type": "singleLineText",
+                "description": "Regio",
+                "group": "Locatie",
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fldrzlllwMYZSGQva",
+                "name": "Regio"
+            },
+            "update": {
+                "description": "Regio"
+            },
+            "rollback": {
+                "description": "",
+                "options": {}
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "id": "ACC-F005",
+                "name": "Plaats",
+                "type": "singleLineText",
+                "description": "Plaats",
+                "group": "Locatie",
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fld54PeuTUgIFoX90",
+                "name": "Plaats"
+            },
+            "update": {
+                "description": "Plaats"
+            },
+            "rollback": {
+                "description": "",
+                "options": {}
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "id": "ACC-F006",
+                "name": "Adres",
+                "type": "singleLineText",
+                "description": "Straat en huisnummer",
+                "group": "Locatie",
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fldOwARUpfaqXw5em",
+                "name": "Adres"
+            },
+            "update": {
+                "description": "Straat en huisnummer"
+            },
+            "rollback": {
+                "description": "",
+                "options": {}
+            }
+        }
+    ],
+    "rollbackPlan": [
+        {
+            "action": "rollback-update",
+            "field": {
+                "id": "ACC-F006",
+                "name": "Adres",
+                "type": "singleLineText",
+                "description": "Straat en huisnummer",
+                "group": "Locatie",
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fldOwARUpfaqXw5em",
+                "name": "Adres"
+            },
+            "payload": {
+                "description": "",
+                "options": {}
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "id": "ACC-F005",
+                "name": "Plaats",
+                "type": "singleLineText",
+                "description": "Plaats",
+                "group": "Locatie",
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fld54PeuTUgIFoX90",
+                "name": "Plaats"
+            },
+            "payload": {
+                "description": "",
+                "options": {}
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "id": "ACC-F004",
+                "name": "Regio",
+                "type": "singleLineText",
+                "description": "Regio",
+                "group": "Locatie",
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fldrzlllwMYZSGQva",
+                "name": "Regio"
+            },
+            "payload": {
+                "description": "",
+                "options": {}
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "id": "ACC-F003",
+                "name": "Land",
+                "type": "singleLineText",
+                "description": "Land",
+                "group": "Locatie",
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fldFUdTow07xhCSss",
+                "name": "Land"
+            },
+            "payload": {
+                "description": "",
+                "options": {}
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "id": "ACC-F002",
+                "name": "Type accommodatie",
+                "type": "singleSelect",
+                "list": "accommodation-types",
+                "description": "Type accommodatie",
+                "group": "Basisgegevens",
+                "required": true,
+                "listDefinition": {
+                    "meta": {
+                        "id": "ACC-L001",
+                        "version": "1.0.0",
+                        "status": "active"
+                    },
+                    "id": "accommodation-types",
+                    "name": {
+                        "nl": "Type accommodatie",
+                        "en": "Accommodation type"
+                    },
+                    "values": [
+                        "Camping",
+                        "Hotel",
+                        "Appartement",
+                        "Vakantiepark",
+                        "Camperplaats",
+                        "B&B"
+                    ]
+                }
+            },
+            "airtableField": {
+                "type": "singleSelect",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                },
+                "id": "fldDGMV2deef20MI9",
+                "name": "Type accommodatie"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "id": "ACC-F001",
+                "name": "Naam",
+                "type": "singleLineText",
+                "description": "Naam van de accommodatie",
+                "group": "Basisgegevens",
+                "required": true,
+                "listDefinition": null
+            },
+            "airtableField": {
+                "type": "singleLineText",
+                "id": "fldMegC7QPmp8Mv15",
+                "name": "Naam"
+            },
+            "payload": {
+                "description": "",
+                "options": {}
+            }
+        }
+    ],
+    "audit": [
+        {
+            "runId": "66c5adf5-36cd-48f6-ac8f-dbc3a78705bc",
+            "timestamp": "2026-07-20T11:32:36.889Z",
+            "action": "update",
+            "field": "Naam",
+            "before": {
+                "description": "",
+                "options": {}
+            },
+            "after": {
+                "description": "Naam van de accommodatie"
+            }
+        },
+        {
+            "runId": "66c5adf5-36cd-48f6-ac8f-dbc3a78705bc",
+            "timestamp": "2026-07-20T11:32:37.378Z",
+            "action": "update",
+            "field": "Type accommodatie",
+            "before": {
+                "description": "",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                }
+            },
+            "after": {
+                "description": "Type accommodatie",
+                "options": {
+                    "choices": []
+                }
+            }
+        },
+        {
+            "runId": "66c5adf5-36cd-48f6-ac8f-dbc3a78705bc",
+            "timestamp": "2026-07-20T11:32:37.577Z",
+            "action": "error",
+            "field": "Type accommodatie",
+            "message": "Request failed with status code 422"
+        },
+        {
+            "runId": "66c5adf5-36cd-48f6-ac8f-dbc3a78705bc",
+            "timestamp": "2026-07-20T11:32:37.581Z",
+            "action": "update",
+            "field": "Land",
+            "before": {
+                "description": "",
+                "options": {}
+            },
+            "after": {
+                "description": "Land"
+            }
+        },
+        {
+            "runId": "66c5adf5-36cd-48f6-ac8f-dbc3a78705bc",
+            "timestamp": "2026-07-20T11:32:37.892Z",
+            "action": "update",
+            "field": "Regio",
+            "before": {
+                "description": "",
+                "options": {}
+            },
+            "after": {
+                "description": "Regio"
+            }
+        },
+        {
+            "runId": "66c5adf5-36cd-48f6-ac8f-dbc3a78705bc",
+            "timestamp": "2026-07-20T11:32:38.141Z",
+            "action": "update",
+            "field": "Plaats",
+            "before": {
+                "description": "",
+                "options": {}
+            },
+            "after": {
+                "description": "Plaats"
+            }
+        },
+        {
+            "runId": "66c5adf5-36cd-48f6-ac8f-dbc3a78705bc",
+            "timestamp": "2026-07-20T11:32:38.397Z",
+            "action": "update",
+            "field": "Adres",
+            "before": {
+                "description": "",
+                "options": {}
+            },
+            "after": {
+                "description": "Straat en huisnummer"
+            }
+        }
+    ]
+}

@@ -1,0 +1,384 @@
+{
+    "metadata": {
+        "builder": "RZD Builder",
+        "version": "2.0.0-rc1",
+        "module": "accommodations",
+        "table": "Accommodaties",
+        "runId": "f1072494-6705-45e3-819c-ee2e29205ddc",
+        "startedAt": "2026-07-20T13:36:58.676Z",
+        "finishedAt": "2026-07-20T13:36:59.247Z",
+        "duration": 0.571,
+        "dryRun": false,
+        "environment": {
+            "node": "v24.18.0",
+            "platform": "win32",
+            "architecture": "x64",
+            "hostname": "DESKTOP-LJ4J1OM",
+            "user": "pvroe"
+        }
+    },
+    "summary": {
+        "create": 0,
+        "update": 1,
+        "skip": 5,
+        "warning": 0,
+        "error": 0
+    },
+    "synchronizationPlan": [
+        {
+            "action": "skip",
+            "field": {
+                "id": "ACC-F001",
+                "name": "Naam",
+                "type": "singleLineText",
+                "description": "Naam van de accommodatie",
+                "group": "Basisgegevens",
+                "required": true,
+                "listDefinition": null
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "id": "ACC-F002",
+                "name": "Type accommodatie",
+                "type": "singleSelect",
+                "list": "accommodation-types",
+                "description": "Type accommodatie",
+                "group": "Basisgegevens",
+                "required": true,
+                "listDefinition": {
+                    "meta": {
+                        "id": "ACC-L001",
+                        "version": "1.0.0",
+                        "status": "active"
+                    },
+                    "id": "accommodation-types",
+                    "name": {
+                        "nl": "Type accommodatie",
+                        "en": "Accommodation type"
+                    },
+                    "values": [
+                        "Camping",
+                        "Hotel",
+                        "Appartement",
+                        "Vakantiepark",
+                        "Camperplaats",
+                        "B&B"
+                    ]
+                }
+            },
+            "airtableField": {
+                "type": "singleSelect",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                },
+                "id": "fldDGMV2deef20MI9",
+                "name": "Type accommodatie"
+            },
+            "update": {
+                "description": "Type accommodatie"
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "action": "skip",
+            "field": {
+                "id": "ACC-F003",
+                "name": "Land",
+                "type": "singleLineText",
+                "description": "Land",
+                "group": "Locatie",
+                "listDefinition": null
+            }
+        },
+        {
+            "action": "skip",
+            "field": {
+                "id": "ACC-F004",
+                "name": "Regio",
+                "type": "singleLineText",
+                "description": "Regio",
+                "group": "Locatie",
+                "listDefinition": null
+            }
+        },
+        {
+            "action": "skip",
+            "field": {
+                "id": "ACC-F005",
+                "name": "Plaats",
+                "type": "singleLineText",
+                "description": "Plaats",
+                "group": "Locatie",
+                "listDefinition": null
+            }
+        },
+        {
+            "action": "skip",
+            "field": {
+                "id": "ACC-F006",
+                "name": "Adres",
+                "type": "singleLineText",
+                "description": "Straat en huisnummer",
+                "group": "Locatie",
+                "listDefinition": null
+            }
+        }
+    ],
+    "rollbackPlan": [
+        {
+            "action": "rollback-update",
+            "field": {
+                "id": "ACC-F002",
+                "name": "Type accommodatie",
+                "type": "singleSelect",
+                "list": "accommodation-types",
+                "description": "Type accommodatie",
+                "group": "Basisgegevens",
+                "required": true,
+                "listDefinition": {
+                    "meta": {
+                        "id": "ACC-L001",
+                        "version": "1.0.0",
+                        "status": "active"
+                    },
+                    "id": "accommodation-types",
+                    "name": {
+                        "nl": "Type accommodatie",
+                        "en": "Accommodation type"
+                    },
+                    "values": [
+                        "Camping",
+                        "Hotel",
+                        "Appartement",
+                        "Vakantiepark",
+                        "Camperplaats",
+                        "B&B"
+                    ]
+                }
+            },
+            "airtableField": {
+                "type": "singleSelect",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                },
+                "id": "fldDGMV2deef20MI9",
+                "name": "Type accommodatie"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "audit": [
+        {
+            "runId": "f1072494-6705-45e3-819c-ee2e29205ddc",
+            "timestamp": "2026-07-20T13:36:58.892Z",
+            "action": "skip",
+            "field": "Naam"
+        },
+        {
+            "runId": "f1072494-6705-45e3-819c-ee2e29205ddc",
+            "timestamp": "2026-07-20T13:36:58.894Z",
+            "action": "update",
+            "field": "Type accommodatie",
+            "before": {
+                "description": "",
+                "options": {
+                    "choices": [
+                        {
+                            "id": "selEs9S8Dkv2kLOaB",
+                            "name": "Camping",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seldj1XchmdQkKD7z",
+                            "name": "Hotel",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selGgV8EQbEV2wGlK",
+                            "name": "Vakantiepark",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "sel3veaiSTrZh86Fl",
+                            "name": "Appartement",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "seltbziMgBlb0bNnm",
+                            "name": "Camperplaats",
+                            "color": "grayLight2"
+                        },
+                        {
+                            "id": "selqBjgTVHJWNX393",
+                            "name": "B&B",
+                            "color": "grayLight2"
+                        }
+                    ]
+                }
+            },
+            "after": {
+                "description": "Type accommodatie"
+            }
+        },
+        {
+            "runId": "f1072494-6705-45e3-819c-ee2e29205ddc",
+            "timestamp": "2026-07-20T13:36:59.231Z",
+            "action": "skip",
+            "field": "Land"
+        },
+        {
+            "runId": "f1072494-6705-45e3-819c-ee2e29205ddc",
+            "timestamp": "2026-07-20T13:36:59.232Z",
+            "action": "skip",
+            "field": "Regio"
+        },
+        {
+            "runId": "f1072494-6705-45e3-819c-ee2e29205ddc",
+            "timestamp": "2026-07-20T13:36:59.233Z",
+            "action": "skip",
+            "field": "Plaats"
+        },
+        {
+            "runId": "f1072494-6705-45e3-819c-ee2e29205ddc",
+            "timestamp": "2026-07-20T13:36:59.234Z",
+            "action": "skip",
+            "field": "Adres"
+        }
+    ]
+}

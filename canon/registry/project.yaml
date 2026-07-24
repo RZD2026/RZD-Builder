@@ -1,0 +1,8 @@
+project:
+  id: rzd
+  name: Reizen zonder Drempels
+  version: "2.0.0"
+
+defaults:
+  language: nl
+  database: airtable

@@ -16,33 +16,49 @@ class FieldOptionsFactory {
                     precision: 1
                 };
 
-            case "singleSelect":
+            case "singleSelect": {
 
-                if (!field.choices || field.choices.length === 0) {
+                const choices =
+                    field.choices ||
+                    field.listDefinition?.values;
+
+                if (!choices || choices.length === 0) {
                     throw new Error(
                         `SingleSelect '${field.name}' heeft geen choices.`
                     );
                 }
 
                 return {
-                    choices: field.choices.map(choice => ({
-                        name: choice
+                    choices: choices.map(choice => ({
+                        name: typeof choice === "string"
+                            ? choice
+                            : choice.name
                     }))
                 };
 
-            case "multipleSelect":
+            }
 
-                if (!field.choices || field.choices.length === 0) {
+            case "multipleSelect": {
+
+                const choices =
+                    field.choices ||
+                    field.listDefinition?.values;
+
+                if (!choices || choices.length === 0) {
                     throw new Error(
                         `MultiSelect '${field.name}' heeft geen choices.`
                     );
                 }
 
                 return {
-                    choices: field.choices.map(choice => ({
-                        name: choice
+                    choices: choices.map(choice => ({
+                        name: typeof choice === "string"
+                            ? choice
+                            : choice.name
                     }))
                 };
+
+            }
 
             case "singleLineText":
             case "multilineText":

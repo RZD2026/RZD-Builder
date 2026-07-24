@@ -1,0 +1,51 @@
+meta:
+  id: ACC-T001
+  version: "1.0.0"
+  status: active
+  name: Accommodaties
+  description: Hoofdtabel met alle accommodaties
+
+table:
+  id: accommodations
+  airtable: Accommodaties
+
+fields:
+
+  - id: ACC-F001
+    name: Naam
+    type: TEXT
+    description: Naam van de accommodatie
+    group: Basisgegevens
+    required: true
+
+  - id: ACC-F002
+    name: Type accommodatie
+    type: SINGLESELECT
+    list: accommodation-types
+    description: Type accommodatie
+    group: Basisgegevens
+    required: true
+
+  - id: ACC-F003
+    name: Land
+    type: TEXT
+    description: Land
+    group: Locatie
+
+  - id: ACC-F004
+    name: Regio
+    type: TEXT
+    description: Regio
+    group: Locatie
+
+  - id: ACC-F005
+    name: Plaats
+    type: TEXT
+    description: Plaats
+    group: Locatie
+
+  - id: ACC-F006
+    name: Adres
+    type: TEXT
+    description: Straat en huisnummer
+    group: Locatie

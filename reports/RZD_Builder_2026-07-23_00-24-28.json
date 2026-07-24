@@ -1,0 +1,647 @@
+{
+    "metadata": {
+        "builder": "RZD Builder",
+        "version": "2.0.0-rc1",
+        "module": "toegang",
+        "table": "Accommodaties",
+        "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+        "startedAt": "2026-07-22T22:24:25.570Z",
+        "finishedAt": "2026-07-22T22:24:28.149Z",
+        "duration": 2.579,
+        "dryRun": false,
+        "environment": {
+            "node": "v24.18.0",
+            "platform": "win32",
+            "architecture": "x64",
+            "hostname": "DESKTOP-LJ4J1OM",
+            "user": "pvroe"
+        }
+    },
+    "summary": {
+        "create": 0,
+        "update": 8,
+        "skip": 2,
+        "warning": 0,
+        "error": 0
+    },
+    "synchronizationPlan": [
+        {
+            "action": "update",
+            "field": {
+                "name": "Parkeerplaats",
+                "type": "checkbox"
+            },
+            "airtableField": {
+                "type": "checkbox",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                },
+                "id": "fldKqLZlDc3FCwnGA",
+                "name": "Parkeerplaats"
+            },
+            "update": {
+                "metadata": {
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    }
+                },
+                "mcp": []
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "name": "Gehandicaptenparkeerplaats",
+                "type": "checkbox"
+            },
+            "airtableField": {
+                "type": "checkbox",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                },
+                "id": "fldT19QTFR5Bl9gr2",
+                "name": "Gehandicaptenparkeerplaats"
+            },
+            "update": {
+                "metadata": {
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    }
+                },
+                "mcp": []
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "name": "Afstand parkeerplaats tot ingang",
+                "type": "number"
+            },
+            "airtableField": {
+                "type": "number",
+                "options": {
+                    "precision": 1
+                },
+                "id": "fldQvqtbXQMzK8SEj",
+                "name": "Afstand parkeerplaats tot ingang"
+            },
+            "update": {
+                "metadata": {
+                    "options": {
+                        "precision": 1
+                    }
+                },
+                "mcp": []
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            }
+        },
+        {
+            "action": "skip",
+            "field": {
+                "name": "Ondergrond parkeerplaats",
+                "type": "singleLineText"
+            }
+        },
+        {
+            "action": "skip",
+            "field": {
+                "name": "Route naar ingang",
+                "type": "singleLineText"
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "name": "Hellingspercentage route",
+                "type": "number"
+            },
+            "airtableField": {
+                "type": "number",
+                "options": {
+                    "precision": 1
+                },
+                "id": "fld9AhCeZEM0C8Ew4",
+                "name": "Hellingspercentage route"
+            },
+            "update": {
+                "metadata": {
+                    "options": {
+                        "precision": 1
+                    }
+                },
+                "mcp": []
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "name": "Drempel ingang",
+                "type": "number"
+            },
+            "airtableField": {
+                "type": "number",
+                "options": {
+                    "precision": 1
+                },
+                "id": "fldJXTVSaymEIITmK",
+                "name": "Drempel ingang"
+            },
+            "update": {
+                "metadata": {
+                    "options": {
+                        "precision": 1
+                    }
+                },
+                "mcp": []
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "name": "Hoofdingang toegankelijk",
+                "type": "checkbox"
+            },
+            "airtableField": {
+                "type": "checkbox",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                },
+                "id": "fldvxRcWenA0C1eGn",
+                "name": "Hoofdingang toegankelijk"
+            },
+            "update": {
+                "metadata": {
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    }
+                },
+                "mcp": []
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "name": "Automatische deur",
+                "type": "checkbox"
+            },
+            "airtableField": {
+                "type": "checkbox",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                },
+                "id": "fld7tjfQuC2gbcOqt",
+                "name": "Automatische deur"
+            },
+            "update": {
+                "metadata": {
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    }
+                },
+                "mcp": []
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            }
+        },
+        {
+            "action": "update",
+            "field": {
+                "name": "Draaicirkel entree",
+                "type": "number"
+            },
+            "airtableField": {
+                "type": "number",
+                "options": {
+                    "precision": 1
+                },
+                "id": "fldqCdVZBTl2sNjY2",
+                "name": "Draaicirkel entree"
+            },
+            "update": {
+                "metadata": {
+                    "options": {
+                        "precision": 1
+                    }
+                },
+                "mcp": []
+            },
+            "rollback": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            }
+        }
+    ],
+    "rollbackPlan": [
+        {
+            "action": "rollback-update",
+            "field": {
+                "name": "Draaicirkel entree",
+                "type": "number"
+            },
+            "airtableField": {
+                "type": "number",
+                "options": {
+                    "precision": 1
+                },
+                "id": "fldqCdVZBTl2sNjY2",
+                "name": "Draaicirkel entree"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "name": "Automatische deur",
+                "type": "checkbox"
+            },
+            "airtableField": {
+                "type": "checkbox",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                },
+                "id": "fld7tjfQuC2gbcOqt",
+                "name": "Automatische deur"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "name": "Hoofdingang toegankelijk",
+                "type": "checkbox"
+            },
+            "airtableField": {
+                "type": "checkbox",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                },
+                "id": "fldvxRcWenA0C1eGn",
+                "name": "Hoofdingang toegankelijk"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "name": "Drempel ingang",
+                "type": "number"
+            },
+            "airtableField": {
+                "type": "number",
+                "options": {
+                    "precision": 1
+                },
+                "id": "fldJXTVSaymEIITmK",
+                "name": "Drempel ingang"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "name": "Hellingspercentage route",
+                "type": "number"
+            },
+            "airtableField": {
+                "type": "number",
+                "options": {
+                    "precision": 1
+                },
+                "id": "fld9AhCeZEM0C8Ew4",
+                "name": "Hellingspercentage route"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "name": "Afstand parkeerplaats tot ingang",
+                "type": "number"
+            },
+            "airtableField": {
+                "type": "number",
+                "options": {
+                    "precision": 1
+                },
+                "id": "fldQvqtbXQMzK8SEj",
+                "name": "Afstand parkeerplaats tot ingang"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "name": "Gehandicaptenparkeerplaats",
+                "type": "checkbox"
+            },
+            "airtableField": {
+                "type": "checkbox",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                },
+                "id": "fldT19QTFR5Bl9gr2",
+                "name": "Gehandicaptenparkeerplaats"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            }
+        },
+        {
+            "action": "rollback-update",
+            "field": {
+                "name": "Parkeerplaats",
+                "type": "checkbox"
+            },
+            "airtableField": {
+                "type": "checkbox",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                },
+                "id": "fldKqLZlDc3FCwnGA",
+                "name": "Parkeerplaats"
+            },
+            "payload": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            }
+        }
+    ],
+    "audit": [
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:25.760Z",
+            "action": "update",
+            "field": "Parkeerplaats",
+            "before": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            },
+            "after": {
+                "metadata": {
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    }
+                },
+                "mcp": []
+            }
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:26.062Z",
+            "action": "update",
+            "field": "Gehandicaptenparkeerplaats",
+            "before": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            },
+            "after": {
+                "metadata": {
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    }
+                },
+                "mcp": []
+            }
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:26.342Z",
+            "action": "update",
+            "field": "Afstand parkeerplaats tot ingang",
+            "before": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            },
+            "after": {
+                "metadata": {
+                    "options": {
+                        "precision": 1
+                    }
+                },
+                "mcp": []
+            }
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:26.661Z",
+            "action": "skip",
+            "field": "Ondergrond parkeerplaats"
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:26.663Z",
+            "action": "skip",
+            "field": "Route naar ingang"
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:26.667Z",
+            "action": "update",
+            "field": "Hellingspercentage route",
+            "before": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            },
+            "after": {
+                "metadata": {
+                    "options": {
+                        "precision": 1
+                    }
+                },
+                "mcp": []
+            }
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:26.979Z",
+            "action": "update",
+            "field": "Drempel ingang",
+            "before": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            },
+            "after": {
+                "metadata": {
+                    "options": {
+                        "precision": 1
+                    }
+                },
+                "mcp": []
+            }
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:27.319Z",
+            "action": "update",
+            "field": "Hoofdingang toegankelijk",
+            "before": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            },
+            "after": {
+                "metadata": {
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    }
+                },
+                "mcp": []
+            }
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:27.598Z",
+            "action": "update",
+            "field": "Automatische deur",
+            "before": {
+                "description": "",
+                "options": {
+                    "icon": "check",
+                    "color": "greenBright"
+                }
+            },
+            "after": {
+                "metadata": {
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    }
+                },
+                "mcp": []
+            }
+        },
+        {
+            "runId": "1d7b2993-3698-47b6-b50a-6c3919e3ac7c",
+            "timestamp": "2026-07-22T22:24:27.861Z",
+            "action": "update",
+            "field": "Draaicirkel entree",
+            "before": {
+                "description": "",
+                "options": {
+                    "precision": 1
+                }
+            },
+            "after": {
+                "metadata": {
+                    "options": {
+                        "precision": 1
+                    }
+                },
+                "mcp": []
+            }
+        }
+    ]
+}

@@ -1,10 +1,22 @@
+const moduleLoader = require("../services/moduleLoader");
 
 const airtable = require("../services/airtableAdapter");
 const logger = require("../services/logger");
 const schemaValidator = require("../services/schemaValidator");
+
 const BuilderContext = require("../services/builderContext");
+
 const comparisonService = require("../services/comparisonService");
+const synchronizationPlan = require("../services/synchronizationPlan");
 const reportFormatter = require("../services/reportFormatter");
+const synchronizationService = require("../services/synchronizationService");
+
+const auditService = require("../services/auditService");
+const reportGenerator = require("../services/reportGenerator");
+
+const builderMetadata = require("../services/builderMetadata");
+const rollbackPlanner = require("../services/rollbackPlanner");
+const runContextFactory = require("../services/runContextFactory");
 
 async function buildModule(moduleName, options = {}) {
 
@@ -12,23 +24,25 @@ async function buildModule(moduleName, options = {}) {
 
     console.log("");
     console.log("================================");
-    console.log("RZD Builder v1.5");
+    console.log("RZD Builder v1.7");
     console.log("================================");
     console.log("");
 
     logger.start(moduleName);
 
+    auditService.clear();
+
     let module;
 
     try {
 
-        delete require.cache[require.resolve(`../modules/${moduleName}`)];
-        module = require(`../modules/${moduleName}`);
+        module = await moduleLoader.load(moduleName);
 
     } catch (err) {
 
         console.log(`❌ Module '${moduleName}' niet gevonden.`);
         logger.write(`FOUT: Module '${moduleName}' niet gevonden.`);
+
         return;
 
     }
@@ -64,26 +78,45 @@ async function buildModule(moduleName, options = {}) {
 
     }
 
-    const airtableFields = await airtable.getFields(tableName);
+    const airtableFields =
+        await airtable.getFields(tableName);
 
     const context = new BuilderContext({
+
         module,
         tableName,
         airtableFields,
         logger,
         options
+
     });
 
+    console.log("");
     console.log(`Controle van module '${moduleName}'...`);
 
-    const results = comparisonService.compareModule(context);
+    const results =
+    comparisonService.compareModule(context);
 
-    reportFormatter.printModuleComparison(results);
+    const plan =
+    synchronizationPlan.build(results);
 
-    const existing = results.filter(r => r.action !== "create").length;
-    const missing = results.filter(r => r.action === "create").length;
-    const changed = results.filter(r => r.action === "update").length;
+    const rollbackPlan =
+    rollbackPlanner.build(plan);
 
+    rollbackPlanner.print(rollbackPlan);
+
+reportFormatter.printModuleComparison(results);
+
+    const existing =
+        results.filter(r => r.action !== "create").length;
+
+    const missing =
+        results.filter(r => r.action === "create").length;
+
+    const changed =
+        results.filter(r => r.action === "update").length;
+
+    console.log("");
     console.log("--------------------------------");
     console.log("Samenvatting");
     console.log("--------------------------------");
@@ -101,56 +134,102 @@ async function buildModule(moduleName, options = {}) {
     logger.write(`Gewijzigd   : ${changed}`);
     logger.write("");
 
-    if (missing === 0) {
-
-        console.log("✅ Geen nieuwe velden om aan te maken.");
-        console.log("");
-
-        logger.end(0, existing);
-
-        return;
-
-    }
-
-    if (dryRun) {
-
-        console.log("================================");
-        console.log("DRY RUN");
-        console.log("================================");
-        console.log("");
-
-        results
-            .filter(r => r.action === "create")
-            .forEach(r => {
-
-                console.log(`➕ ${r.field.name} (${r.field.type})`);
-                logger.write(`DRY RUN : ${r.field.name}`);
-
-            });
-
-        console.log("");
-        console.log("Geen wijzigingen uitgevoerd.");
-        console.log("");
-
-        logger.end(0, existing);
-
-        return;
-
-    }
-
-    console.log("Nieuwe velden worden aangemaakt...");
     console.log("");
+    console.log("================================");
+    console.log("Synchronisatie");
+    console.log("================================");
 
-    const fieldsToCreate = results
-        .filter(r => r.action === "create")
-        .map(r => r.field);
+    console.log(">>> Audit Run ID:", auditService.getRunId());
 
-    const result = await airtable.createMissingFields(
+// Start metadata
+const metadata =
+    builderMetadata.create({
+
+        module: moduleName,
+
+        table: tableName,
+
+        runId: auditService.getRunId(),
+
+        dryRun
+
+    });
+
+const summary =
+    await synchronizationService.execute(
         tableName,
-        fieldsToCreate
+        plan,
+        {
+            dryRun
+        }
     );
 
-    logger.end(result.created, result.skipped);
+// Eindtijd + duur berekenen
+builderMetadata.finish(metadata);
+builderMetadata.print(metadata);
+
+    console.log(">>> Metadata Run ID:", metadata.runId);
+    console.log("================================");
+    console.log("Synchronisatie voltooid");
+    console.log("================================");
+    console.log("");
+
+    console.log(`Nieuwe velden  : ${summary.created}`);
+    console.log(`Bijgewerkt     : ${summary.updated}`);
+    console.log(`Overgeslagen   : ${summary.skipped}`);
+    console.log(`Waarschuwingen : ${summary.warnings}`);
+    console.log(`Fouten         : ${summary.errors}`);
+
+    logger.write("");
+    logger.write("Synchronisatie");
+    logger.write(`Nieuwe velden  : ${summary.created}`);
+    logger.write(`Bijgewerkt     : ${summary.updated}`);
+    logger.write(`Overgeslagen   : ${summary.skipped}`);
+    logger.write(`Waarschuwingen : ${summary.warnings}`);
+    logger.write(`Fouten         : ${summary.errors}`);
+
+console.log("");
+console.log("================================");
+console.log("Rapporten genereren");
+console.log("================================");
+console.log("");
+
+    const runContext =
+    runContextFactory.create({
+
+        metadata,
+
+        auditService,
+
+        synchronizationPlan: plan,
+
+        rollbackPlan
+
+    });
+
+    const jsonReport =
+    reportGenerator.saveJson(runContext);
+
+    const markdownReport =
+    reportGenerator.saveMarkdown(runContext);
+
+    console.log("JSON");
+    console.log(jsonReport);
+    console.log("");
+
+    console.log("Markdown");
+    console.log(markdownReport);
+    console.log("");
+
+    logger.write("");
+    logger.write("Rapporten");
+    logger.write(jsonReport);
+    logger.write(markdownReport);
+
+    logger.end(
+        summary.created,
+        summary.skipped
+    );
 
 }
 
