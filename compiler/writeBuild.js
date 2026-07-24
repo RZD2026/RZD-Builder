@@ -2,28 +2,62 @@
 const fs = require("fs-extra");
 const path = require("path");
 
-async function writeBuild(build) {
+async function writeCollection(outputDir, collection = [], property) {
 
-    const buildDir = path.join(__dirname, "..", "build");
-    const modulesDir = path.join(buildDir, "modules");
+    await fs.ensureDir(outputDir);
 
-    await fs.ensureDir(buildDir);
-    await fs.ensureDir(modulesDir);
+    for (const item of collection) {
 
-    for (const module of build.modules) {
-
-        const filename = `${module.id}.js`;
-        const filePath = path.join(modulesDir, filename);
+        const filename = `${item.id}.js`;
+        const filePath = path.join(outputDir, filename);
 
         const content =
-`module.exports = ${JSON.stringify(module, null, 4)};
+`module.exports = ${JSON.stringify(item, null, 4)};
 `;
 
         await fs.writeFile(filePath, content, "utf8");
 
-        console.log(`✓ ${filename}`);
+        console.log(`✓ ${property}: ${filename}`);
 
     }
+
+}
+
+async function writeBuild(build) {
+
+    const buildDir = path.join(__dirname, "..", "build");
+
+    await fs.ensureDir(buildDir);
+
+    await writeCollection(
+
+        path.join(buildDir, "modules"),
+
+        build.modules,
+
+        "module"
+
+    );
+
+    await writeCollection(
+
+        path.join(buildDir, "lists"),
+
+        build.lists,
+
+        "list"
+
+    );
+
+    await writeCollection(
+
+        path.join(buildDir, "registry"),
+
+        build.registry,
+
+        "registry"
+
+    );
 
     console.log("");
     console.log("Build succesvol geschreven.");
