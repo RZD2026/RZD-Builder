@@ -2,12 +2,10 @@
 const SynchronizationCoordinator = require("../synchronization/SynchronizationCoordinator");
 const BuilderBootstrap = require("../bootstrap/BuilderBootstrap");
 const BuilderWorkflow = require("../workflow/BuilderWorkflow");
+const ReportingCoordinator = require("../reporting/ReportingCoordinator");
 const logger = require("../../services/logger");
 
-const reportGenerator = require("../../services/reportGenerator");
-
 const rollbackPlanner = require("../../services/rollbackPlanner");
-const runContextFactory = require("../../services/runContextFactory");
 
 async function buildModule(moduleName, options = {}) {
 
@@ -89,45 +87,21 @@ async function buildModule(moduleName, options = {}) {
     console.log("================================");
     console.log("");
 
-    const runContext =
-    runContextFactory.create({
+    await ReportingCoordinator.run({
 
-        metadata,
+    metadata,
 
-        auditSummary,
+    auditSummary,
 
-        audit,
+    audit,
 
-        synchronizationPlan: plan,
+    synchronizationPlan: plan,
 
-        rollbackPlan
+    rollbackPlan,
 
-    });
+    syncSummary
 
-    const jsonReport =
-        reportGenerator.saveJson(runContext);
-
-    const markdownReport =
-        reportGenerator.saveMarkdown(runContext);
-
-    console.log("JSON");
-    console.log(jsonReport);
-    console.log("");
-
-    console.log("Markdown");
-    console.log(markdownReport);
-    console.log("");
-
-    logger.write("");
-    logger.write("Rapporten");
-    logger.write(jsonReport);
-    logger.write(markdownReport);
-
-    logger.end(
-        syncSummary.created,
-        syncSummary.skipped
-    );
-
+});
 }
 
 module.exports = {

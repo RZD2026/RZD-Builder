@@ -3,21 +3,23 @@ function normalizeCanon(canon) {
 
     return {
 
-        registry: canon.registry,
+    registry: canon.registry,
 
-        lists: canon.lists,
+    lists: canon.lists,
 
-        tables: (canon.tables || []).map(table => ({
+    tables: (canon.tables || []).map(table => ({
 
-            id: table.table.id,
+        id: table.data.table.id,
 
-            airtable: table.table.airtable,
+        airtable: table.data.table.airtable,
 
-            meta: table.meta || {},
+        meta: table.data.meta || {},
 
-            fields: table.fields || []
+        fields: table.data.fields || []
 
-        }))
+    }))
+
+};
 
     };
 
