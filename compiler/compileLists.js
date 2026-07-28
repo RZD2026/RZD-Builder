@@ -1,27 +1,19 @@
 
-async function compileLists(canon) {
+async function compileLists(input) {
 
-    const lists = [];
+    const model = input.model || input;
 
-    for (const list of (canon.lists || [])) {
+    return model.lists.map(list => ({
 
-        const data = list.data;
+        id: list.id,
 
-        lists.push({
+        name: list.name,
 
-            id: data.id,
+        description: list.description,
 
-            name: data.name,
+        values: list.values || []
 
-            description: data.description,
-
-            values: data.values || []
-
-        });
-
-    }
-
-    return lists;
+    }));
 
 }
 

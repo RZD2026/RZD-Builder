@@ -3,6 +3,10 @@ function canonModel(rawCanon) {
 
     const lists = rawCanon.lists.map(item => item.data);
 
+    const listLookup = Object.fromEntries(
+        lists.map(list => [list.id, list])
+    );
+
     return {
 
         registry: rawCanon.registry.map(item => item.data),
@@ -28,7 +32,7 @@ function canonModel(rawCanon) {
                 ...field,
 
                 listDefinition: field.list
-                    ? lists.find(list => list.id === field.list) || null
+                    ? listLookup[field.list] || null
                     : null
 
             }))

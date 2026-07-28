@@ -1,7 +1,9 @@
 
-async function compileRegistry(canon) {
+async function compileRegistry(input) {
 
-    return canon.registry || [];
+    const model = input.model || input;
+
+    return model.registry || [];
 
 }
 

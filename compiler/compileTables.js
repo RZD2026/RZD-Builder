@@ -1,37 +1,27 @@
 
-const mapFieldType = require("./typeMapper");
+async function compileTables(input) {
 
-async function compileTables(canon) {
+    const model = input.model || input;
 
-    const modules = [];
+    return model.tables.map(table => ({
 
-    for (const table of canon.tables) {
+        id: table.id,
+        name: table.name,
+        description: table.description,
+        airtable: table.airtable,
+        meta: table.meta,
 
-        modules.push({
+        fields: table.fields.map(field => ({
 
-            id: table.id,
+            ...field,
 
-            name: table.name,
+            list: field.hasList
+                ? field.listRef.id
+                : field.list
 
-            description: table.description,
+        }))
 
-            airtable: table.airtable,
-
-            meta: table.meta,
-
-            fields: (table.fields || []).map(field => ({
-
-                ...field,
-
-                type: mapFieldType(field.type)
-
-            }))
-
-        });
-
-    }
-
-    return modules;
+    }));
 
 }
 
