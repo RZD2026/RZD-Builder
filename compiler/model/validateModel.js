@@ -1,7 +1,8 @@
 
 async function validateModel(input) {
 
-    const model = input.model || input;
+    const context = input.model ? input : { model: input };
+    const model = context.model;
 
     for (const table of model.tables) {
 
@@ -9,7 +10,7 @@ async function validateModel(input) {
 
             if (!field.id) {
 
-                model.warnings.push({
+                context.warnings.push({
                     type: "missing-field-id",
                     table: table.id,
                     field: field.name || "<unknown>"

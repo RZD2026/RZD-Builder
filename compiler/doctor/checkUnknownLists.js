@@ -1,7 +1,9 @@
 
-function checkUnknownLists(model) {
+function checkUnknownLists(input) {
 
-    return model.warnings.filter(warning =>
+    const context = input.model ? input : { model: input };
+
+    return context.warnings.filter(warning =>
         warning.type === "unknown-list"
     );
 

@@ -1,11 +1,13 @@
 
-function getList(model, listId) {
+function getList(input, listId) {
 
-    if (!model || !model.lookup || !model.lookup.lists) {
+    const context = input.lookup ? input : { lookup: input.lookup || {} };
+
+    if (!context.lookup.lists) {
         return undefined;
     }
 
-    return model.lookup.lists[listId];
+    return context.lookup.lists[listId];
 
 }
 

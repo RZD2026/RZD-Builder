@@ -1,5 +1,7 @@
 
-function references(model) {
+function references(input) {
+
+    const context = input.model ? input : { model: input };
 
     const report = {
 
@@ -7,7 +9,7 @@ function references(model) {
 
     };
 
-    for (const warning of model.warnings) {
+    for (const warning of context.warnings) {
 
         switch (warning.type) {
 

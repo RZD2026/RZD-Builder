@@ -1,14 +1,13 @@
 
+const CompilerPipeline = require("./CompilerPipeline");
 const CompilerContext = require("./CompilerContext");
 
-const createModel = require("./model/createModel");
-const enrichModel = require("./model/enrichModel");
-
-const doctor = require("./doctor/doctor");
-
-const compileTables = require("./compileTables");
-const compileLists = require("./compileLists");
-const compileRegistry = require("./compileRegistry");
+const CreateModelStage = require("./stages/CreateModelStage");
+const EnrichModelStage = require("./stages/EnrichModelStage");
+const DoctorStage = require("./stages/DoctorStage");
+const CompileTablesStage = require("./stages/CompileTablesStage");
+const CompileRegistryStage = require("./stages/CompileRegistryStage");
+const CompileListsStage = require("./stages/CompileListsStage");
 
 async function compiler(canon) {
 
@@ -18,32 +17,34 @@ async function compiler(canon) {
 
     const context = new CompilerContext(canon);
 
-    context.model = await createModel(context);
-    await enrichModel(context);
-
-    const diagnostics = await doctor(context.model);
-
-    const build = {
+    context.build = {
 
         modules: [],
         registry: [],
         lists: [],
         schema: [],
         translations: [],
-
-        diagnostics
+        diagnostics: null
 
     };
 
-    build.modules = await compileTables(context.model);
-    build.registry = await compileRegistry(context.model);
-    build.lists = await compileLists(context.model);
+    const pipeline = new CompilerPipeline();
+
+    pipeline
+        .add(CreateModelStage)
+        .add(EnrichModelStage)
+        .add(DoctorStage)
+        .add(CompileTablesStage)
+        .add(CompileRegistryStage)
+        .add(CompileListsStage);
+
+    await pipeline.execute(context);
 
     console.log("");
     console.log("Compiler gereed.");
     console.log("");
 
-    return build;
+    return context.build;
 
 }
 

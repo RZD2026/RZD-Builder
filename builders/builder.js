@@ -1,3 +1,4 @@
+
 const moduleLoader = require("../services/moduleLoader");
 
 const airtable = require("../services/airtableAdapter");
@@ -18,9 +19,7 @@ const builderMetadata = require("../services/builderMetadata");
 const rollbackPlanner = require("../services/rollbackPlanner");
 const runContextFactory = require("../services/runContextFactory");
 
-async function buildModule(moduleName, options = {}) {
-
-    const dryRun = options.dryRun === true;
+function initializeBuilder(moduleName) {
 
     console.log("");
     console.log("================================");
@@ -31,6 +30,48 @@ async function buildModule(moduleName, options = {}) {
     logger.start(moduleName);
 
     auditService.clear();
+
+}
+
+function validateModule(module) {
+
+const errors = schemaValidator.validate(module);
+
+    if (errors.length === 0) {
+        return true;
+    }
+
+    console.log("");
+    console.log("================================");
+    console.log("SCHEMA VALIDATIE FOUTEN");
+    console.log("================================");
+    console.log("");
+
+    logger.write("SCHEMA VALIDATIE FOUTEN");
+
+    errors.forEach(error => {
+
+        console.log("❌ " + error);
+        logger.write(error);
+
+    });
+
+    console.log("");
+    console.log("Builder gestopt.");
+    console.log("");
+
+    logger.write("Builder gestopt.");
+
+    return false;
+
+}
+
+
+async function buildModule(moduleName, options = {}) {
+
+    const dryRun = options.dryRun === true;
+
+    initializeBuilder(moduleName);
 
     let module;
 
@@ -47,92 +88,26 @@ async function buildModule(moduleName, options = {}) {
 
     }
 
-    const tableName = module.table || "Accommodaties";
-
-    const errors = schemaValidator.validate(module);
-
-    if (errors.length > 0) {
-
-        console.log("");
-        console.log("================================");
-        console.log("SCHEMA VALIDATIE FOUTEN");
-        console.log("================================");
-        console.log("");
-
-        logger.write("SCHEMA VALIDATIE FOUTEN");
-
-        errors.forEach(error => {
-
-            console.log("❌ " + error);
-            logger.write(error);
-
-        });
-
-        console.log("");
-        console.log("Builder gestopt.");
-        console.log("");
-
-        logger.write("Builder gestopt.");
-
+    if (!validateModule(module)) {
         return;
-
     }
 
-    const airtableFields =
-        await airtable.getFields(tableName);
+    const context =
+          await createBuilderContext(module, options);
 
-    const context = new BuilderContext({
-
-        module,
-        tableName,
-        airtableFields,
-        logger,
-        options
-
-    });
+    const tableName =
+          context.tableName;
 
     console.log("");
     console.log(`Controle van module '${moduleName}'...`);
 
-    const results =
-    comparisonService.compareModule(context);
+    const {
+        results,
+        plan,
+        rollbackPlan
+    } = compareModule(context);
 
-    const plan =
-    synchronizationPlan.build(results);
-
-    const rollbackPlan =
-    rollbackPlanner.build(plan);
-
-    rollbackPlanner.print(rollbackPlan);
-
-reportFormatter.printModuleComparison(results);
-
-    const existing =
-        results.filter(r => r.action !== "create").length;
-
-    const missing =
-        results.filter(r => r.action === "create").length;
-
-    const changed =
-        results.filter(r => r.action === "update").length;
-
-    console.log("");
-    console.log("--------------------------------");
-    console.log("Samenvatting");
-    console.log("--------------------------------");
-    console.log(`Totaal      : ${module.fields.length}`);
-    console.log(`Bestaan     : ${existing}`);
-    console.log(`Ontbreken   : ${missing}`);
-    console.log(`Gewijzigd   : ${changed}`);
-    console.log("");
-
-    logger.write("");
-    logger.write("Samenvatting");
-    logger.write(`Totaal      : ${module.fields.length}`);
-    logger.write(`Bestaan     : ${existing}`);
-    logger.write(`Ontbreken   : ${missing}`);
-    logger.write(`Gewijzigd   : ${changed}`);
-    logger.write("");
+    printSummary(module, results);
 
     console.log("");
     console.log("================================");
@@ -141,32 +116,27 @@ reportFormatter.printModuleComparison(results);
 
     console.log(">>> Audit Run ID:", auditService.getRunId());
 
-// Start metadata
-const metadata =
-    builderMetadata.create({
+    const metadata =
+        builderMetadata.create({
 
-        module: moduleName,
-
-        table: tableName,
-
-        runId: auditService.getRunId(),
-
-        dryRun
-
-    });
-
-const summary =
-    await synchronizationService.execute(
-        tableName,
-        plan,
-        {
+            module: moduleName,
+            table: tableName,
+            runId: auditService.getRunId(),
             dryRun
-        }
-    );
 
-// Eindtijd + duur berekenen
-builderMetadata.finish(metadata);
-builderMetadata.print(metadata);
+        });
+
+    const summary =
+        await synchronizationService.execute(
+            tableName,
+            plan,
+            {
+                dryRun
+            }
+        );
+
+    builderMetadata.finish(metadata);
+    builderMetadata.print(metadata);
 
     console.log(">>> Metadata Run ID:", metadata.runId);
     console.log("================================");
@@ -188,44 +158,25 @@ builderMetadata.print(metadata);
     logger.write(`Waarschuwingen : ${summary.warnings}`);
     logger.write(`Fouten         : ${summary.errors}`);
 
-console.log("");
-console.log("================================");
-console.log("Rapporten genereren");
-console.log("================================");
-console.log("");
+    console.log("");
+    console.log("================================");
+    console.log("Rapporten genereren");
+    console.log("================================");
+    console.log("");
 
     const runContext =
     runContextFactory.create({
 
         metadata,
-
         auditService,
-
         synchronizationPlan: plan,
-
         rollbackPlan
 
     });
 
-    const jsonReport =
-    reportGenerator.saveJson(runContext);
+    generateReports(runContext);;
 
-    const markdownReport =
-    reportGenerator.saveMarkdown(runContext);
-
-    console.log("JSON");
-    console.log(jsonReport);
-    console.log("");
-
-    console.log("Markdown");
-    console.log(markdownReport);
-    console.log("");
-
-    logger.write("");
-    logger.write("Rapporten");
-    logger.write(jsonReport);
-    logger.write(markdownReport);
-
+    
     logger.end(
         summary.created,
         summary.skipped

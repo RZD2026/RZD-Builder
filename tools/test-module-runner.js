@@ -1,25 +1,13 @@
 
-const moduleRunner = require("../services/moduleRunner");
+const builder = require("../core/kernel/BuilderKernel");
 
 (async () => {
 
-    const build = {
-
-        modules: [
-
-            {
-                id: "accommodations"
-            }
-
-        ]
-
-    };
-
     try {
 
-        await moduleRunner.run(build, {
-            dryRun: true
-        });
+    await builder.buildModule("accommodations", {
+        dryRun: true
+    });
 
         console.log("");
         console.log("✓ ModuleRunner succesvol getest.");

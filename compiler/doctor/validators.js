@@ -1,3 +1,4 @@
+const { getParsedType } = require("zod/v3");
 
 const FIELD_TYPES = new Set([
     "text",
@@ -57,4 +58,4 @@ module.exports = {
     isValidId,
     isKnownFieldType
 
-};
+};getParsedType

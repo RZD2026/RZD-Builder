@@ -1,63 +1,68 @@
-# RZD Builder → WordPress Architectuur
+# WORDPRESS_ARCHITECTURE
 
-## Doel
-
-Automatisch accommodaties vanuit Airtable publiceren naar WordPress.
+| Eigenschap | Waarde |
+|------------|--------|
+| Project | RZD Builder |
+| Document | WORDPRESS_ARCHITECTURE.md |
+| Status | Actief |
+| Rol | WordPress-publicatiearchitectuur |
+| Laatste wijziging | 07-08-2026 |
+| Eigenaar | Pascalle Vroegop |
 
 ---
 
-# Pipeline
+# Doel
 
+Dit document beschrijft de architectuur van de automatische publicatie vanuit **RZD Builder** naar **WordPress**.
+
+De architectuur beschrijft uitsluitend:
+
+- de publicatiepipeline;
+- de verantwoordelijkheden van de componenten;
+- de gegevensstroom;
+- de mapping tussen Builder en WordPress;
+- de architectuurprincipes;
+- de toekomstige ontwikkeling van de publicatielaag.
+
+Implementatiedetails en broncode vallen buiten de scope van dit document.
+
+---
+
+# Scope
+
+Dit document beschrijft uitsluitend de architectuur van de WordPress-publicatielaag.
+
+Het behandelt:
+
+- de architectuur;
+- de gegevensstroom;
+- de verantwoordelijkheden;
+- de publicatiepipeline;
+- de veldmapping;
+- de ontwerpprincipes.
+
+De implementatie wordt beschreven in de broncode en de bijbehorende technische documentatie.
+
+---
+
+# Architectuuroverzicht
+
+De publicatie verloopt volledig geautomatiseerd via RZD Builder.
+
+```text
 Airtable
-↓
-Builder
-↓
+    │
+    ▼
+BuilderKernel
+    │
+    ▼
 WordPressMapper
-↓
+    │
+    ▼
 WordPressPublisher
-↓
+    │
+    ▼
 WordPress REST API
-↓
+    │
+    ▼
 WordPress Website
-
----
-
-# Publicatiemodel
-
-- Type: Custom Post Type
-- Status: draft (standaard)
-- Publicatie: handmatig of automatisch
-
----
-
-# Basisvelden
-
-| Airtable | WordPress |
-|----------|-----------|
-| Naam | title |
-| Land | meta.land |
-| Regio | meta.regio |
-| Plaats | meta.plaats |
-| Adres | meta.adres |
-| Website | meta.website |
-| Telefoon | meta.telefoon |
-| E-mail | meta.email |
-| GPS | meta.gps |
-
----
-
-# Toekomst
-
-- Foto's synchroniseren
-- Reviews synchroniseren
-- AI-samenvattingen
-- SEO
-- Meertaligheid
-- Categorieën
-- Tags
-
----
-
-Status
-
-Document versie 1.0

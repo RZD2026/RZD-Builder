@@ -1,9 +1,10 @@
 
 function buildStatistics(input) {
 
-    const model = input.model || input;
+    const context = input.model ? input : { model: input };
+    const model = context.model;
 
-    model.statistics = {
+    context.statistics = {
 
         tables: model.tables.length,
 

@@ -35,9 +35,7 @@ class UpdateService {
 
             const response = await axios.patch(
     `https://api.airtable.com/v0/meta/bases/${baseId}/tables/${tableId}/fields/${fieldId}`,
-    {
-        description: "Builder test"
-    },
+    payload,
     {
         headers
     }

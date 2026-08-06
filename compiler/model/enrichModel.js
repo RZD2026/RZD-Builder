@@ -4,16 +4,20 @@ const buildStatistics = require("./buildStatistics");
 const buildLookups = require("./buildLookups");
 const validateModel = require("./validateModel");
 
-async function enrichModel(model) {
+async function enrichModel(input) {
 
-    model.lookup = {};
-    model.errors = [];
-    model.warnings = model.warnings || [];
+    const context = input.model ? input : { model: input };
+    const model = context.model;
 
-    buildLookups(model);
-    await resolveReferences(model);
-    await validateModel(model);
-    buildStatistics(model);
+    context.lookup = {};
+    context.errors = [];
+    context.warnings = context.warnings || [];
+    context.statistics = {};
+
+    buildLookups(context);
+    await resolveReferences(context);
+    await validateModel(context);
+    buildStatistics(context);
 
     return model;
 

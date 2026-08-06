@@ -1,6 +1,7 @@
 async function resolveReferences(input) {
 
-    const model = input.model || input;
+    const context = input.model ? input : { model: input };
+    const model = context.model;
 
     for (const table of model.tables) {
 
@@ -14,11 +15,11 @@ async function resolveReferences(input) {
                 continue;
             }
 
-            field.listRef = model.lookup.lists[field.list] || null;
+            field.listRef = context.lookup.lists[field.list] || null;
 
             if (!field.listRef) {
 
-                model.warnings.push({
+                context.warnings.push({
                     type: "unknown-list",
                     table: table.id,
                     field: field.id,

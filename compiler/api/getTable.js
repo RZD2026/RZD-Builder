@@ -1,10 +1,12 @@
-function getTable(model, tableId) {
+function getTable(input, tableId) {
 
-    if (!model || !model.lookup || !model.lookup.tables) {
+    const context = input.lookup ? input : { lookup: input.lookup || {} };
+
+    if (!context.lookup.tables) {
         return undefined;
     }
 
-    return model.lookup.tables[tableId];
+    return context.lookup.tables[tableId];
 
 }
 

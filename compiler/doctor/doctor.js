@@ -5,18 +5,21 @@ const registry = require("./registry");
 const schema = require("./schema");
 const { printGroup } = require("./reporter");
 
-async function doctor(model) {
+async function doctor(input) {
+
+    const context = input.model ? input : { model: input };
+    const model = context.model;
 
     const report = {
 
-        references: references(model),
+        references: references(context),
         fields: fields(model),
         lists: lists(model),
         registry: registry(model),
         schema: schema(model),
 
-        warnings: model.warnings,
-        errors: model.errors
+        warnings: context.warnings,
+        errors: context.errors
 
     };
 

@@ -55,6 +55,6 @@ const fields = [
 ];
 
 module.exports = {
+    table: "Accommodaties",
     fields
 };
-
