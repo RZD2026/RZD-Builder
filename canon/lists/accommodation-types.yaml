@@ -1,0 +1,18 @@
+meta:
+  id: ACC-L001
+  version: "1.0.0"
+  status: active
+
+id: accommodation-types
+
+name:
+  nl: Type accommodatie
+  en: Accommodation type
+
+values:
+  - Camping
+  - Hotel
+  - Appartement
+  - Vakantiepark
+  - Camperplaats
+  - B&B

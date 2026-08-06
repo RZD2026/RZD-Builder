@@ -1,100 +1,151 @@
+# RZD Builder
 
-# RZD Builder v1.0.0
+> **Professional Builder Framework for Reizen zonder Drempels (RZD)**
 
-RZD Builder is het ontwikkelproject voor Reizen Zonder Drempels (RZD).
+RZD Builder is een modulair ontwikkelplatform voor het beheren, valideren, synchroniseren en publiceren van gegevens voor het project **Reizen zonder Drempels (RZD)**.
 
-Met deze Builder worden automatisch tabellen, velden en modules opgebouwd in een Airtable-base.
+De Builder is ontworpen met de nadruk op betrouwbaarheid, onderhoudbaarheid, uitbreidbaarheid en een duidelijke scheiding van verantwoordelijkheden. Dankzij de modulaire architectuur kunnen nieuwe functionaliteiten, connectors en publicatieplatformen eenvoudig worden toegevoegd.
 
 ---
 
-## Functies
+# Kernfunctionaliteiten
 
-- Verbinding maken met Airtable
-- Schema van de database uitlezen
-- Tabellen controleren
-- Velden controleren
-- Modules automatisch toevoegen
-- Logging
-- Back-ups
+- BuilderKernel
+- Compiler Framework
+- Pipeline-architectuur
+- Metadata-gestuurde verwerking
+- Synchronisatie met externe systemen
+- Doctor Framework
 - Validatie
+- Logging
+- Rapportage
+- Professionele documentatiesuite
 
 ---
 
-## Installatie
+# Projectstructuur
 
-Installeer de benodigde pakketten:
-
-```bash
-npm install
-```
-
-Maak vervolgens een `.env`-bestand aan op basis van `.env.example`.
-
-Voorbeeld:
-
-```
-AIRTABLE_TOKEN=xxxxxxxxxxxxxxxx
-AIRTABLE_BASE_ID=appxxxxxxxxxxxx
-```
-
----
-
-## Beschikbare opdrachten
-
-Test de verbinding:
-
-```bash
-node index.js test
-```
-
-Lees het schema van de database uit:
-
-```bash
-node index.js schema
-```
-
-Maak een back-up:
-
-```bash
-node index.js backup
-```
-
-Controleer de configuratie:
-
-```bash
-node index.js validate
-```
-
----
-
-## Projectstructuur
-
-```
+```text
 RZD Builder
 │
-├── builders/
-├── config/
-├── modules/
-├── services/
+├── README.md
+├── LICENSE
+├── package.json
+├── package-lock.json
+│
+├── adapters/
+├── airtableScripts/
 ├── backup/
+├── build/
+├── builders/
+├── canon/
+├── compiler/
+├── config/
+├── core/
+├── docs/
+├── engines/
+├── generated/
 ├── logs/
+├── mcp/
+├── modules/
+├── node_modules/
+├── services/
+├── tools/
 │
 ├── index.js
-├── package.json
-├── README.md
-├── .env
-└── .env.example
+└── test*.js
 ```
+
+> **Opmerking**
+>
+> Mappen zoals `node_modules/`, `logs/` en gegenereerde bestanden worden niet opgenomen in Git en maken geen onderdeel uit van de broncode.
 
 ---
 
-## Versie
+# Documentatie
 
-RZD Builder v1.0.0
+Alle projectdocumentatie bevindt zich in de map **docs/**.
 
-Ontwikkeld voor het project:
+| Document | Omschrijving |
+|----------|--------------|
+| README.md | Startpunt van de documentatiesuite |
+| AGENTS.md | Startpunt voor AI-coding agents |
+| PROJECT_STATUS.md | Actuele projectstatus |
+| CHECKPOINT.md | Overdracht tussen ontwikkelsessies |
+| BACKLOG.md | Openstaande werkzaamheden |
+| CHANGELOG.md | Historische wijzigingen |
+| ARCHITECTURE.md | Technische architectuur |
+| AI_RULES.md | Ontwikkelworkflow voor AI |
+| CONTRIBUTING.md | Richtlijnen voor bijdragen |
+| DOCUMENTATION_ARCHITECTURE.md | Opbouw van de documentatiesuite |
+| ROADMAP.md | Lange termijn planning |
+| RELEASE_NOTES.md | Releasehistorie |
+| WORDPRESS_ARCHITECTURE.md | WordPress-publicatiearchitectuur |
 
-**Reizen Zonder Drempels (RZD)**
+---
 
-Doel:
-een volledig geautomatiseerde Builder waarmee nieuwe modules veilig aan de Airtable-database kunnen worden toegevoegd.
+# Ontwikkelprincipes
+
+RZD Builder is gebaseerd op de volgende uitgangspunten:
+
+- Modulaire architectuur
+- Eén verantwoordelijkheid per component
+- Metadata boven hardcoded logica
+- Kleine, veilige wijzigingen
+- Testen na iedere wijziging
+- Architectuur vóór implementatie
+- Consistente documentatie
+- Hoge onderhoudbaarheid
+
+---
+
+# Huidige status
+
+**Actieve ontwikkeling**
+
+De huidige focus ligt op:
+
+- verdere ontwikkeling van de BuilderKernel;
+- verdere modularisering van de compiler;
+- uitbreiding van de pipeline;
+- verdere Airtable-integratie;
+- ontwikkeling van de WordPress-publicatiepipeline;
+- voorbereiding van de eerste stabiele release.
+
+---
+
+# Nieuwe ontwikkelsessie
+
+Iedere ontwikkelsessie start vanuit:
+
+1. `docs/AGENTS.md`
+2. `docs/CHECKPOINT.md`
+3. `docs/PROJECT_STATUS.md`
+4. `docs/BACKLOG.md`
+
+Daarna wordt gewerkt volgens de richtlijnen uit **docs/AI_RULES.md**.
+
+---
+
+# Bijdragen
+
+Alle ontwikkelrichtlijnen zijn vastgelegd in:
+
+**docs/CONTRIBUTING.md**
+
+---
+
+# Licentie
+
+Zie:
+
+**LICENSE**
+
+---
+
+# Meer informatie
+
+De volledige technische documentatie bevindt zich in de map **docs/**.
+
+De documentatiesuite vormt samen met de BuilderKernel de centrale basis van het RZD Builder-project.
+
