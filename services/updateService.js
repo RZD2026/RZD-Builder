@@ -1,4 +1,3 @@
-
 const axios = require("axios");
 
 require("dotenv").config();
@@ -31,15 +30,39 @@ class UpdateService {
         });
         console.log("");
 
+        // Geen lege options naar Airtable sturen
+        if (
+            payload.options &&
+            Object.keys(payload.options).length === 0
+        ) {
+            delete payload.options;
+        }
+
+        // Geen lege metadata sturen
+        Object.keys(payload).forEach(key => {
+
+            const value = payload[key];
+
+            if (
+                value &&
+                typeof value === "object" &&
+                !Array.isArray(value) &&
+                Object.keys(value).length === 0
+            ) {
+                delete payload[key];
+            }
+
+        });
+
         try {
 
             const response = await axios.patch(
-    `https://api.airtable.com/v0/meta/bases/${baseId}/tables/${tableId}/fields/${fieldId}`,
-    payload,
-    {
-        headers
-    }
-);
+                `https://api.airtable.com/v0/meta/bases/${baseId}/tables/${tableId}/fields/${fieldId}`,
+                payload,
+                {
+                    headers
+                }
+            );
 
             console.log("✓ Update uitgevoerd.");
             console.log("");

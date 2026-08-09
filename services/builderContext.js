@@ -16,29 +16,44 @@ class BuilderContext {
 
     }
 
-    getField(fieldName) {
+    getAirtableName(field) {
+
+        return field.labels?.airtable || field.name;
+
+    }
+
+    getField(field) {
+
+        const fieldName =
+            typeof field === "string"
+                ? field
+                : this.getAirtableName(field);
 
         return this.airtableFields.find(
-            field => field.name === fieldName
+            airtableField => airtableField.name === fieldName
         );
 
     }
 
-    fieldExists(fieldName) {
+    fieldExists(field) {
 
-        return this.getField(fieldName) !== undefined;
+        return this.getField(field) !== undefined;
 
     }
 
     getMissingFields() {
 
-        return this.module.fields.filter(field => !this.fieldExists(field.name));
+        return this.module.fields.filter(
+            field => !this.fieldExists(field)
+        );
 
     }
 
     getExistingFields() {
 
-        return this.module.fields.filter(field => this.fieldExists(field.name));
+        return this.module.fields.filter(
+            field => this.fieldExists(field)
+        );
 
     }
 

@@ -1,18 +1,40 @@
-
 function normalizeField(field, tableId) {
 
     return {
 
         tableId,
 
-        id: field.id,
-        name: field.name,
-        label: field.label,
+        id: field.id ?? null,
+
+        name: field.name ?? null,
+
+        order: field.order ?? 0,
+
+        labels: field.labels ?? {
+            airtable: field.name ?? "",
+            app: field.name ?? "",
+            website: field.name ?? ""
+        },
+
+        description: field.description ?? "",
+
+        helpText: field.helpText ?? "",
+
         type: field.type,
 
         required: field.required ?? false,
+
         readonly: field.readonly ?? false,
+
         hidden: field.hidden ?? false,
+
+        defaultValue: field.defaultValue ?? null,
+
+        unit: field.unit ?? null,
+
+        options: field.options ?? {},
+
+        validation: field.validation ?? {},
 
         ...field
 

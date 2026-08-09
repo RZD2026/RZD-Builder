@@ -1,5 +1,15 @@
-
 class RollbackPlanner {
+
+    getFieldName(field) {
+
+        return (
+            field?.labels?.airtable ??
+            field?.name ??
+            field?.id ??
+            "Onbekend veld"
+        );
+
+    }
 
     build(plan) {
 
@@ -74,7 +84,7 @@ class RollbackPlanner {
             console.log(`${index + 1}. ${item.action}`);
             console.log("--------------------------------");
 
-            console.log(`Veld : ${item.field.name}`);
+            console.log(`Veld : ${this.getFieldName(item.field)}`);
 
             if (item.payload) {
 

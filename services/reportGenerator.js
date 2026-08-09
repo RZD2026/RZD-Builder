@@ -4,32 +4,31 @@ const path = require("path");
 class ReportGenerator {
 
     buildReport({
-
-    metadata,
-
-    summary,
-
-    audit,
-
-    synchronizationPlan = [],
-
-    rollbackPlan = []
-
-}) {
+        metadata,
+        summary,
+        audit,
+        synchronizationPlan = [],
+        rollbackPlan = []
+    }) {
 
         return {
+            metadata,
+            summary,
+            synchronizationPlan,
+            rollbackPlan,
+            audit
+        };
 
-    metadata,
+    }
 
-    summary,
+    getFieldName(field) {
 
-    synchronizationPlan,
-
-    rollbackPlan,
-
-    audit
-
-};
+        return (
+            field?.labels?.airtable ??
+            field?.name ??
+            field?.id ??
+            "Onbekend veld"
+        );
 
     }
 
@@ -38,15 +37,11 @@ class ReportGenerator {
         const now = new Date();
 
         const year = now.getFullYear();
-
         const month = String(now.getMonth() + 1).padStart(2, "0");
-
         const day = String(now.getDate()).padStart(2, "0");
 
         const hour = String(now.getHours()).padStart(2, "0");
-
         const minute = String(now.getMinutes()).padStart(2, "0");
-
         const second = String(now.getSeconds()).padStart(2, "0");
 
         return `${year}-${month}-${day}_${hour}-${minute}-${second}`;
@@ -59,36 +54,42 @@ class ReportGenerator {
 
     }
 
+    ensureReportDirectory() {
+
+        const directory = path.join(
+            process.cwd(),
+            "reports"
+        );
+
+        if (!fs.existsSync(directory)) {
+
+            fs.mkdirSync(directory, {
+                recursive: true
+            });
+
+        }
+
+        return directory;
+
+    }
+
     buildJsonReport(report) {
 
-        return JSON.stringify(
-            report,
-            null,
-            4
-        );
+        return JSON.stringify(report, null, 4);
 
     }
 
     appendJsonBlock(title, object) {
 
         if (!object) {
-
             return "";
-
         }
 
         let md = "";
 
         md += `### ${title}\n\n`;
-
         md += "```json\n";
-
-        md += JSON.stringify(
-            object,
-            null,
-            4
-        );
-
+        md += JSON.stringify(object, null, 4);
         md += "\n```\n\n";
 
         return md;
@@ -106,9 +107,7 @@ class ReportGenerator {
         Object.entries(report.metadata).forEach(([key, value]) => {
 
             if (typeof value === "object") {
-
                 return;
-
             }
 
             md += `- **${key}** : ${value}\n`;
@@ -133,11 +132,11 @@ class ReportGenerator {
 
         md += "## Samenvatting\n\n";
 
-    Object.entries(report.summary).forEach(([key, value]) => {
+        Object.entries(report.summary).forEach(([key, value]) => {
 
-    md += `- ${key} : ${value}\n`;
+            md += `- ${key} : ${value}\n`;
 
-});
+        });
 
         md += "\n";
 
@@ -155,7 +154,7 @@ class ReportGenerator {
 
                 if (item.field) {
 
-                    md += `**Veld:** ${item.field.name}\n\n`;
+                    md += `**Veld:** ${this.getFieldName(item.field)}\n\n`;
 
                 }
 
@@ -186,7 +185,7 @@ class ReportGenerator {
 
                 if (item.field) {
 
-                    md += `**Veld:** ${item.field.name}\n\n`;
+                    md += `**Veld:** ${this.getFieldName(item.field)}\n\n`;
 
                 }
 
@@ -254,17 +253,14 @@ class ReportGenerator {
     }
 
     saveJson(runContext) {
-        
-        const report =
-            this.buildReport(runContext);
 
-        const fileName =
-            this.createFileName("json");
+        const report = this.buildReport(runContext);
+
+        const directory = this.ensureReportDirectory();
 
         const filePath = path.join(
-            process.cwd(),
-            "reports",
-            fileName
+            directory,
+            this.createFileName("json")
         );
 
         fs.writeFileSync(
@@ -278,16 +274,13 @@ class ReportGenerator {
 
     saveMarkdown(runContext) {
 
-        const report =
-    this.buildReport(runContext);
+        const report = this.buildReport(runContext);
 
-        const fileName =
-            this.createFileName("md");
+        const directory = this.ensureReportDirectory();
 
         const filePath = path.join(
-            process.cwd(),
-            "reports",
-            fileName
+            directory,
+            this.createFileName("md")
         );
 
         fs.writeFileSync(

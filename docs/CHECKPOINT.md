@@ -1,13 +1,13 @@
 # CHECKPOINT
 
-| Eigenschap | Waarde |
-|------------|--------|
-| Project | RZD Builder |
-| Document | CHECKPOINT.md |
-| Status | Actief |
-| Rol | Sessieoverdracht |
-| Laatste wijziging | 05-08-2026 |
-| Eigenaar | Pascalle Vroegop |
+| Eigenschap        | Waarde           |
+| ----------------- | ---------------- |
+| Project           | RZD Builder      |
+| Document          | CHECKPOINT.md    |
+| Status            | Actief           |
+| Rol               | Sessieoverdracht |
+| Laatste wijziging | 09-08-2026       |
+| Eigenaar          | Pascalle Vroegop |
 
 ---
 
@@ -35,7 +35,7 @@ Openstaande werkzaamheden staan in **BACKLOG.md**.
 
 **Datum**
 
-05-08-2026
+09-08-2026
 
 **Status**
 
@@ -43,142 +43,156 @@ Openstaande werkzaamheden staan in **BACKLOG.md**.
 
 ---
 
-# Actief bestand
+# Laatste afgeronde werkzaamheden
 
-Wordt aan het einde van iedere ontwikkelsessie bijgewerkt.
+De Airtable-verbinding is opnieuw gecontroleerd en gekoppeld aan de juiste bestaande RZD 5.1-base.
+
+**Actieve Base ID**
+
+    appImdZ7AGoXCAlto
+
+De Builder kan de bestaande RZD 5.1-base uitlezen.
+
+Bevestigde tabellen:
+
+- Accommodaties
+- Modules
+- Beoordelingspunten
+- Accommodatie beoordelingen
+- Standaard beoordelingssets
+- Opmerkingen
+- Verbeterpunten
+- Reizigerservaringen
+
+De Airtable-token is succesvol getest.
+
+De benodigde schema-rechten werken.
+
+Een create-table API-test is succesvol uitgevoerd.
+
+De schema write plan, volledige payload dry run en execution safety dry run zijn succesvol uitgevoerd.
+
+De Builder kan afhankelijkheden en linked-table relaties correct verwerken in de dry run.
+
+De Canon ContentDefinition is gecontroleerd.
+
+Ondersteunde contenttypen:
+
+- checkbox
+- number
+- text
+- longtext
+- select
+- attachment
+
+De `Type`-keuzes voor Airtable zijn succesvol opgebouwd.
+
+Er is nog geen productie-write uitgevoerd voor de nieuwe schema-aanpassing.
+
+---
+
+# Belangrijk besluit
+
+De bestaande **RZD 5.1 Airtable-structuur blijft leidend**.
+
+Er wordt:
+
+- geen nieuwe Airtable-base aangemaakt;
+- geen nieuwe `Content Modules`-tabel aangemaakt;
+- geen nieuwe `Accommodatie Beoordelingen`-tabel aangemaakt;
+- geen bestaande RZD-data verwijderd;
+- geen bestaande tabellen onnodig vervangen.
+
+De Builder moet de Canon-structuur koppelen aan de bestaande RZD 5.1-tabellen.
+
+---
+
+# Huidige mapping
+
+| Builder / Canon              | Bestaande RZD 5.1       |
+| ---------------------------- | ------------------------ |
+| Content Modules              | Modules                  |
+| Beoordelingspunten           | Beoordelingspunten       |
+| Accommodatie Beoordelingen   | Accommodatie beoordelingen |
+| Accommodaties                | Accommodaties            |
+
+Deze mapping moet technisch verder worden uitgewerkt voordat een productie-write plaatsvindt.
+
+---
+
+# Actief bestand
 
 **Momenteel**
 
-```
-Geen actief bestand.
-```
+    Geen actief bestand.
 
 ---
 
-# Laatst afgeronde taak
+# Volgende taak
 
-**Taak**
+De volgende sessie gaat verder met de bestaande RZD 5.1-structuur.
 
-Volledige kwaliteitscontrole en herstructurering van de documentatiesuite.
-
-**Resultaat**
-
-De kern van de documentatiesuite is volledig herzien en gestandaardiseerd.
-
-Afgerond:
-
-- README.md
-- PROJECT_STATUS.md
-- ARCHITECTURE.md
-- AI_RULES.md
-- BACKLOG.md
-- CHANGELOG.md
-- CHECKPOINT.md
-
-**Documentatie bijgewerkt**
-
-✅ Ja
-
-**CHANGELOG bijgewerkt**
-
-✅ Ja
+1. Tabel **Modules** analyseren.
+2. Tabel **Beoordelingspunten** analyseren.
+3. Tabel **Accommodatie beoordelingen** analyseren.
+4. Exacte Canon-naar-Airtable veldmapping bepalen.
+5. Naam-/tabelmapping in de Builder definiëren.
+6. Builder aanpassen zodat bestaande RZD 5.1-tabellen worden herkend.
+7. Volledige dry run uitvoeren.
+8. Resultaat controleren.
+9. Pas daarna eventueel productie-synchronisatie uitvoeren.
+10. Daarna verder met de Documentation Engine.
 
 ---
 
-# Huidige situatie
+# Openstaande aandachtspunten
 
-Er is momenteel geen actieve ontwikkeling.
-
-De documentatiesuite is gereed voor de volgende ontwikkelfase.
-
----
-
-# Eerstvolgende taak
-
-Voer de kwaliteitsaudit uit van het eerstvolgende document uit de documentatiesuite of start de eerstvolgende ontwikkelingstaak uit **BACKLOG.md**.
-
-Werk altijd volgens de ontwikkelworkflow uit **AI_RULES.md**.
+- Canon-velden moeten nog exact worden gemapt op de bestaande Airtable-velden.
+- De Builder mag niet opnieuw proberen bestaande RZD 5.1-tabellen aan te maken.
+- De naamverschillen tussen Canon en Airtable moeten centraal worden afgehandeld.
+- Productie-write is nog niet uitgevoerd.
+- De automatische Documentation Engine staat nog op de agenda.
+- PROJECT_STATUS en CHECKPOINT worden voorlopig nog handmatig bijgewerkt; automatisering hiervan is onderdeel van Builder 3.0.
 
 ---
 
-# Open aandachtspunten
+# Veiligheidsregel
 
-Controleer vóór de volgende ontwikkeling:
+Voordat een productie-write wordt uitgevoerd:
 
-- of de documentatie nog synchroon loopt met de broncode;
-- of architectuurwijzigingen gevolgen hebben voor andere documenten;
-- of aanvullende documentatie nodig is.
+1. schema analyseren;
+2. mapping controleren;
+3. volledige dry run uitvoeren;
+4. output controleren;
+5. pas daarna `execute: true` gebruiken.
 
-Momenteel zijn geen kritieke blokkades bekend.
-
----
-
-# Open beslissingen
-
-Momenteel geen open architectuur- of ontwerpbeslissingen.
+Bij twijfel **niet schrijven**.
 
 ---
 
-# Nog uit te voeren testen
+# Documenten eerst raadplegen
 
-Geen openstaande verplichte testen.
+Bij de start van een nieuwe sessie:
 
-Nieuwe testen worden bepaald op basis van de eerstvolgende ontwikkelingstaak.
+1. **PROJECT_STATUS.md**
+2. **CHECKPOINT.md**
+3. **BACKLOG.md**
+4. **CHANGELOG.md**
+5. **ARCHITECTURE.md**
+6. **AI_RULES.md**
 
----
-
-# Benodigde documentatie
-
-Lees vóór iedere nieuwe taak:
-
-1. README.md *(indien projectoriëntatie nodig is)*
-2. PROJECT_STATUS.md
-3. BACKLOG.md
-4. ARCHITECTURE.md
-5. AI_RULES.md
-
-Raadpleeg daarna indien nodig:
-
-- CHANGELOG.md
-- DOCUMENTATION_ARCHITECTURE.md
-- WORDPRESS_ARCHITECTURE.md
-- RELEASE_NOTES.md
+Daarna pas code aanpassen.
 
 ---
 
-# Verwachte workflow volgende sessie
+# Sessieoverdracht
 
-1. Lees README.md *(indien projectoriëntatie nodig is).*
-2. Lees PROJECT_STATUS.md.
-3. Controleer BACKLOG.md.
-4. Kies het eerstvolgende actieve bestand.
-5. Analyseer de taak.
-6. Bespreek de voorgestelde oplossing.
-7. Vraag goedkeuring.
-8. Voer de wijziging uit.
-9. Test de wijziging.
-10. Werk de documentatie bij.
-11. Werk CHANGELOG.md bij indien een taak is afgerond.
-12. Werk CHECKPOINT.md bij voordat de sessie wordt afgesloten.
+De Airtable-verbinding is gereed.
 
----
+De juiste RZD 5.1-base is bevestigd.
 
-# Geschatte duur volgende sessie
+De volgende stap is **niet opnieuw Airtable configureren**.
 
-Wordt bepaald zodra de eerstvolgende taak uit **BACKLOG.md** is geselecteerd.
+De volgende stap is:
 
-De tijdsinschatting wordt gemaakt conform **AI_RULES.md**.
-
----
-
-# Opmerking
-
-CHECKPOINT.md bevat uitsluitend informatie die nodig is om een ontwikkelsessie veilig en efficiënt te hervatten.
-
-Historische informatie wordt vastgelegd in **CHANGELOG.md**.
-
-Projectstatus wordt beheerd in **PROJECT_STATUS.md**.
-
-Openstaande werkzaamheden worden bijgehouden in **BACKLOG.md**.
-
-Hierdoor blijft het checkpoint compact, actueel en direct bruikbaar voor zowel ontwikkelaars als AI-assistenten.
+**bestaande RZD 5.1-tabellen analyseren → Canon-mapping bepalen → Builder aanpassen → dry run → controleren → pas daarna schrijven.**

@@ -1,4 +1,3 @@
-
 const FieldTypes = require("../config/fieldTypes");
 
 module.exports = {
@@ -8,9 +7,32 @@ module.exports = {
     fields: [
 
         {
-            name: "Description Test",
+            id: "description_test",
+
+            order: 10,
+
+            labels: {
+                airtable: "Description Test",
+                app: "Description Test",
+                website: "Description Test"
+            },
+
+            description: "Controle of descriptions via de Metadata Write API worden aangemaakt.",
+            helpText: "",
+
             type: FieldTypes.TEXT,
-            description: "Controle of descriptions via de Metadata Write API worden aangemaakt."
+
+            required: false,
+            readonly: false,
+            hidden: false,
+
+            defaultValue: null,
+            unit: null,
+
+            options: {},
+
+            validation: {}
+
         }
 
     ]

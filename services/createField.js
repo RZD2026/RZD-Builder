@@ -1,17 +1,21 @@
-
 async createField(tableName, field) {
 
     const tableId = await this.getTableId(tableName);
 
-    console.log(`➕ Veld aanmaken: ${field.name}`);
+    const fieldName =
+        field.labels?.airtable ??
+        field.name;
+
+    console.log(`➕ Veld aanmaken: ${fieldName}`);
 
     try {
 
         const response = await axios.post(
             `https://api.airtable.com/v0/meta/bases/${baseId}/tables/${tableId}/fields`,
             {
-                name: field.name,
-                type: field.type
+                name: fieldName,
+                type: field.type,
+                options: field.options || {}
             },
             {
                 headers

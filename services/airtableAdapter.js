@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 
 const axios = require("axios");
@@ -13,6 +12,16 @@ const headers = {
 };
 
 class AirtableAdapter {
+
+    getFieldName(field) {
+
+        return (
+            field?.labels?.airtable ??
+            field?.name ??
+            field?.id
+        );
+
+    }
 
     async getTables() {
 
@@ -29,10 +38,14 @@ class AirtableAdapter {
 
         const tables = await this.getTables();
 
-        const table = tables.find(t => t.name === tableName);
+        const table = tables.find(
+            t => t.name === tableName
+        );
 
         if (!table) {
-            throw new Error(`Tabel '${tableName}' niet gevonden.`);
+            throw new Error(
+                `Tabel '${tableName}' niet gevonden.`
+            );
         }
 
         return table;
@@ -51,7 +64,9 @@ class AirtableAdapter {
 
         const table = await this.getTable(tableName);
 
-        return table.fields.map(field => field.name);
+        return table.fields.map(
+            field => field.name
+        );
 
     }
 
@@ -63,26 +78,81 @@ class AirtableAdapter {
 
     }
 
-    async createField(tableName, field) {
+    async createTable(table) {
 
-        const tableId = await this.getTableId(tableName);
+        if (!table || typeof table !== "object") {
+
+            throw new Error(
+                "AirtableAdapter.createTable: tabeldefinitie ontbreekt."
+            );
+
+        }
+
+        if (!table.name) {
+
+            throw new Error(
+                "AirtableAdapter.createTable: tabelnaam ontbreekt."
+            );
+
+        }
 
         const payload = {
-            name: field.name,
+            name: table.name,
+            fields: table.fields || []
+        };
+
+        console.log("");
+        console.log("========== CREATE TABLE ==========");
+        console.log(`Tabel: ${table.name}`);
+        console.dir(payload, {
+            depth: null
+        });
+        console.log("==================================");
+        console.log("");
+
+        const response = await axios.post(
+            `https://api.airtable.com/v0/meta/bases/${baseId}/tables`,
+            payload,
+            { headers }
+        );
+
+        return response.data;
+
+    }
+
+    async createField(tableName, field) {
+
+        const tableId =
+            await this.getTableId(tableName);
+
+        const fieldName =
+            this.getFieldName(field);
+
+        const payload = {
+            name: fieldName,
             type: field.type
         };
 
-        if (field.description && field.description.trim() !== "") {
-            payload.description = field.description;
+        if (field.description?.trim()) {
+
+            payload.description =
+                field.description;
+
         }
 
-        const options = FieldOptionsFactory.get(field);
+        const options =
+            FieldOptionsFactory.get(field);
 
-        if (options) {
+        if (
+            options &&
+            Object.keys(options).length > 0
+        ) {
+
             payload.options = options;
+
         }
 
-        console.log(`➕ ${field.name}`);
+        console.log(`➕ ${fieldName}`);
 
         try {
 
@@ -92,7 +162,7 @@ class AirtableAdapter {
                 { headers }
             );
 
-            console.log(`✅ ${field.name}`);
+            console.log(`✓ ${fieldName}`);
 
             return response.data;
 
@@ -101,9 +171,21 @@ class AirtableAdapter {
             if (error.response) {
 
                 console.log("");
-                console.log("========== AIRTABLE ERROR ==========");
-                console.dir(error.response.data, { depth: null });
-                console.log("====================================");
+                console.log(
+                    "========== AIRTABLE ERROR =========="
+                );
+
+                console.dir(
+                    error.response.data,
+                    {
+                        depth: null
+                    }
+                );
+
+                console.log(
+                    "===================================="
+                );
+
                 console.log("");
 
             }
@@ -116,22 +198,34 @@ class AirtableAdapter {
 
     async createMissingFields(tableName, fields) {
 
-        const existingFields = await this.getFieldNames(tableName);
+        const existingFields =
+            await this.getFieldNames(tableName);
 
         let created = 0;
         let skipped = 0;
 
         for (const field of fields) {
 
-            if (existingFields.includes(field.name)) {
+            const fieldName =
+                this.getFieldName(field);
 
-                console.log(`✓ ${field.name}`);
+            if (
+                existingFields.includes(fieldName)
+            ) {
+
+                console.log(`✓ ${fieldName}`);
+
                 skipped++;
+
                 continue;
 
             }
 
-            await this.createField(tableName, field);
+            await this.createField(
+                tableName,
+                field
+            );
+
             created++;
 
         }
@@ -140,8 +234,8 @@ class AirtableAdapter {
         console.log("================================");
         console.log("Resultaat");
         console.log("================================");
-        console.log(`Aangemaakt : ${created}`);
-        console.log(`Overgeslagen : ${skipped}`);
+        console.log(`Aangemaakt  : ${created}`);
+        console.log(`Overgeslagen: ${skipped}`);
         console.log("");
 
         return {

@@ -1,7 +1,16 @@
-
 class FieldOptionsFactory {
 
     static get(field) {
+
+        // Builder v2:
+        // Heeft het veld zelf al options?
+        // Dan zijn die leidend.
+        if (
+            field.options &&
+            Object.keys(field.options).length > 0
+        ) {
+            return field.options;
+        }
 
         switch (field.type) {
 
@@ -23,16 +32,19 @@ class FieldOptionsFactory {
                     field.listDefinition?.values;
 
                 if (!choices || choices.length === 0) {
+
                     throw new Error(
-                        `SingleSelect '${field.name}' heeft geen choices.`
+                        `SingleSelect '${field.labels?.airtable || field.name}' heeft geen choices.`
                     );
+
                 }
 
                 return {
                     choices: choices.map(choice => ({
-                        name: typeof choice === "string"
-                            ? choice
-                            : choice.name
+                        name:
+                            typeof choice === "string"
+                                ? choice
+                                : choice.name
                     }))
                 };
 
@@ -45,16 +57,19 @@ class FieldOptionsFactory {
                     field.listDefinition?.values;
 
                 if (!choices || choices.length === 0) {
+
                     throw new Error(
-                        `MultiSelect '${field.name}' heeft geen choices.`
+                        `MultiSelect '${field.labels?.airtable || field.name}' heeft geen choices.`
                     );
+
                 }
 
                 return {
                     choices: choices.map(choice => ({
-                        name: typeof choice === "string"
-                            ? choice
-                            : choice.name
+                        name:
+                            typeof choice === "string"
+                                ? choice
+                                : choice.name
                     }))
                 };
 
@@ -65,7 +80,7 @@ class FieldOptionsFactory {
             case "url":
             case "email":
             case "phoneNumber":
-                return null;
+                return {};
 
             case "date":
                 return {
@@ -75,7 +90,7 @@ class FieldOptionsFactory {
                 };
 
             default:
-                return null;
+                return {};
 
         }
 

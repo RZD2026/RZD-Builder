@@ -1,165 +1,111 @@
+class FieldDefinition {
 
-const airtable = require("../services/airtableAdapter");
-const logger = require("../services/logger");
-const schemaValidator = require("../services/schemaValidator");
-const FieldDefinition = require("../services/fieldDefinition");
+    create(field = {}) {
 
-async function buildModule(moduleName, options = {}) {
+        const airtableName =
+            field.labels?.airtable ??
+            field.name ??
+            field.id ??
+            "";
 
-    const dryRun = options.dryRun === true;
+        return {
 
-    console.log("");
-    console.log("================================");
-    console.log("RZD Builder v1.4");
-    console.log("================================");
-    console.log("");
+            // Identiteit
+            id: field.id ?? null,
 
-    logger.start(moduleName);
+            order: field.order ?? 0,
 
-    let module;
+            labels: {
+                airtable: airtableName,
+                app: field.labels?.app ?? airtableName,
+                website: field.labels?.website ?? airtableName
+            },
 
-    try {
+            // Backward compatibility
+            name: airtableName,
 
-        module = require(`../modules/${moduleName}`);
+            description: field.description ?? "",
+            helpText: field.helpText ?? "",
 
-    } catch (err) {
+            type: field.type,
 
-        console.log(`❌ Module '${moduleName}' niet gevonden.`);
-        logger.write(`FOUT: Module '${moduleName}' niet gevonden.`);
-        return;
+            required: field.required ?? false,
+            readonly: field.readonly ?? false,
+            hidden: field.hidden ?? false,
 
-    }
+            defaultValue:
+                field.defaultValue ?? null,
 
-    // Alle velden normaliseren
-    module.fields = module.fields.map(field =>
-        FieldDefinition.create(field)
-    );
+            unit:
+                field.unit ?? null,
 
-    const tableName = module.table || "Accommodaties";
+            validation:
+                field.validation ?? {},
 
-    const errors = schemaValidator.validate(module);
+            options:
+                this.buildOptions(field)
 
-    if (errors.length > 0) {
-
-        console.log("");
-        console.log("================================");
-        console.log("SCHEMA VALIDATIE FOUTEN");
-        console.log("================================");
-        console.log("");
-
-        logger.write("SCHEMA VALIDATIE FOUTEN");
-
-        errors.forEach(error => {
-            console.log(`❌ ${error}`);
-            logger.write(error);
-        });
-
-        console.log("");
-        console.log("Builder gestopt.");
-        console.log("");
-
-        logger.write("Builder gestopt.");
-
-        return;
+        };
 
     }
 
-    const existingFields = await airtable.getFieldNames(tableName);
+    buildOptions(field) {
 
-    let exists = 0;
-    let missing = 0;
+        // Builder v2
+        if (
+            field.options &&
+            Object.keys(field.options).length > 0
+        ) {
 
-    console.log(`Controle van module '${moduleName}'...`);
-    console.log("");
-
-    logger.write(`Controle module: ${moduleName}`);
-    logger.write("");
-
-    for (const field of module.fields) {
-
-        if (existingFields.includes(field.name)) {
-
-            console.log(`✓ ${field.name}`);
-            logger.write(`BESTAAT : ${field.name}`);
-            exists++;
-
-        } else {
-
-            console.log(`➕ ${field.name} (${field.type})`);
-            logger.write(`ONTBREEKT : ${field.name} (${field.type})`);
-            missing++;
+            return structuredClone(field.options);
 
         }
 
-    }
+        const options = {};
 
-    console.log("");
-    console.log("--------------------------------");
-    console.log("Samenvatting");
-    console.log("--------------------------------");
-    console.log(`Totaal      : ${module.fields.length}`);
-    console.log(`Bestaan     : ${exists}`);
-    console.log(`Ontbreken   : ${missing}`);
-    console.log("");
+        // Builder v1
+        if (Array.isArray(field.choices)) {
 
-    logger.write("");
-    logger.write("Samenvatting");
-    logger.write(`Totaal      : ${module.fields.length}`);
-    logger.write(`Bestaan     : ${exists}`);
-    logger.write(`Ontbreken   : ${missing}`);
-    logger.write("");
+            options.choices = field.choices.map(choice => ({
 
-    if (missing === 0) {
+                name:
+                    typeof choice === "string"
+                        ? choice
+                        : choice.name
 
-        console.log("✅ Alle velden bestaan al.");
-        console.log("");
+            }));
 
-        logger.end(0, exists);
-        return;
+        }
 
-    }
+        // Canon
+        else if (
+            field.listDefinition &&
+            Array.isArray(field.listDefinition.values)
+        ) {
 
-    if (dryRun) {
+            options.choices =
+                field.listDefinition.values.map(value => ({
+                    name: value
+                }));
 
-        console.log("================================");
-        console.log("DRY RUN");
-        console.log("================================");
-        console.log("");
+        }
 
-        console.log("De volgende velden zouden worden aangemaakt:");
-        console.log("");
+        if (field.precision !== undefined) {
+            options.precision = field.precision;
+        }
 
-        module.fields
-            .filter(field => !existingFields.includes(field.name))
-            .forEach(field => {
+        if (field.icon !== undefined) {
+            options.icon = field.icon;
+        }
 
-                console.log(`➕ ${field.name} (${field.type})`);
-                logger.write(`DRY RUN : ${field.name} (${field.type})`);
+        if (field.color !== undefined) {
+            options.color = field.color;
+        }
 
-            });
-
-        console.log("");
-        console.log("Geen wijzigingen uitgevoerd.");
-        console.log("");
-
-        logger.end(0, exists);
-
-        return;
+        return options;
 
     }
-
-    console.log("Ontbrekende velden worden aangemaakt...");
-    console.log("");
-
-    const result = await airtable.createMissingFields(
-        tableName,
-        module.fields
-    );
-
-    logger.end(result.created, result.skipped);
 
 }
 
-module.exports = {
-    buildModule
-};
+module.exports = new FieldDefinition();

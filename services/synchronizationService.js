@@ -1,4 +1,3 @@
-
 const airtable = require("./airtableAdapter");
 const updateService = require("./updateService");
 const auditService = require("./auditService");
@@ -23,6 +22,12 @@ class SynchronizationService {
 
         for (const item of plan) {
 
+            const fieldName =
+                item.field?.labels?.airtable ??
+                item.field?.name ??
+                item.field?.id ??
+                "Onbekend veld";
+
             try {
 
                 switch (item.action) {
@@ -34,12 +39,12 @@ class SynchronizationService {
                         auditService.add({
 
                             action: "create",
-                            field: item.field.name,
+                            field: fieldName,
                             type: item.field.type
 
                         });
 
-                        console.log(`➕ ${item.field.name}`);
+                        console.log(`➕ ${fieldName}`);
 
                         if (!dryRun) {
 
@@ -59,11 +64,11 @@ class SynchronizationService {
                         auditService.add({
 
                             action: "skip",
-                            field: item.field.name
+                            field: fieldName
 
                         });
 
-                        console.log(`✓ ${item.field.name}`);
+                        console.log(`✓ ${fieldName}`);
 
                         break;
 
@@ -71,7 +76,7 @@ class SynchronizationService {
 
                         summary.updated++;
 
-                        console.log(`⚠ ${item.field.name}`);
+                        console.log(`⚠ ${fieldName}`);
 
                         if (!item.update) {
 
@@ -80,7 +85,7 @@ class SynchronizationService {
                             auditService.add({
 
                                 action: "warning",
-                                field: item.field.name,
+                                field: fieldName,
                                 message: "Geen wijzigingen."
 
                             });
@@ -94,7 +99,7 @@ class SynchronizationService {
 
                             action: "update",
 
-                            field: item.field.name,
+                            field: fieldName,
 
                             before: item.rollback,
 
@@ -175,7 +180,7 @@ class SynchronizationService {
 
                     action: "error",
 
-                    field: item.field?.name,
+                    field: fieldName,
 
                     message: error.message
 

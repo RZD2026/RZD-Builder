@@ -1,8 +1,17 @@
-
 const fieldComparer = require("./fieldComparer");
 const differenceEngine = require("./differenceEngine");
 
 class ComparisonService {
+
+    getFieldName(field) {
+
+        return (
+            field?.labels?.airtable ??
+            field?.name ??
+            field?.id
+        );
+
+    }
 
     compare(localField, airtableField) {
 
@@ -41,7 +50,9 @@ class ComparisonService {
 
         for (const localField of context.module.fields) {
 
-            const airtableField = context.getField(localField.name);
+            const airtableField = context.getField(
+                this.getFieldName(localField)
+            );
 
             // Nieuw veld
             if (!airtableField) {

@@ -1,5 +1,15 @@
-
 class ReportFormatter {
+
+    getFieldName(field) {
+
+        return (
+            field?.labels?.airtable ??
+            field?.name ??
+            field?.id ??
+            "Onbekend veld"
+        );
+
+    }
 
     printComparison(fieldName, report) {
 
@@ -50,24 +60,26 @@ class ReportFormatter {
 
         results.forEach(result => {
 
+            const fieldName = this.getFieldName(result.field);
+
             if (result.action === "create") {
 
-                console.log(`➕ ${result.field.name} (nieuw veld)`);
+                console.log(`➕ ${fieldName} (nieuw veld)`);
                 return;
 
             }
 
             if (!result.comparison.hasDifferences) {
 
-                console.log(`✓ ${result.field.name}`);
+                console.log(`✓ ${fieldName}`);
                 return;
 
             }
 
-            console.log(`⚠ ${result.field.name}`);
+            console.log(`⚠ ${fieldName}`);
 
             this.printComparison(
-                result.field.name,
+                fieldName,
                 result.comparison.report
             );
 

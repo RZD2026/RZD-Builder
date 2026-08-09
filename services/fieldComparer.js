@@ -1,12 +1,16 @@
-
 class FieldComparer {
 
     compare(localField, airtableField) {
 
         const differences = [];
 
-        // Naam
-        if ((localField.name || "") !== (airtableField.name || "")) {
+        // Naam (Builder v2 gebruikt labels.airtable)
+        const localName =
+            localField.labels?.airtable ??
+            localField.name ??
+            "";
+
+        if (localName !== (airtableField.name || "")) {
             differences.push("name");
         }
 
@@ -23,7 +27,6 @@ class FieldComparer {
             differences.push("description");
         }
 
-        // Bouw options vanuit Canon indien nodig
         const localOptions = this.buildOptions(localField);
 
         this.compareOptions(
@@ -40,23 +43,61 @@ class FieldComparer {
 
         const options = { ...(field.options || {}) };
 
-        if (
-            field.type === "SINGLESELECT" &&
+        // Builder v2
+        if (Array.isArray(options.choices)) {
+
+            options.choices = options.choices.map(choice => ({
+
+                name:
+                    typeof choice === "string"
+                        ? choice
+                        : choice.name
+
+            }));
+
+        }
+
+        // Builder v1 (backward compatibility)
+        else if (Array.isArray(field.choices)) {
+
+            options.choices = field.choices.map(choice => ({
+
+                name:
+                    typeof choice === "string"
+                        ? choice
+                        : choice.name
+
+            }));
+
+        }
+
+        // Canon
+        else if (
             field.listDefinition &&
             Array.isArray(field.listDefinition.values)
         ) {
+
             options.choices = field.listDefinition.values.map(value => ({
                 name: value
             }));
+
         }
 
         return options;
 
     }
 
+    normalizeChoices(choices = []) {
+
+        return choices
+            .map(choice => choice.name)
+            .filter(Boolean)
+            .sort();
+
+    }
+
     compareOptions(localOptions, airtableOptions, differences) {
 
-        // Precision
         if (
             (localOptions.precision ?? null) !==
             (airtableOptions.precision ?? null)
@@ -64,7 +105,6 @@ class FieldComparer {
             differences.push("options.precision");
         }
 
-        // Checkbox icon
         if (
             (localOptions.icon || "") !==
             (airtableOptions.icon || "")
@@ -72,7 +112,6 @@ class FieldComparer {
             differences.push("options.icon");
         }
 
-        // Checkbox kleur
         if (
             (localOptions.color || "") !==
             (airtableOptions.color || "")
@@ -80,11 +119,16 @@ class FieldComparer {
             differences.push("options.color");
         }
 
-        // Select keuzes
-        const localChoices = JSON.stringify(localOptions.choices || []);
-        const airtableChoices = JSON.stringify(airtableOptions.choices || []);
+        const localChoices =
+            this.normalizeChoices(localOptions.choices);
 
-        if (localChoices !== airtableChoices) {
+        const airtableChoices =
+            this.normalizeChoices(airtableOptions.choices);
+
+        if (
+            JSON.stringify(localChoices) !==
+            JSON.stringify(airtableChoices)
+        ) {
             differences.push("options.choices");
         }
 

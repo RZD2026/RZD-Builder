@@ -6,11 +6,29 @@ class DifferenceEngine {
 
             property,
 
-            local: this.getValue(localField, property),
+            local: this.getLocalValue(localField, property),
 
             remote: this.getValue(airtableField, property)
 
         }));
+
+    }
+
+    getLocalValue(field, property) {
+
+        // Builder v2
+        if (property === "name") {
+
+            return (
+                field?.labels?.airtable ??
+                field?.name ??
+                field?.id ??
+                null
+            );
+
+        }
+
+        return this.getValue(field, property);
 
     }
 
