@@ -23,6 +23,7 @@ class AirtableAdapter {
 
     }
 
+
     async getTables() {
 
         const response = await axios.get(
@@ -34,35 +35,44 @@ class AirtableAdapter {
 
     }
 
+
     async getTable(tableName) {
 
-        const tables = await this.getTables();
+        const tables =
+            await this.getTables();
 
-        const table = tables.find(
-            t => t.name === tableName
-        );
+        const table =
+            tables.find(
+                t => t.name === tableName
+            );
 
         if (!table) {
+
             throw new Error(
                 `Tabel '${tableName}' niet gevonden.`
             );
+
         }
 
         return table;
 
     }
 
+
     async getTableId(tableName) {
 
-        const table = await this.getTable(tableName);
+        const table =
+            await this.getTable(tableName);
 
         return table.id;
 
     }
 
+
     async getFieldNames(tableName) {
 
-        const table = await this.getTable(tableName);
+        const table =
+            await this.getTable(tableName);
 
         return table.fields.map(
             field => field.name
@@ -70,13 +80,16 @@ class AirtableAdapter {
 
     }
 
+
     async getFields(tableName) {
 
-        const table = await this.getTable(tableName);
+        const table =
+            await this.getTable(tableName);
 
         return table.fields;
 
     }
+
 
     async createTable(table) {
 
@@ -110,15 +123,17 @@ class AirtableAdapter {
         console.log("==================================");
         console.log("");
 
-        const response = await axios.post(
-            `https://api.airtable.com/v0/meta/bases/${baseId}/tables`,
-            payload,
-            { headers }
-        );
+        const response =
+            await axios.post(
+                `https://api.airtable.com/v0/meta/bases/${baseId}/tables`,
+                payload,
+                { headers }
+            );
 
         return response.data;
 
     }
+
 
     async createField(tableName, field) {
 
@@ -148,7 +163,8 @@ class AirtableAdapter {
             Object.keys(options).length > 0
         ) {
 
-            payload.options = options;
+            payload.options =
+                options;
 
         }
 
@@ -156,11 +172,12 @@ class AirtableAdapter {
 
         try {
 
-            const response = await axios.post(
-                `https://api.airtable.com/v0/meta/bases/${baseId}/tables/${tableId}/fields`,
-                payload,
-                { headers }
-            );
+            const response =
+                await axios.post(
+                    `https://api.airtable.com/v0/meta/bases/${baseId}/tables/${tableId}/fields`,
+                    payload,
+                    { headers }
+                );
 
             console.log(`✓ ${fieldName}`);
 
@@ -196,7 +213,91 @@ class AirtableAdapter {
 
     }
 
-    async createMissingFields(tableName, fields) {
+
+    async createRecord(tableName, fields) {
+
+        if (!tableName) {
+
+            throw new Error(
+                "AirtableAdapter.createRecord: tabelnaam ontbreekt."
+            );
+
+        }
+
+        if (!fields || typeof fields !== "object") {
+
+            throw new Error(
+                "AirtableAdapter.createRecord: fields ontbreken."
+            );
+
+        }
+
+        const payload = {
+            fields
+        };
+
+        const response =
+            await axios.post(
+                `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`,
+                payload,
+                { headers }
+            );
+
+        return response.data;
+
+    }
+
+
+    async updateRecord(
+        tableName,
+        recordId,
+        fields
+    ) {
+
+        if (!tableName) {
+
+            throw new Error(
+                "AirtableAdapter.updateRecord: tabelnaam ontbreekt."
+            );
+
+        }
+
+        if (!recordId) {
+
+            throw new Error(
+                "AirtableAdapter.updateRecord: recordId ontbreekt."
+            );
+
+        }
+
+        if (!fields || typeof fields !== "object") {
+
+            throw new Error(
+                "AirtableAdapter.updateRecord: fields ontbreken."
+            );
+
+        }
+
+        const payload = {
+            fields
+        };
+
+        const response =
+            await axios.patch(
+                `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}/${recordId}`,
+                payload,
+                { headers }
+            );
+
+        return response.data;
+
+    }
+
+
+    async createMissingFields(
+        tableName,
+        fields
+    ) {
 
         const existingFields =
             await this.getFieldNames(tableName);
@@ -247,4 +348,6 @@ class AirtableAdapter {
 
 }
 
-module.exports = new AirtableAdapter();
+
+module.exports =
+    new AirtableAdapter();

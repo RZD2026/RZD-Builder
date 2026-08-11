@@ -1,15 +1,21 @@
-const TYPE_TO_VALUE_FIELD = {
-    checkbox: "Waarde ja/nee",
-    number: "Waarde getal",
-    text: "Waarde tekst",
-    longtext: "Waarde tekst",
-    select: "Waarde tekst",
-    attachment: "Waarde bijlage"
+const REVIEW_TABLE = "Accommodatie Beoordelingen";
+
+const REVIEW_FIELDS = {
+    accommodation: "Accommodatie",
+    point: "Beoordelingspunt",
+    value: "Waarde / Resultaat",
+    status: "Status",
+    photo: "Foto / Bewijs",
+    comment: "Opmerking"
 };
+
+const resolver =
+    require("./airtablePointResolver");
+
 
 class AirtableMapping {
 
-    static create(contentPoint) {
+    static async create(contentPoint, pointMapping) {
 
         if (!contentPoint || typeof contentPoint !== "object") {
             throw new Error(
@@ -17,30 +23,100 @@ class AirtableMapping {
             );
         }
 
-        const valueField =
-            TYPE_TO_VALUE_FIELD[contentPoint.type];
-
-        if (!valueField) {
+        if (!pointMapping || typeof pointMapping !== "object") {
             throw new Error(
-                `Geen Airtable mapping voor content type: ${contentPoint.type}`
+                `AirtableMapping: geen Airtable mapping voor '${contentPoint.id}'.`
             );
         }
 
+        const resolved =
+            await resolver.resolve(pointMapping);
+
+        if (resolved.status === "NO_MATCH") {
+
+            return {
+                contentId: contentPoint.id,
+
+                status: "NO_MATCH",
+
+                point: {
+                    table: "Beoordelingspunten",
+                    recordId: null,
+                    field: "Beoordelingspunt",
+                    name: null
+                },
+
+                review: {
+                    table: REVIEW_TABLE,
+
+                    links: {
+                        accommodation: REVIEW_FIELDS.accommodation,
+                        point: REVIEW_FIELDS.point
+                    },
+
+                    value: {
+                        field: REVIEW_FIELDS.value
+                    },
+
+                    status: {
+                        field: REVIEW_FIELDS.status
+                    },
+
+                    photo: {
+                        field: REVIEW_FIELDS.photo
+                    },
+
+                    comment: {
+                        field: REVIEW_FIELDS.comment
+                    }
+                }
+            };
+        }
+
         return {
+
             contentId: contentPoint.id,
 
-            target: {
-                table: "Accommodatie Beoordelingen"
+            status: resolved.status,
+
+            point: {
+                table: "Beoordelingspunten",
+                recordId: resolved.recordId,
+                field: "Beoordelingspunt",
+                name: resolved.name
             },
 
-            value: {
-                field: valueField
+            review: {
+                table: REVIEW_TABLE,
+
+                links: {
+                    accommodation: REVIEW_FIELDS.accommodation,
+                    point: REVIEW_FIELDS.point
+                },
+
+                value: {
+                    field: REVIEW_FIELDS.value
+                },
+
+                status: {
+                    field: REVIEW_FIELDS.status
+                },
+
+                photo: {
+                    field: REVIEW_FIELDS.photo
+                },
+
+                comment: {
+                    field: REVIEW_FIELDS.comment
+                }
             }
+
         };
 
     }
 
-    static createMany(contentPoints) {
+
+    static async createMany(contentPoints, pointMappings) {
 
         if (!Array.isArray(contentPoints)) {
             throw new Error(
@@ -48,21 +124,43 @@ class AirtableMapping {
             );
         }
 
-        return contentPoints.map(point =>
-            this.create(point)
+        if (!pointMappings || typeof pointMappings !== "object") {
+            throw new Error(
+                "AirtableMapping: point mappings ontbreken."
+            );
+        }
+
+        return Promise.all(
+            contentPoints.map(point => {
+
+                const mapping =
+                    pointMappings[point.id];
+
+                return this.create(
+                    point,
+                    mapping
+                );
+
+            })
         );
 
     }
 
+
     static isSupportedType(type) {
 
-        return Object.prototype.hasOwnProperty.call(
-            TYPE_TO_VALUE_FIELD,
-            type
-        );
+        return [
+            "checkbox",
+            "number",
+            "text",
+            "longtext",
+            "select",
+            "attachment"
+        ].includes(type);
 
     }
 
 }
+
 
 module.exports = AirtableMapping;

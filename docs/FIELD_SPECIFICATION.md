@@ -61,3 +61,20 @@ Alle modules, de Builder, Airtable-synchronisatie, de app en de website gebruike
 Deze specificatie is leidend voor de volledige Builder-architectuur.
 
 Nieuwe eigenschappen worden uitsluitend toegevoegd wanneer zij generiek toepasbaar zijn op alle veldtypen.
+
+<!-- RZD-AUTO:START FIELD_SPECIFICATION -->
+### RZD 5.1 actuele mapping
+
+- Content Modules → Modules
+- Beoordelingspunten → Beoordelingspunten
+- Accommodatie Beoordelingen → Accommodatie beoordelingen
+- Accommodaties → Accommodaties
+
+**Antwoordveld:** Waarde / Resultaat
+
+**Verbeterpunten:** afzonderlijke rapportage- en actielaag
+
+**Bronnen:** relationele laag; meerdere bronnen per accommodatie en beoordeling toegestaan.
+
+**Veiligheid:** bestaande RZD 5.1-data blijft leidend.
+<!-- RZD-AUTO:END FIELD_SPECIFICATION -->

@@ -359,3 +359,21 @@ De volgende sessie moet niet opnieuw beginnen met het aanmaken van Airtable-tabe
 De verbinding met RZD 5.1 is al succesvol gevalideerd.
 
 De eerstvolgende taak is het analyseren en mappen van de bestaande structuur.
+
+<!-- RZD-AUTO:START PROJECT_STATUS -->
+### Documentation Engine actuele status
+
+- 3A — documentatiestructuur gevalideerd
+- 3B — documentation mapping vastgesteld
+- 3C — mapping geladen en toegepast
+- 3D — concrete documentgeneratie getest
+- 3E — bestaande headings gevalideerd
+- 3F — managed-block diff gevalideerd
+- 3G — gecontroleerde document-write beschikbaar
+
+**Write-status:** gecontroleerde write-fase actief.
+
+**Airtable:** geen writes uitgevoerd door de Documentation Engine.
+
+**GitHub:** wijzigingen worden via de lokale Git-workflow gecommit en gepusht.
+<!-- RZD-AUTO:END PROJECT_STATUS -->

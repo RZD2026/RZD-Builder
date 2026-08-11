@@ -196,3 +196,17 @@ De volgende stap is **niet opnieuw Airtable configureren**.
 De volgende stap is:
 
 **bestaande RZD 5.1-tabellen analyseren → Canon-mapping bepalen → Builder aanpassen → dry run → controleren → pas daarna schrijven.**
+
+<!-- RZD-AUTO:START CHECKPOINT -->
+### Documentation Engine status
+
+De managed-block beveiliging is actief.
+
+De engine mag uitsluitend inhoud tussen RZD-AUTO START/END-markers wijzigen.
+
+Alle bestaande documentinhoud buiten deze markers blijft onaangetast.
+
+Documentation Engine 3G ondersteunt gecontroleerde writes.
+
+Na de write moet de Git-diff worden gecontroleerd voordat wordt gecommit.
+<!-- RZD-AUTO:END CHECKPOINT -->
