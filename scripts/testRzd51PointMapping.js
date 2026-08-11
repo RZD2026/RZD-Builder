@@ -12,18 +12,19 @@ async function run() {
     for (const point of module.points) {
 
         const result = mapping.get(point.id);
+        const airtable = result?.airtable;
 
         console.log("--------------------------------");
-        console.log(`Canon ID:       ${point.id}`);
-        console.log(`Canon naam:     ${point.labels.website}`);
-        console.log(`Type:            ${point.type}`);
-        console.log(`Eenheid:         ${point.unit || "-"}`);
-        console.log(`Status:          ${result?.status || "MISSING"}`);
+        console.log(`Canon ID:        ${point.id}`);
+        console.log(`Canon naam:      ${point.labels.website}`);
+        console.log(`Type:             ${point.type}`);
+        console.log(`Eenheid:          ${point.unit || "-"}`);
+        console.log(`Status:           ${result?.status || "MISSING"}`);
         console.log(
-            `Airtable ID:    ${result?.airtableRecordId || "-"}`
+            `Airtable module: ${airtable?.module || "-"}`
         );
         console.log(
-            `Airtable naam:  ${result?.airtableName || "-"}`
+            `Airtable naam:   ${airtable?.name || "-"}`
         );
     }
 

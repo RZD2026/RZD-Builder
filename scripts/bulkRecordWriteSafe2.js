@@ -240,7 +240,7 @@ async function run() {
     const writable =
         mappings.filter(
             mapping =>
-                mapping.status !== "NO_MATCH"
+                mapping.status === "EXACT"
         );
 
 

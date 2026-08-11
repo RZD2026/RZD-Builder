@@ -1,13 +1,13 @@
 # CHANGELOG
 
-| Eigenschap | Waarde |
-|------------|--------|
-| Project | RZD Builder |
-| Document | CHANGELOG.md |
-| Status | Actief |
-| Rol | Historisch wijzigingsoverzicht |
-| Laatste wijziging | 05-08-2026 |
-| Eigenaar | Pascalle Vroegop |
+| Eigenschap        | Waarde                         |
+| ----------------- | ------------------------------ |
+| Project           | RZD Builder                    |
+| Document          | CHANGELOG.md                   |
+| Status            | Actief                         |
+| Rol               | Historisch wijzigingsoverzicht |
+| Laatste wijziging | 11-08-2026                     |
+| Eigenaar          | Pascalle Vroegop               |
 
 ---
 
@@ -45,19 +45,19 @@ Iedere registratie bevat minimaal:
 
 # Werkcodes
 
-| Code | Onderdeel |
-|------|-----------|
-| CORE | BuilderKernel |
-| COMP | Compiler |
-| PIPE | Pipeline |
-| SYNC | Synchronisatie |
-| API | Metadata |
-| DR | Doctor Framework |
-| VAL | Validators |
-| DOC | Documentatie |
-| TEST | Testen |
-| CFG | Configuratie |
-| REL | Releases |
+| Code | Onderdeel        |
+| ---- | ---------------- |
+| CORE | BuilderKernel    |
+| COMP | Compiler         |
+| PIPE | Pipeline         |
+| SYNC | Synchronisatie   |
+| API  | Metadata         |
+| DR   | Doctor Framework |
+| VAL  | Validators       |
+| DOC  | Documentatie     |
+| TEST | Testen           |
+| CFG  | Configuratie     |
+| REL  | Releases         |
 
 ---
 
@@ -211,6 +211,78 @@ Doctor Framework ontwikkeld.
 - Uitgebreide kwaliteitscontrole.
 - Betere foutanalyse.
 - Rapportage.
+
+---
+
+## 2026-08-11
+
+### SYNC-002 — RZD 5.1 Canon mapping en write safety
+
+**Type**
+
+Synchronisatie / Mapping
+
+**Waarom**
+
+De Canon Content Engine moest veilig kunnen worden gekoppeld aan de bestaande RZD 5.1 Airtable-structuur zonder dat onzekere mappings naar de write-flow konden doorstromen.
+
+**Wijziging**
+
+De RZD 5.1 Canon point mapping en Airtable resolver zijn read-only gevalideerd.
+
+De gecombineerde mappingflow verwerkt de Canon-punten via:
+
+- `rzd51PointMapping`
+- `airtablePointResolver`
+- bestaande RZD 5.1 Airtable-records
+
+De write-flow is aangepast zodat uitsluitend mappings met status `EXACT` schrijfbaar zijn.
+
+Dit is aangepast in:
+
+- `scripts/bulkRecordWriteFinal.js`
+- `scripts/bulkRecordWriteSafe2.js`
+
+**Resultaat**
+
+- 10 Canon-punten verwerkt.
+- 6 × EXACT.
+- 1 × POSSIBLE.
+- 3 × NO_MATCH.
+- 7 bestaande Airtable-records gevonden.
+- Alle 6 EXACT mappings hebben een geldig Airtable Beoordelingspunt-record-ID.
+- `automatic_door` blijft `NO_MATCH` en wordt niet geschreven.
+- Geen Airtable-writes uitgevoerd.
+
+---
+
+### TEST-002 — RZD 5.1 gecombineerde mapping dry-run
+
+**Type**
+
+Test
+
+**Waarom**
+
+De volledige Canon → RZD 5.1 mapping/resolver-flow moest read-only worden gevalideerd voordat productie-synchronisatie wordt uitgevoerd.
+
+**Wijziging**
+
+Read-only regressietest toegevoegd:
+
+- `scripts/testCombinedPointMapping.js`
+
+De gecombineerde mapping dry-run en Final Bulk Write dry-run zijn succesvol uitgevoerd.
+
+**Resultaat**
+
+- Canon module geladen: `toegang`
+- 10 Canon-punten verwerkt.
+- 6 × EXACT.
+- 1 × POSSIBLE.
+- 3 × NO_MATCH.
+- 7 Airtable-records gevonden.
+- Airtable writes: 0.
 
 ---
 

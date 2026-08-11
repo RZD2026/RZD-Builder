@@ -6,7 +6,7 @@
 | Document          | CHECKPOINT.md    |
 | Status            | Actief           |
 | Rol               | Sessieoverdracht |
-| Laatste wijziging | 09-08-2026       |
+| Laatste wijziging | 11-08-2026       |
 | Eigenaar          | Pascalle Vroegop |
 
 ---
@@ -35,7 +35,7 @@ Openstaande werkzaamheden staan in **BACKLOG.md**.
 
 **Datum**
 
-09-08-2026
+11-08-2026
 
 **Status**
 
@@ -89,6 +89,37 @@ De `Type`-keuzes voor Airtable zijn succesvol opgebouwd.
 
 Er is nog geen productie-write uitgevoerd voor de nieuwe schema-aanpassing.
 
+De Documentation Engine is uitgevoerd en gevalideerd van fase 3A tot en met 3G.
+
+De drie managed documentblokken zijn succesvol geschreven en daarna geverifieerd.
+
+De RZD 5.1 Canon point mapping/resolver dry-run is succesvol uitgevoerd.
+
+Er zijn 10 Canon-punten verwerkt:
+- 6 × EXACT
+- 1 × POSSIBLE
+- 3 × NO_MATCH
+
+Er zijn 7 bestaande Airtable-records gevonden.
+
+De write-flow is aangepast zodat uitsluitend mappings met status `EXACT` schrijfbaar zijn. Dit is aangepast in `bulkRecordWriteFinal.js` en `bulkRecordWriteSafe2.js`.
+
+Alle 6 schrijfbare punten hebben een geldig Airtable-record-ID.
+
+De gecombineerde mapping dry-run en de Final Bulk Write dry-run zijn succesvol uitgevoerd.
+
+Er zijn geen Airtable-writes uitgevoerd.
+
+Het read-only testscript `scripts/testCombinedPointMapping.js` is toegevoegd en succesvol uitgevoerd.
+
+Er is gecontroleerd dat de inhoud buiten de managed blocks niet is gewijzigd.
+
+De beschermde documenten zijn niet gewijzigd.
+
+Er zijn geen Airtable-writes uitgevoerd door de Documentation Engine.
+
+De wijzigingen zijn lokaal gecommit en naar GitHub gepusht.
+
 ---
 
 # Belangrijk besluit
@@ -109,14 +140,16 @@ De Builder moet de Canon-structuur koppelen aan de bestaande RZD 5.1-tabellen.
 
 # Huidige mapping
 
-| Builder / Canon              | Bestaande RZD 5.1       |
-| ---------------------------- | ------------------------ |
-| Content Modules              | Modules                  |
-| Beoordelingspunten           | Beoordelingspunten       |
-| Accommodatie Beoordelingen   | Accommodatie beoordelingen |
-| Accommodaties                | Accommodaties            |
+| Builder / Canon            | Bestaande RZD 5.1          |
+| -------------------------- | --------------------------- |
+| Content Modules            | Modules                     |
+| Beoordelingspunten         | Beoordelingspunten          |
+| Accommodatie Beoordelingen | Accommodatie beoordelingen  |
+| Accommodaties              | Accommodaties               |
 
-Deze mapping moet technisch verder worden uitgewerkt voordat een productie-write plaatsvindt.
+Deze tabelmapping is technisch vastgelegd.
+
+De exacte inhoudelijke veldmapping wordt nog verder gecontroleerd.
 
 ---
 
@@ -130,18 +163,21 @@ Deze mapping moet technisch verder worden uitgewerkt voordat een productie-write
 
 # Volgende taak
 
-De volgende sessie gaat verder met de bestaande RZD 5.1-structuur.
+De volgende sessie begint met de resterende documentatieconsistentiecontrole.
 
-1. Tabel **Modules** analyseren.
-2. Tabel **Beoordelingspunten** analyseren.
-3. Tabel **Accommodatie beoordelingen** analyseren.
-4. Exacte Canon-naar-Airtable veldmapping bepalen.
-5. Naam-/tabelmapping in de Builder definiëren.
-6. Builder aanpassen zodat bestaande RZD 5.1-tabellen worden herkend.
-7. Volledige dry run uitvoeren.
-8. Resultaat controleren.
-9. Pas daarna eventueel productie-synchronisatie uitvoeren.
-10. Daarna verder met de Documentation Engine.
+1. `documentationMapping.js` controleren en synchroniseren met de definitieve Documentation Engine-status.
+2. `CHANGELOG.md` aanvullen met de afgeronde Documentation Engine-werkzaamheden.
+3. Volledige documentatie-audit uitvoeren.
+4. Daarna verder met de inhoudelijke RZD 5.1 mapping.
+5. Tabel **Modules** analyseren.
+6. Tabel **Beoordelingspunten** analyseren.
+7. Tabel **Accommodatie beoordelingen** analyseren.
+8. Exacte Canon-naar-Airtable veldmapping bepalen.
+9. Naam-/tabelmapping in de Builder verder controleren.
+10. Builder aanpassen waar nodig.
+11. Volledige dry run uitvoeren.
+12. Resultaat controleren.
+13. Pas daarna eventueel productie-synchronisatie uitvoeren.
 
 ---
 
@@ -151,8 +187,9 @@ De volgende sessie gaat verder met de bestaande RZD 5.1-structuur.
 - De Builder mag niet opnieuw proberen bestaande RZD 5.1-tabellen aan te maken.
 - De naamverschillen tussen Canon en Airtable moeten centraal worden afgehandeld.
 - Productie-write is nog niet uitgevoerd.
-- De automatische Documentation Engine staat nog op de agenda.
-- PROJECT_STATUS en CHECKPOINT worden voorlopig nog handmatig bijgewerkt; automatisering hiervan is onderdeel van Builder 3.0.
+- De resterende documentatieconsistentie moet nog worden gecontroleerd.
+- `documentationMapping.js` moet nog worden gesynchroniseerd met de definitieve Documentation Engine-status.
+- `CHANGELOG.md` moet nog worden aangevuld met de afgeronde Documentation Engine-werkzaamheden.
 
 ---
 
@@ -193,9 +230,17 @@ De juiste RZD 5.1-base is bevestigd.
 
 De volgende stap is **niet opnieuw Airtable configureren**.
 
+De Documentation Engine 3A t/m 3G is afgerond.
+
+De managed-block beveiliging is gevalideerd.
+
+De gecontroleerde document-write is uitgevoerd en geverifieerd.
+
+De wijzigingen zijn naar GitHub gepusht.
+
 De volgende stap is:
 
-**bestaande RZD 5.1-tabellen analyseren → Canon-mapping bepalen → Builder aanpassen → dry run → controleren → pas daarna schrijven.**
+**resterende documentatieconsistentie controleren → documentationMapping.js synchroniseren → CHANGELOG.md aanvullen → volledige audit → daarna verder met de RZD 5.1 mapping.**
 
 <!-- RZD-AUTO:START CHECKPOINT -->
 ### Documentation Engine status
@@ -206,7 +251,8 @@ De engine mag uitsluitend inhoud tussen RZD-AUTO START/END-markers wijzigen.
 
 Alle bestaande documentinhoud buiten deze markers blijft onaangetast.
 
-Documentation Engine 3G ondersteunt gecontroleerde writes.
+Documentation Engine 3G is uitgevoerd en succesvol geverifieerd.
 
-Na de write moet de Git-diff worden gecontroleerd voordat wordt gecommit.
+De volgende sessie gaat verder met de resterende documentatieconsistentiecontrole.
+
 <!-- RZD-AUTO:END CHECKPOINT -->

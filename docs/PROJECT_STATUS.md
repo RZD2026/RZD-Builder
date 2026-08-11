@@ -32,7 +32,7 @@ De Builder werkt vanuit één Canon Model en synchroniseert dit naar meerdere pl
 | ------------ | ------------------------ |
 | Ontwikkeling | 🟢 Actief                |
 | Builder 2.0  | 🟢 Afgerond              |
-| Builder 3.0  | 🟡 Ontwerpfase           |
+| Builder 3.0  | 🟢 Actief                |
 | Canon Model  | 🟢 Actief                |
 | Teststatus   | 🟢 Alle testen succesvol |
 | Documentatie | 🟢 Actief onderhouden    |
@@ -199,13 +199,16 @@ De bestaande tabellen blijven leidend.
 
 ## Status
 
-🟡 Start volgende ontwikkelfase
+🟢 Actief
 
 Builder 3.0 bouwt voort op de stabiele basis van Builder 2.0.
 
 Nieuwe functionaliteit wordt uitsluitend nog binnen Builder 3.0 ontwikkeld.
 
 De huidige focus ligt op de **Content Engine** en de koppeling met de bestaande RZD 5.1-structuur.
+De Canon-naar-RZD 5.1 tabelmapping is vastgesteld en in de Builder vastgelegd.
+
+De Documentation Engine is inmiddels gevalideerd tot en met fase 3G.
 
 ---
 
@@ -247,19 +250,59 @@ De volgende technische stap is het koppelen van deze Canon-structuur aan de best
 
 ---
 
+## RZD 5.1 Mapping & Write Safety
+
+De RZD 5.1 Canon point mapping/resolver is inmiddels read-only gevalideerd.
+
+De gecombineerde dry-run heeft 10 Canon-punten verwerkt:
+
+- 6 × EXACT
+- 1 × POSSIBLE
+- 3 × NO_MATCH
+
+Er zijn 7 bestaande Airtable-records gevonden.
+
+Alle 6 EXACT mappings hebben een geldig Airtable Beoordelingspunt-record-ID.
+
+De write-flow is beveiligd zodat uitsluitend mappings met status `EXACT` schrijfbaar zijn. Dit is toegepast in `bulkRecordWriteFinal.js` en `bulkRecordWriteSafe2.js`.
+
+`automatic_door` blijft `NO_MATCH` en wordt niet geschreven.
+
+De gecombineerde mapping dry-run en de Final Bulk Write dry-run zijn succesvol uitgevoerd.
+
+Er zijn geen Airtable-writes uitgevoerd.
+
+`scripts/testCombinedPointMapping.js` is toegevoegd als read-only regressietest en succesvol uitgevoerd.
+
+---
+
 ## Documentation Engine
 
-Genereert automatisch:
+De Documentation Engine is ontwikkeld en gevalideerd tot en met fase 3G.
 
-- PROJECT_STATUS
-- CHANGELOG
-- ARCHITECTURE
-- API-documentatie
-- Module-documentatie
+De afgeronde fases zijn:
 
-De automatische documentatievoorziening blijft onderdeel van de Builder 3.0-agenda.
+- 3A — documentatiestructuur en veiligheidsregels
+- 3B — bron-naar-document mapping
+- 3C — mapping laden en toepassen
+- 3D — concrete documentgeneratie dry-run
+- 3E — sectiecontrole
+- 3F — managed-block dry-run
+- - 3G — gecontroleerde document-write uitgevoerd en geverifieerd
 
-Het doel is dat status, checkpoints en relevante projectdocumentatie uiteindelijk automatisch worden bijgewerkt in plaats van handmatig te moeten worden onderhouden.
+**Write-status:** gecontroleerde document-write uitgevoerd.
+
+**Airtable:** geen writes uitgevoerd door de Documentation Engine.
+
+**GitHub:** wijzigingen zijn lokaal gecommit en naar GitHub gepusht.
+
+De engine werkt met RZD-AUTO START/END managed blocks.
+
+Bestaande documentinhoud buiten deze blocks wordt beschermd.
+
+Protected documenten worden niet automatisch gewijzigd.
+
+CHANGELOG.md blijft append-only.
 
 ---
 
@@ -291,15 +334,16 @@ Status
 
 Builder 3.0
 
-Start:
+Focus:
 
 - Content Engine
+- RZD 5.1 mapping
 - Documentation Engine
 - Export Engine
 
 Status
 
-🟡 Gereed om te starten
+🟢 Actief
 
 ---
 
@@ -321,16 +365,18 @@ Status
 
 # Volgende ontwikkelsessie
 
-1. Bestaande tabel **Modules** analyseren.
-2. Bestaande tabel **Beoordelingspunten** analyseren.
-3. Bestaande tabel **Accommodatie beoordelingen** analyseren.
-4. Exacte Canon-naar-Airtable veldmapping bepalen.
-5. Naam-/tabelmapping in de Builder definiëren.
-6. Builder aanpassen zodat de bestaande RZD 5.1-structuur wordt herkend.
-7. Volledige dry-run uitvoeren.
-8. Resultaat controleren.
-9. Pas daarna synchronisatie uitvoeren.
-10. Documentation Engine verder uitwerken.
+1. documentationMapping.js controleren en synchroniseren met de definitieve Documentation Engine-status.
+2. CHANGELOG.md aanvullen met de afgeronde Documentation Engine-werkzaamheden.
+3. Volledige documentatie-audit uitvoeren.
+4. Bestaande tabel Modules analyseren.
+5. Bestaande tabel Beoordelingspunten analyseren.
+6. Bestaande tabel Accommodatie beoordelingen analyseren.
+7. Exacte Canon-naar-Airtable veldmapping bepalen.
+8. Naam-/tabelmapping in de Builder definiëren.
+9. Builder aanpassen waar nodig.
+10. Volledige dry-run uitvoeren.
+11. Resultaat controleren.
+12. Pas daarna eventueel productie-synchronisatie uitvoeren.
 
 ---
 

@@ -67,7 +67,7 @@ class AirtablePointResolver {
 
  );
 
-        if (!module) {
+        if (!moduleRecord) {
             return {
                 status: "NO_MATCH",
                 recordId: null
