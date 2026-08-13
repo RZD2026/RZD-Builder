@@ -87,7 +87,15 @@ Ondersteunde contenttypen:
 
 De `Type`-keuzes voor Airtable zijn succesvol opgebouwd.
 
-Er is nog geen productie-write uitgevoerd voor de nieuwe schema-aanpassing.
+Er heeft een gecontroleerde productie-execute plaatsgevonden voor één geval: de accommodatie *Karios* (accommodatie id: `recQzECjVOUbQjc5g`) nadat mapping- en dry-runvalidaties waren uitgevoerd.
+
+Belangrijke wijzigingen sinds de vorige checkpoint:
+
+- `services/reviewWriteService.js` is ingevoerd als centrale service voor `Accommodatie beoordelingen` en voorkomt duplicaten (0 → CREATE, 1 → UPDATE, >1 → BLOCKED_MULTIPLE_MATCHES).
+- Meerdere scripts zijn gemigreerd naar `reviewWriteService.upsertReview(...)` (waaronder `scripts/writeMappedRecords.js`, `scripts/bulkRecordWrite.js`, `scripts/bulkRecordWriteFinal.js`, `scripts/bulkRecordWriteSafe2.js`).
+- Er is een gecontroleerde execute uitgevoerd op Karios: 5 vooraf geverifieerde lege duplicaten verwijderd; daarna 7 beoordelingen en 0 duplicaten; `writeMappedRecords.js --execute` resulteerde in 6 updates, 0 creates, 0 deletes.
+
+Correctie op eerdere bewering: eerdere documenten vermeldden dat er geen productie-Airtable-writes zijn uitgevoerd — dit is gecorrigeerd: er is een gecontroleerde execute-write uitgevoerd op Karios.
 
 De Documentation Engine is uitgevoerd en gevalideerd van fase 3A tot en met 3G.
 
@@ -108,15 +116,13 @@ Alle 6 schrijfbare punten hebben een geldig Airtable-record-ID.
 
 De gecombineerde mapping dry-run en de Final Bulk Write dry-run zijn succesvol uitgevoerd.
 
-Er zijn geen Airtable-writes uitgevoerd.
-
 Het read-only testscript `scripts/testCombinedPointMapping.js` is toegevoegd en succesvol uitgevoerd.
 
 Er is gecontroleerd dat de inhoud buiten de managed blocks niet is gewijzigd.
 
 De beschermde documenten zijn niet gewijzigd.
 
-Er zijn geen Airtable-writes uitgevoerd door de Documentation Engine.
+De Documentation Engine heeft geen ongecontroleerde Airtable-writes uitgevoerd.
 
 De wijzigingen zijn lokaal gecommit en naar GitHub gepusht.
 
@@ -253,6 +259,5 @@ Alle bestaande documentinhoud buiten deze markers blijft onaangetast.
 
 Documentation Engine 3G is uitgevoerd en succesvol geverifieerd.
 
-De volgende sessie gaat verder met de resterende documentatieconsistentiecontrole.
-
+Na de write moet de Git-diff worden gecontroleerd voordat wordt gecommit.
 <!-- RZD-AUTO:END CHECKPOINT -->

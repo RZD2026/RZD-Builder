@@ -24,75 +24,8 @@ const headers = {
 };
 
 
-const REVIEW_TABLE =
-    "Accommodatie Beoordelingen";
-
-
-async function findExistingReviews(
-    accommodationId,
-    pointRecordId
-) {
-
-    const formula =
-        `AND(` +
-        `FIND("${accommodationId}", ARRAYJOIN({Accommodatie})),` +
-        `FIND("${pointRecordId}", ARRAYJOIN({Beoordelingspunt}))` +
-        `)`;
-
-    const response =
-        await axios.get(
-            `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(REVIEW_TABLE)}`,
-            {
-                headers,
-                params: {
-                    filterByFormula: formula,
-                    pageSize: 100
-                }
-            }
-        );
-
-    return response.data.records || [];
-
-}
-
-
-async function createRecord(fields) {
-
-    const response =
-        await axios.post(
-            `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(REVIEW_TABLE)}`,
-            {
-                fields
-            },
-            {
-                headers
-            }
-        );
-
-    return response.data;
-
-}
-
-
-async function updateRecord(
-    recordId,
-    fields
-) {
-
-    const response =
-        await axios.patch(
-            `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(REVIEW_TABLE)}/${recordId}`,
-            {
-                fields
-            },
-            {
-                headers
-            }
-        );
-
-    return response.data;
-
-}
+const reviewWriteService =
+    require("../services/reviewWriteService");
 
 
 async function run() {
@@ -199,13 +132,6 @@ async function run() {
         };
 
 
-        const existing =
-            await findExistingReviews(
-                accommodationId,
-                pointId
-            );
-
-
         console.log("--------------------------------");
 
         console.log(
@@ -219,101 +145,32 @@ async function run() {
         );
 
         console.log(
-            "Bestaande records:",
-            existing.length
+            "Actie:",
+            execute ? "EXECUTE" : "DRY-RUN"
         );
 
+        console.dir(fields, { depth: null });
 
-        if (existing.length === 0) {
+        const upsert = await reviewWriteService.upsertReview({
+            accommodationId: accommodationId,
+            pointId: pointId,
+            fields: fields,
+            dryRun: !execute
+        });
 
+        if (upsert.action === "CREATE") {
             creates++;
-
-            console.log(
-                "Actie: CREATE"
-            );
-
-            console.log(
-                "Velden:"
-            );
-
-            console.dir(
-                fields,
-                {
-                    depth: null
-                }
-            );
-
-
-            if (execute) {
-
-                const created =
-                    await createRecord(
-                        fields
-                    );
-
-                console.log(
-                    "Aangemaakt:",
-                    created.id
-                );
-
-            }
-
-            continue;
-        }
-
-
-        if (existing.length > 1) {
-
+        } else if (upsert.action === "UPDATE") {
+            updates++;
+        } else if (upsert.action === "BLOCKED_MULTIPLE_MATCHES") {
             duplicates++;
-
-            console.log(
-                "Actie: DUPLICATE - NIET SCHRIJVEN"
-            );
-
-            console.log(
-                "Record IDs:",
-                existing.map(
-                    record => record.id
-                )
-            );
-
-            continue;
         }
 
-
-        const existingRecord =
-            existing[0];
-
-        updates++;
-
-
         console.log(
-            "Actie: UPDATE"
+            "Resultaat:",
+            upsert.action,
+            upsert.recordId ? `(${upsert.recordId})` : ""
         );
-
-        console.log(
-            "Bestaand record:",
-            existingRecord.id
-        );
-
-
-        if (execute) {
-
-            const updated =
-                await updateRecord(
-                    existingRecord.id,
-                    {
-                        "Beoordeling naam":
-                            pointName
-                    }
-                );
-
-            console.log(
-                "Bijgewerkt:",
-                updated.id
-            );
-
-        }
 
     }
 

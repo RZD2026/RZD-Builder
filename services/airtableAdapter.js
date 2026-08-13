@@ -1,17 +1,24 @@
 require("dotenv").config();
 
 const axios = require("axios");
-const FieldOptionsFactory = require("./fieldOptionsFactory");
 
-const baseId = process.env.AIRTABLE_BASE_ID;
-const token = process.env.AIRTABLE_TOKEN;
+const FieldOptionsFactory =
+    require("./fieldOptionsFactory");
+
+const baseId =
+    process.env.AIRTABLE_BASE_ID;
+
+const token =
+    process.env.AIRTABLE_TOKEN;
 
 const headers = {
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json"
 };
 
+
 class AirtableAdapter {
+
 
     getFieldName(field) {
 
@@ -26,10 +33,11 @@ class AirtableAdapter {
 
     async getTables() {
 
-        const response = await axios.get(
-            `https://api.airtable.com/v0/meta/bases/${baseId}/tables`,
-            { headers }
-        );
+        const response =
+            await axios.get(
+                `https://api.airtable.com/v0/meta/bases/${baseId}/tables`,
+                { headers }
+            );
 
         return response.data.tables;
 
@@ -62,7 +70,9 @@ class AirtableAdapter {
     async getTableId(tableName) {
 
         const table =
-            await this.getTable(tableName);
+            await this.getTable(
+                tableName
+            );
 
         return table.id;
 
@@ -72,7 +82,9 @@ class AirtableAdapter {
     async getFieldNames(tableName) {
 
         const table =
-            await this.getTable(tableName);
+            await this.getTable(
+                tableName
+            );
 
         return table.fields.map(
             field => field.name
@@ -84,16 +96,67 @@ class AirtableAdapter {
     async getFields(tableName) {
 
         const table =
-            await this.getTable(tableName);
+            await this.getTable(
+                tableName
+            );
 
         return table.fields;
 
     }
 
 
+    async listRecords(
+        tableName,
+        params = {}
+    ) {
+
+        if (!tableName) {
+
+            throw new Error(
+                "AirtableAdapter.listRecords: tabelnaam ontbreekt."
+            );
+
+        }
+
+        const records = [];
+        let offset = null;
+
+        do {
+
+            const query = Object.assign({}, params);
+
+            if (offset) {
+                query.offset = offset;
+            }
+
+            const response =
+                await axios.get(
+                    `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`,
+                    {
+                        headers,
+                        params: query
+                    }
+                );
+
+            records.push(
+                ...(response.data.records || [])
+            );
+
+            offset = response.data.offset || null;
+
+        } while (offset);
+
+        return records;
+
+    }
+
+
     async createTable(table) {
 
-        if (!table || typeof table !== "object") {
+        if (
+            !table ||
+            typeof table !== "object"
+        ) {
 
             throw new Error(
                 "AirtableAdapter.createTable: tabeldefinitie ontbreekt."
@@ -115,12 +178,19 @@ class AirtableAdapter {
         };
 
         console.log("");
-        console.log("========== CREATE TABLE ==========");
-        console.log(`Tabel: ${table.name}`);
-        console.dir(payload, {
-            depth: null
-        });
-        console.log("==================================");
+        console.log(
+            "========== CREATE TABLE =========="
+        );
+        console.log(
+            `Tabel: ${table.name}`
+        );
+        console.dir(
+            payload,
+            { depth: null }
+        );
+        console.log(
+            "=================================="
+        );
         console.log("");
 
         const response =
@@ -135,20 +205,29 @@ class AirtableAdapter {
     }
 
 
-    async createField(tableName, field) {
+    async createField(
+        tableName,
+        field
+    ) {
 
         const tableId =
-            await this.getTableId(tableName);
+            await this.getTableId(
+                tableName
+            );
 
         const fieldName =
-            this.getFieldName(field);
+            this.getFieldName(
+                field
+            );
 
         const payload = {
             name: fieldName,
             type: field.type
         };
 
-        if (field.description?.trim()) {
+        if (
+            field.description?.trim()
+        ) {
 
             payload.description =
                 field.description;
@@ -156,7 +235,9 @@ class AirtableAdapter {
         }
 
         const options =
-            FieldOptionsFactory.get(field);
+            FieldOptionsFactory.get(
+                field
+            );
 
         if (
             options &&
@@ -168,7 +249,9 @@ class AirtableAdapter {
 
         }
 
-        console.log(`➕ ${fieldName}`);
+        console.log(
+            `➕ ${fieldName}`
+        );
 
         try {
 
@@ -179,7 +262,9 @@ class AirtableAdapter {
                     { headers }
                 );
 
-            console.log(`✓ ${fieldName}`);
+            console.log(
+                `✓ ${fieldName}`
+            );
 
             return response.data;
 
@@ -194,9 +279,7 @@ class AirtableAdapter {
 
                 console.dir(
                     error.response.data,
-                    {
-                        depth: null
-                    }
+                    { depth: null }
                 );
 
                 console.log(
@@ -214,7 +297,81 @@ class AirtableAdapter {
     }
 
 
-    async createRecord(tableName, fields) {
+    async createMissingFields(
+        tableName,
+        fields
+    ) {
+
+        const existingFields =
+            await this.getFieldNames(
+                tableName
+            );
+
+        let created = 0;
+        let skipped = 0;
+
+        for (const field of fields) {
+
+            const fieldName =
+                this.getFieldName(
+                    field
+                );
+
+            if (
+                existingFields.includes(
+                    fieldName
+                )
+            ) {
+
+                console.log(
+                    `✓ ${fieldName}`
+                );
+
+                skipped++;
+
+                continue;
+
+            }
+
+            await this.createField(
+                tableName,
+                field
+            );
+
+            created++;
+
+        }
+
+        console.log("");
+        console.log(
+            "================================"
+        );
+        console.log(
+            "Resultaat"
+        );
+        console.log(
+            "================================"
+        );
+        console.log(
+            `Aangemaakt  : ${created}`
+        );
+        console.log(
+            `Overgeslagen: ${skipped}`
+        );
+        console.log("");
+
+        return {
+            created,
+            skipped
+        };
+
+    }
+
+
+    async createRecord(
+        tableName,
+        fields
+    ) {
 
         if (!tableName) {
 
@@ -224,7 +381,10 @@ class AirtableAdapter {
 
         }
 
-        if (!fields || typeof fields !== "object") {
+        if (
+            !fields ||
+            typeof fields !== "object"
+        ) {
 
             throw new Error(
                 "AirtableAdapter.createRecord: fields ontbreken."
@@ -240,6 +400,38 @@ class AirtableAdapter {
             await axios.post(
                 `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`,
                 payload,
+                { headers }
+            );
+
+        return response.data;
+
+    }
+
+
+    async getRecord(
+        tableName,
+        recordId
+    ) {
+
+        if (!tableName) {
+
+            throw new Error(
+                "AirtableAdapter.getRecord: tabelnaam ontbreekt."
+            );
+
+        }
+
+        if (!recordId) {
+
+            throw new Error(
+                "AirtableAdapter.getRecord: recordId ontbreekt."
+            );
+
+        }
+
+        const response =
+            await axios.get(
+                `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}/${recordId}`,
                 { headers }
             );
 
@@ -270,7 +462,10 @@ class AirtableAdapter {
 
         }
 
-        if (!fields || typeof fields !== "object") {
+        if (
+            !fields ||
+            typeof fields !== "object"
+        ) {
 
             throw new Error(
                 "AirtableAdapter.updateRecord: fields ontbreken."
@@ -294,57 +489,37 @@ class AirtableAdapter {
     }
 
 
-    async createMissingFields(
+    async deleteRecord(
         tableName,
-        fields
+        recordId
     ) {
 
-        const existingFields =
-            await this.getFieldNames(tableName);
+        if (!tableName) {
 
-        let created = 0;
-        let skipped = 0;
-
-        for (const field of fields) {
-
-            const fieldName =
-                this.getFieldName(field);
-
-            if (
-                existingFields.includes(fieldName)
-            ) {
-
-                console.log(`✓ ${fieldName}`);
-
-                skipped++;
-
-                continue;
-
-            }
-
-            await this.createField(
-                tableName,
-                field
+            throw new Error(
+                "AirtableAdapter.deleteRecord: tabelnaam ontbreekt."
             );
-
-            created++;
 
         }
 
-        console.log("");
-        console.log("================================");
-        console.log("Resultaat");
-        console.log("================================");
-        console.log(`Aangemaakt  : ${created}`);
-        console.log(`Overgeslagen: ${skipped}`);
-        console.log("");
+        if (!recordId) {
 
-        return {
-            created,
-            skipped
-        };
+            throw new Error(
+                "AirtableAdapter.deleteRecord: recordId ontbreekt."
+            );
+
+        }
+
+        const response =
+            await axios.delete(
+                `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}/${recordId}`,
+                { headers }
+            );
+
+        return response.data;
 
     }
+
 
 }
 

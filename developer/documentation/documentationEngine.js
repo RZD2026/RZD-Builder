@@ -365,6 +365,59 @@ function buildProposedDocument(
 }
 
 
+function verifyRequiredSections(
+    original,
+    definition
+) {
+
+    const sections =
+        definition.sections || [];
+
+    const missing = [];
+
+    for (
+        const section
+        of sections
+    ) {
+
+        if (
+            !original.includes(
+                section
+            )
+        ) {
+
+            missing.push(
+                section
+            );
+
+        }
+
+    }
+
+    if (
+        missing.length > 0
+    ) {
+
+        return {
+
+            valid: false,
+
+            reason:
+                `Ontbrekende secties: ${missing.join(", ")}`
+
+        };
+
+    }
+
+    return {
+
+        valid: true
+
+    };
+
+}
+
+
 /* =========================================================
    SAFETY CHECK
    ========================================================= */
@@ -624,6 +677,32 @@ function prepareDocument(
 
             reason:
                 "Geen generator beschikbaar."
+
+        };
+
+    }
+
+
+    const sectionCheck =
+        verifyRequiredSections(
+            original,
+            definition
+        );
+
+
+    if (!sectionCheck.valid) {
+
+        return {
+
+            file,
+
+            name,
+
+            status:
+                "BLOCKED",
+
+            reason:
+                sectionCheck.reason
 
         };
 

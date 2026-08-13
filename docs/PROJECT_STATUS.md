@@ -123,7 +123,7 @@ Alle testen succesvol.
 
 De Airtable-verbinding en schema-functionaliteit zijn succesvol gevalideerd.
 
-Er is nog geen productie-write uitgevoerd voor de nieuwe schema-aanpassing.
+Er heeft recent een gecontroleerde productie-execute plaatsgevonden voor één geval (Karios, `recQzECjVOUbQjc5g`) na uitgebreide dry-runs en validaties. Deze execute betrof gecontroleerde updates en is bewust uitgevoerd door het team.
 
 ---
 
@@ -254,11 +254,7 @@ De volgende technische stap is het koppelen van deze Canon-structuur aan de best
 
 De RZD 5.1 Canon point mapping/resolver is inmiddels read-only gevalideerd.
 
-De gecombineerde dry-run heeft 10 Canon-punten verwerkt:
-
-- 6 × EXACT
-- 1 × POSSIBLE
-- 3 × NO_MATCH
+De gecombineerde dry-run heeft 10 Canon-punten behandeld. De huidige `pointMappings.js` bevat 6 × EXACT, 1 × POSSIBLE en 3 × NO_MATCH entries. Niet alle genoemde entries zijn automatisch via de resolver verwerkt; enkele blijven `NO_MATCH` of `POSSIBLE` en vereisen een inhoudelijke beslissing.
 
 Er zijn 7 bestaande Airtable-records gevonden.
 
@@ -268,9 +264,35 @@ De write-flow is beveiligd zodat uitsluitend mappings met status `EXACT` schrijf
 
 `automatic_door` blijft `NO_MATCH` en wordt niet geschreven.
 
+
 De gecombineerde mapping dry-run en de Final Bulk Write dry-run zijn succesvol uitgevoerd.
 
-Er zijn geen Airtable-writes uitgevoerd.
+Operationele update (2026-08-14):
+
+- `services/reviewWriteService.js` is ingevoerd als centrale upsert-service voor `Accommodatie beoordelingen`. De service implementeert duplicate-safety: 0 matches → CREATE, 1 match → UPDATE, >1 matches → BLOCKED_MULTIPLE_MATCHES (geen automatische keuze/verwijdering).
+- Diverse scripts zijn gemigreerd naar het gebruik van `reviewWriteService.upsertReview(...)` (o.a. `writeMappedRecords.js`, `bulkRecordWrite.js`, `bulkRecordWriteFinal.js`, `bulkRecordWriteSafe2.js`).
+- Gecontroleerde execute uitgevoerd voor accommodatie Karios (`recQzECjVOUbQjc5g`): 5 vooraf geverifieerde lege duplicaten verwijderd; na opschoning 7 beoordelingen en 0 duplicaten; `writeMappedRecords.js --execute` resulteerde in 6 updates, 0 creates en 0 deletes.
+
+Mapping status (canon module `toegang`, samenvatting): 10 Canon-punten verwerkt — 6 × EXACT, 1 × POSSIBLE, 3 × NO_MATCH. De huidige `pointMappings.js` bevat:
+
+- 4 × EXACT (parking gerelateerd)
+- `entrance_threshold` — EXACT
+- `entrance_turning_circle` — EXACT
+- `entrance_route` — POSSIBLE
+- `route_slope` — NO_MATCH
+- `main_entrance_accessible` — NO_MATCH
+- `automatic_door` — NO_MATCH
+
+Besluit rond NO_MATCH (beleid): een `NO_MATCH` betekent niet automatisch dat er een nieuw Airtable-beoordelingspunt gemaakt wordt. Teambesluiten:
+
+- `route_slope` wordt niet toegevoegd als apart Airtable-punt; hellingsinformatie kan binnen beoordeling/omschrijving worden vastgelegd.
+- `automatic_door` blijft voorlopig `NO_MATCH`.
+- `main_entrance_accessible` blijft voorlopig `NO_MATCH`.
+- `entrance_route` wordt niet automatisch aangemaakt zonder expliciet inhoudelijk besluit.
+
+Open technisch aandachtspunt:
+
+- De Canon content IDs en de `pointMappings.js` keys verschillen op enkele punten (bijv. `route_to_entrance` vs `entrance_route`, `turning_circle` vs `entrance_turning_circle`). De huidige resolver (`content/mapping/airtablePointResolver.js`) matcht uitsluitend op `contentPoint.id` en kent geen alias/ID‑vertaling laag. Dit is een open technisch aandachtspunt dat nog besloten moet worden; het wordt hier geregistreerd maar niet automatisch opgelost.
 
 `scripts/testCombinedPointMapping.js` is toegevoegd als read-only regressietest en succesvol uitgevoerd.
 
@@ -292,7 +314,7 @@ De afgeronde fases zijn:
 
 **Write-status:** gecontroleerde document-write uitgevoerd.
 
-**Airtable:** geen writes uitgevoerd door de Documentation Engine.
+**Airtable:** de Documentation Engine voerde geen ongecontroleerde Airtable-writes uit.
 
 **GitHub:** wijzigingen zijn lokaal gecommit en naar GitHub gepusht.
 

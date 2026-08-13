@@ -9,6 +9,8 @@ const airtableMapping =
 
 const airtableAdapter =
     require("../services/airtableAdapter");
+const reviewWriteService =
+    require("../services/reviewWriteService");
 
 
 async function run() {
@@ -17,13 +19,18 @@ async function run() {
     console.log("===== RZD 5.1 SINGLE RECORD WRITE =====");
     console.log("");
 
+    const accommodationId =
+        "recQzECjVOUbQjc5g";
+
+    const accommodationName =
+        "Karios Hotel - Peschiera del Garda";
+
     const module =
         await loader.load("toegang");
 
     const point =
         module.points.find(
-            item =>
-                item.id === "entrance_turning_circle"
+            item => item.id === "entrance_turning_circle"
         );
 
     if (!point) {
@@ -47,78 +54,46 @@ async function run() {
         );
     }
 
-    const accommodationRecordId =
-        "receCbuC0qSuQAZK0";
-
     const fields = {
 
-        [mapping.review.links.accommodation]:
-            [accommodationRecordId],
+        "Beoordeling naam":
+            `${accommodationName} - ${mapping.point.name}`,
 
-        [mapping.review.links.point]:
+        "Accommodatie":
+            [accommodationId],
+
+        "Beoordelingspunt":
             [mapping.point.recordId],
 
-        "Beoordeling naam":
-            `TEST 42 - ${mapping.point.name}`
+        "Status":
+            "Nog niet beoordeeld"
 
     };
 
-    console.log(
-        "Content ID:",
-        mapping.contentId
-    );
+    console.log("Accommodatie:", accommodationName);
+    console.log("Accommodatie ID:", accommodationId);
+    console.log("Beoordelingspunt:", mapping.point.name);
+    console.log("Beoordelingspunt ID:", mapping.point.recordId);
 
-    console.log(
-        "Status:",
-        mapping.status
-    );
-
-    console.log(
-        "Beoordelingspunt:",
-        mapping.point.name
-    );
-
-    console.log(
-        "Beoordelingspunt ID:",
-        mapping.point.recordId
-    );
-
-    console.log(
-        "Accommodatie ID:",
-        accommodationRecordId
-    );
-
-    console.log(
-        "Tabel:",
-        mapping.review.table
-    );
-
+    console.log("");
     console.log("Velden:");
-
-    console.dir(
-        fields,
-        {
-            depth: null
-        }
-    );
+    console.dir(fields, {
+        depth: null
+    });
 
     console.log("");
-    console.log("Schrijf record naar Airtable...");
+    console.log("Schrijf record (via reviewWriteService, dry-run)...");
 
-    const created =
-        await airtableAdapter.createRecord(
-            mapping.review.table,
-            fields
-        );
+    const upsert = await reviewWriteService.upsertReview({
+        accommodationId: accommodationId,
+        pointId: mapping.point.recordId,
+        fields: fields,
+        dryRun: true
+    });
 
     console.log("");
-    console.log("===== WRITE GESLAAGD =====");
-
-    console.log(
-        "Nieuw record ID:",
-        created.id
-    );
-
+    console.log("===== WRITE (DRY-RUN) GEDRAAIWD =====");
+    console.log("Resultaat:", upsert.action, upsert.recordId ? `(${upsert.recordId})` : "");
     console.log("");
 
 }
@@ -129,9 +104,7 @@ run().catch(error => {
     console.error("");
     console.error("===== WRITE MISLUKT =====");
     console.error("");
-
     console.error(error);
-
     process.exit(1);
 
 });

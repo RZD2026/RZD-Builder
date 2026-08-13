@@ -23,146 +23,10 @@ const headers = {
     "Content-Type": "application/json"
 };
 
-const REVIEW_TABLE =
-    "Accommodatie Beoordelingen";
 
 
-async function getAllReviewRecords() {
-
-    const records = [];
-    let offset = null;
-
-    do {
-
-        const params = {
-            pageSize: 100
-        };
-
-        if (offset) {
-            params.offset = offset;
-        }
-
-        const response =
-            await axios.get(
-                `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(REVIEW_TABLE)}`,
-                {
-                    headers,
-                    params
-                }
-            );
-
-        records.push(
-            ...(response.data.records || [])
-        );
-
-        offset =
-            response.data.offset || null;
-
-    } while (offset);
-
-    return records;
-}
-
-
-async function createRecord(fields) {
-
-    const response =
-        await axios.post(
-            `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(REVIEW_TABLE)}`,
-            {
-                fields
-            },
-            {
-                headers
-            }
-        );
-
-    return response.data;
-}
-
-
-async function updateRecord(
-    recordId,
-    fields
-) {
-
-    const response =
-        await axios.patch(
-            `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(REVIEW_TABLE)}/${recordId}`,
-            {
-                fields
-            },
-            {
-                headers
-            }
-            );
-
-    return response.data;
-}
-
-
-function containsLinkedRecord(
-    fieldValue,
-    recordId
-) {
-
-    if (!Array.isArray(fieldValue)) {
-        return false;
-    }
-
-    return fieldValue.some(
-        value => {
-
-            if (typeof value === "string") {
-                return value === recordId;
-            }
-
-            if (
-                value &&
-                typeof value === "object"
-            ) {
-                return (
-                    value.id === recordId
-                );
-            }
-
-            return false;
-        }
-    );
-
-}
-
-
-function findMatchingRecords(
-    records,
-    accommodationId,
-    pointId
-) {
-
-    return records.filter(
-        record => {
-
-            const accommodationField =
-                record.fields?.Accommodatie;
-
-            const pointField =
-                record.fields?.Beoordelingspunt;
-
-            return (
-                containsLinkedRecord(
-                    accommodationField,
-                    accommodationId
-                ) &&
-                containsLinkedRecord(
-                    pointField,
-                    pointId
-                )
-            );
-
-        }
-    );
-
-}
+const reviewWriteService =
+    require("../services/reviewWriteService");
 
 
 async function run() {
@@ -211,19 +75,7 @@ async function run() {
     console.log("");
 
 
-    console.log(
-        "Bestaande reviewrecords ophalen..."
-    );
-
-    const existingRecords =
-        await getAllReviewRecords();
-
-    console.log(
-        "Aantal records via API:",
-        existingRecords.length
-    );
-
-    console.log("");
+    // Existing records are handled inside reviewWriteService; no bulk fetch here.
 
 
     const module =
@@ -289,119 +141,47 @@ async function run() {
         };
 
 
-        const matches =
-            findMatchingRecords(
-                existingRecords,
-                accommodationId,
-                pointId
+            console.log(
+                "--------------------------------"
             );
-
-
-        console.log(
-            "--------------------------------"
-        );
-
-        console.log(
-            "Content ID:",
-            mapping.contentId
-        );
-
-        console.log(
-            "Beoordelingspunt:",
-            pointName
-        );
-
-        console.log(
-            "Bestaande matches:",
-            matches.length
-        );
-
-
-        if (matches.length === 0) {
-
-            creates++;
 
             console.log(
-                "Actie: CREATE"
+                "Content ID:",
+                mapping.contentId
             );
 
-            console.dir(
-                fields,
-                {
-                    depth: null
-                }
+            console.log(
+                "Beoordelingspunt:",
+                pointName
             );
 
+            console.log(
+                "Actie:",
+                execute ? "EXECUTE" : "DRY-RUN"
+            );
 
-            if (execute) {
+            console.dir(fields, { depth: null });
 
-                const created =
-                    await createRecord(
-                        fields
-                    );
+            const upsert = await reviewWriteService.upsertReview({
+                accommodationId: accommodationId,
+                pointId: pointId,
+                fields: fields,
+                dryRun: !execute
+            });
 
-                console.log(
-                    "Aangemaakt:",
-                    created.id
-                );
-
+            if (upsert.action === "CREATE") {
+                creates++;
+            } else if (upsert.action === "UPDATE") {
+                updates++;
+            } else if (upsert.action === "BLOCKED_MULTIPLE_MATCHES") {
+                duplicates++;
             }
 
-            continue;
-        }
-
-
-        if (matches.length > 1) {
-
-            duplicates++;
-
             console.log(
-                "Actie: DUBBEL - NIET SCHRIJVEN"
+                "Resultaat:",
+                upsert.action,
+                upsert.recordId ? `(${upsert.recordId})` : ""
             );
-
-            console.log(
-                "Record IDs:",
-                matches.map(
-                    record => record.id
-                )
-            );
-
-            continue;
-        }
-
-
-        const existing =
-            matches[0];
-
-        updates++;
-
-        console.log(
-            "Actie: UPDATE"
-        );
-
-        console.log(
-            "Bestaand record:",
-            existing.id
-        );
-
-
-        if (execute) {
-
-            const updated =
-                await updateRecord(
-                    existing.id,
-                    {
-                        "Beoordeling naam":
-                            pointName
-                    }
-                );
-
-            console.log(
-                "Bijgewerkt:",
-                updated.id
-            );
-
-        }
 
     }
 

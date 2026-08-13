@@ -9,6 +9,8 @@ const airtableMapping =
 
 const airtableAdapter =
     require("../services/airtableAdapter");
+const reviewWriteService =
+    require("../services/reviewWriteService");
 
 
 async function run() {
@@ -108,7 +110,7 @@ async function run() {
 
         console.log(
             "Actie:",
-            execute ? "CREATE" : "DRY-RUN"
+            execute ? "EXECUTE" : "DRY-RUN"
         );
 
         console.log("Velden:");
@@ -120,19 +122,18 @@ async function run() {
             }
         );
 
-        if (!execute) {
-            continue;
-        }
-
-        const created =
-            await airtableAdapter.createRecord(
-                mapping.review.table,
-                fields
-            );
+        // Delegate create/update/duplicate logic to reviewWriteService.
+        const upsert = await reviewWriteService.upsertReview({
+            accommodationId: accommodationId,
+            pointId: mapping.point.recordId,
+            fields: fields,
+            dryRun: !execute
+        });
 
         console.log(
-            "Aangemaakt:",
-            created.id
+            "Resultaat:",
+            upsert.action,
+            upsert.recordId ? `(${upsert.recordId})` : ""
         );
 
     }

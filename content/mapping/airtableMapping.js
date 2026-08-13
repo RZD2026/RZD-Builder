@@ -1,4 +1,4 @@
-const REVIEW_TABLE = "Accommodatie Beoordelingen";
+const REVIEW_TABLE = "Accommodatie beoordelingen";
 
 const REVIEW_FIELDS = {
     accommodation: "Accommodatie",

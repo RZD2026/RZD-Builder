@@ -17,11 +17,12 @@ Dit document registreert alle **belangrijke afgeronde wijzigingen** binnen RZD B
 
 Iedere afgeronde ontwikkelingstaak wordt na voltooiing vanuit **BACKLOG.md** naar dit document verplaatst.
 
+
+---
+
 De changelog vormt daarmee de officiële historische registratie van de ontwikkeling van het project.
 
 Kleine experimenten, tussentijdse commits en tijdelijke wijzigingen blijven onderdeel van de Git-geschiedenis.
-
----
 
 # Registratieregels
 
@@ -40,6 +41,35 @@ Iedere registratie bevat minimaal:
 - reden;
 - uitgevoerde wijziging;
 - resultaat.
+
+## 2026-08-14
+
+### SYNC-003 — Review write service & controlled execute on Karios
+
+**Type**
+
+Synchronisatie / Operational
+
+**Waarom**
+
+Centraliseer en beveilig alle schrijfacties naar tabel `Accommodatie beoordelingen` en voer een gecontroleerde execute uit om migraties en write-behaviour in productie te verifiëren.
+
+**Wijziging**
+
+- `services/reviewWriteService.js` toegevoegd als centrale domain service voor upsert-logica van beoordelingen.
+- Meerdere scripts gemigreerd naar `reviewWriteService.upsertReview(...)` (waaronder `scripts/writeMappedRecords.js`, `scripts/bulkRecordWrite.js`, `scripts/bulkRecordWriteFinal.js`, `scripts/bulkRecordWriteSafe2.js`).
+- Introduceert duplicate-safety: 0 matches → CREATE, 1 match → UPDATE, >1 matches → BLOCKED_MULTIPLE_MATCHES (geen automatische keuze of verwijdering).
+- Gecontroleerde execute-write uitgevoerd voor de Karios-accommodatie (accommodatie id: `recQzECjVOUbQjc5g`) na dry-runs.
+
+**Resultaat**
+
+- Voor Karios werden eerst vijf vooraf geverifieerde lege duplicaten verwijderd.
+- Na opschoning: 7 beoordelingen aanwezig, 0 duplicaten.
+- `writeMappedRecords.js --execute` uitgevoerd (gecontroleerde productie-write): 6 bestaande records geüpdatet; 0 records aangemaakt; 0 records verwijderd tijdens execute-run.
+
+**Opmerking**
+
+- Dit corrigeert eerdere documentatie die aangaf dat er geen productie-writes zijn uitgevoerd — er heeft bewust een gecontroleerde execute-write op Karios plaatsgevonden.
 
 ---
 
