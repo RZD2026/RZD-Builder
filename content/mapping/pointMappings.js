@@ -4,7 +4,7 @@ module.exports = {
         status: "EXACT",
         airtable: {
             module: "Parkeren",
-            name: "Parkeerplaats aanwezig"
+            name: "Parkeerplaats bij accommodatie aanwezig"
         }
     },
 
@@ -12,32 +12,20 @@ module.exports = {
         status: "EXACT",
         airtable: {
             module: "Parkeren",
-            name: "Rolstoelparkeerplaats aanwezig"
+            name: "GPK-plaats aanwezig"
         }
     },
 
     parking_distance: {
-        status: "EXACT",
-        airtable: {
-            module: "Parkeren",
-            name: "Afstand parkeren tot entree"
-        }
+        status: "NO_MATCH"
     },
 
     parking_surface: {
-        status: "EXACT",
-        airtable: {
-            module: "Parkeren",
-            name: "Ondergrond parkeerplaats"
-        }
+        status: "NO_MATCH"
     },
 
     entrance_route: {
-        status: "POSSIBLE",
-        airtable: {
-            module: "Strand & Recreatie",
-            name: "Toegankelijke routes"
-        }
+        status: "NO_MATCH"
     },
 
     route_slope: {

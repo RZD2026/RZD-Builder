@@ -2,6 +2,7 @@ const REVIEW_TABLE = "Accommodatie beoordelingen";
 
 const REVIEW_FIELDS = {
     accommodation: "Accommodatie",
+    voorziening: "Voorziening",
     point: "Beoordelingspunt",
     value: "Waarde / Resultaat",
     status: "Status",
@@ -51,6 +52,7 @@ class AirtableMapping {
 
                     links: {
                         accommodation: REVIEW_FIELDS.accommodation,
+                        voorziening: REVIEW_FIELDS.voorziening,
                         point: REVIEW_FIELDS.point
                     },
 
@@ -83,7 +85,8 @@ class AirtableMapping {
                 table: "Beoordelingspunten",
                 recordId: resolved.recordId,
                 field: "Beoordelingspunt",
-                name: resolved.name
+                name: resolved.name,
+                type: contentPoint.type
             },
 
             review: {
@@ -91,6 +94,7 @@ class AirtableMapping {
 
                 links: {
                     accommodation: REVIEW_FIELDS.accommodation,
+                    voorziening: REVIEW_FIELDS.voorziening,
                     point: REVIEW_FIELDS.point
                 },
 
