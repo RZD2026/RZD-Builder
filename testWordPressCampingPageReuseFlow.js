@@ -1,11 +1,5 @@
 const assert = require("assert");
 
-const campingReadService =
-    require("./services/campingReadService");
-
-const mapper =
-    require("./services/wordpressMapper");
-
 const publisher =
     require("./services/wordpressPublisher");
 
@@ -13,39 +7,16 @@ const postService =
     require("./services/wordpressPostService");
 
 
-function buildAggregate(id = "recCampingAggregate") {
+function buildPreparedPayload(id) {
 
-    return {
-        id,
-        naam: "Camping Test",
-        type: "Camping",
-        locatie: {
-            land: "Nederland",
-            plaats: "Testplaats"
+    const mapped = {
+        title: "Camping Test",
+        status: "draft",
+        meta: {
+            rzd_camping_id: id
         },
-        contact: {
-            website: "https://example.test"
-        },
-        fotos: [],
-        assessmentsets: [],
-        campingBeoordelingen: [],
-        voorzieningen: [],
-        reizigerservaringen: [],
-        opmerkingen: [],
-        aandachtspunten: "",
-        accommodatieLaag: {
-            aangepasteAccommodatieAanwezig: "Onbekend",
-            volledigeBeoordeling: null
-        }
+        content: "<p>Lokale testinhoud.</p>"
     };
-
-}
-
-
-function buildPreparedPayload(aggregate) {
-
-    const mapped =
-        mapper.mapCampingAggregate(aggregate);
 
     const prepared =
         publisher.preparePage(mapped);
@@ -76,16 +47,9 @@ function response(body, totalPages = "1", ok = true, status = 200) {
 
 async function runTests() {
 
-    const originalGetCampingAggregate =
-        campingReadService.getCampingAggregate;
     const originalFetch = global.fetch;
 
     const calls = [];
-
-    campingReadService.getCampingAggregate = async campingId => {
-        calls.push({ kind: "aggregate", campingId });
-        return buildAggregate(campingId);
-    };
 
     try {
 
@@ -106,10 +70,8 @@ async function runTests() {
             ]);
         };
 
-        const existingAggregate =
-            await campingReadService.getCampingAggregate("recExisting");
         const existingPayload =
-            buildPreparedPayload(existingAggregate);
+            buildPreparedPayload("recExisting");
         const existingResult =
             await postService.create(existingPayload);
 
@@ -140,10 +102,8 @@ async function runTests() {
             );
         };
 
-        const createdAggregate =
-            await campingReadService.getCampingAggregate("recNew");
         const createdPayload =
-            buildPreparedPayload(createdAggregate);
+            buildPreparedPayload("recNew");
         const createdResult =
             await postService.create(createdPayload);
         const createdCalls =
@@ -177,10 +137,8 @@ async function runTests() {
             ]);
         };
 
-        const duplicateAggregate =
-            await campingReadService.getCampingAggregate("recDuplicate");
         const duplicatePayload =
-            buildPreparedPayload(duplicateAggregate);
+            buildPreparedPayload("recDuplicate");
         const duplicateResult =
             await postService.create(duplicatePayload);
 
@@ -206,10 +164,8 @@ async function runTests() {
             );
         };
 
-        const lookupErrorAggregate =
-            await campingReadService.getCampingAggregate("recLookupError");
         const lookupErrorPayload =
-            buildPreparedPayload(lookupErrorAggregate);
+            buildPreparedPayload("recLookupError");
 
         await assert.rejects(
             () => postService.create(lookupErrorPayload),
@@ -227,10 +183,8 @@ async function runTests() {
             return response([]);
         };
 
-        const invalidPaginationAggregate =
-            await campingReadService.getCampingAggregate("recInvalidPagination");
         const invalidPaginationPayload =
-            buildPreparedPayload(invalidPaginationAggregate);
+            buildPreparedPayload("recInvalidPagination");
 
         global.fetch = async (url, options) => {
             calls.push({ kind: "fetch", url, options });
@@ -252,7 +206,6 @@ async function runTests() {
     } finally {
 
         global.fetch = originalFetch;
-        campingReadService.getCampingAggregate = originalGetCampingAggregate;
 
     }
 
