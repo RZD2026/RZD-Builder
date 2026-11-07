@@ -218,6 +218,23 @@ Bij iedere uitbreiding gelden de volgende uitgangspunten:
 
 Nieuwe functionaliteit wordt alleen toegevoegd wanneer deze past binnen de bestaande architectuur van RZD Builder.
 
+## Inhoudelijke en visuele richting
+
+Voor de toekomstige presentatie van campings en bestemmingen gelden de
+vastgelegde RZD-redactionele stijl en website-opbouw uit **PROJECT_STATUS.md**.
+De homepage legt het RZD-concept breder uit; bestemmingspagina's blijven warm,
+feitelijk en ervaringsgericht zonder vooraf een oordeel te geven.
+
+RZD ontwikkelt daarnaast een eigen iconentaal voor de vaste categorieën Parkeren
+& Aankomst, Toegang & Entree, Accommodatie, Sanitair, Zwembad & Waterpark, Strand
+& Gardameer, Horeca, Winkels & Voorzieningen, Mobiliteit & Hulpmiddelen en
+Medische voorzieningen.
+
+Deze iconenset is nog niet definitief. De eerstvolgende ontwerpstap is het
+afzonderlijk ontwikkelen en testen van iconen op circa 32, 48 en 80 px. Pas na
+deze beoordeling wordt de volledige set doorgetrokken. Functionele regels en
+concrete referenties worden bijgehouden in **PROJECT_STATUS.md**.
+
 ---
 
 # Gerelateerde documentatie

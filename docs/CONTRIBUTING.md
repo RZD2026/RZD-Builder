@@ -1,182 +1,164 @@
-# CONTRIBUTING
+# CONTRIBUTING.md
 
 | Eigenschap | Waarde |
-|------------|--------|
+|---|---|
 | Project | RZD Builder |
 | Document | CONTRIBUTING.md |
 | Status | Actief |
-| Rol | Ontwikkelrichtlijnen |
-| Laatste wijziging | 06-08-2026 |
+| Rol | Ontwikkelrichtlijnen voor bijdragers |
+| Laatste wijziging | 06-11-2026 |
 | Eigenaar | Pascalle Vroegop |
 
 ---
 
 # Doel
 
-Dit document beschrijft de algemene ontwikkelrichtlijnen voor bijdragen aan **RZD Builder**.
+CONTRIBUTING.md bevat de ontwikkelrichtlijnen voor bijdragers aan RZD Builder.
 
-Het doel is om ervoor te zorgen dat iedere wijziging:
+Het document beschrijft:
 
-- veilig wordt uitgevoerd;
-- aansluit op de bestaande architectuur;
-- voldoende wordt getest;
-- volledig wordt gedocumenteerd;
-- de onderhoudbaarheid van het project vergroot.
+- ontwikkelrichtlijnen;
+- het bijdrageproces;
+- relevante verwijzingen naar projectafspraken.
 
-De dagelijkse ontwikkelworkflow is vastgelegd in **AI_RULES.md**.
+Het doel is om wijzigingen gecontroleerd, begrijpelijk en volgens de bestaande projectstructuur uit te voeren.
 
 ---
 
-# Ontwikkelfilosofie
+# Algemene bijdrageprincipes
 
-RZD Builder wordt ontwikkeld volgens de volgende uitgangspunten:
+## 1. Werk vanuit de bestaande projectstructuur
 
-- kwaliteit boven snelheid;
-- kleine, gecontroleerde wijzigingen;
-- modulaire architectuur;
-- uitbreidbaarheid;
-- onderhoudbaarheid;
-- testbaarheid;
-- documentatie als integraal onderdeel van de ontwikkeling.
+- Respecteer de bestaande mappenstructuur.
+- Gebruik de bestaande componenten en verantwoordelijkheden.
+- Voeg geen nieuwe architectuur toe zonder dat dit nodig is.
+- Houd wijzigingen beperkt tot het doel van de opdracht.
+- Voorkom onnodige wijzigingen aan bestaande functionaliteit.
 
----
+## 2. Eén bron per informatietype
 
-# Ontwikkelproces
+Gebruik de officiële documentatiebron voor het betreffende onderwerp.
 
-Iedere wijziging verloopt volgens dezelfde hoofdlijn:
+| Informatietype | Officiële bron |
+|---|---|
+| Documentstructuur en onderhoudsregels | DOCUMENTATION_ARCHITECTURE.md |
+| Navigatie en leesvolgorde | README.md |
+| Technische architectuur | ARCHITECTURE.md |
+| AI-werkwijze | AI_RULES.md |
+| Projectstatus | PROJECT_STATUS.md |
+| Openstaande werkzaamheden | BACKLOG.md |
+| Laatste sessiestatus en validaties | CHECKPOINT.md |
+| Afgeronde wijzigingen | CHANGELOG.md |
+| Ontwikkelrichting | ROADMAP.md |
+| WordPress-integratie | WORDPRESS_ARCHITECTURE.md |
+| Ontwikkelrichtlijnen | CONTRIBUTING.md |
+| Release-overzicht | RELEASE_NOTES.md |
 
-1. Analyse
-2. Bespreken
-3. Goedkeuring
-4. Implementatie
-5. Testen
-6. Documentatie bijwerken
-7. CHANGELOG.md bijwerken (indien van toepassing)
-8. CHECKPOINT.md bijwerken bij het afsluiten van de sessie
-
-De volledige werkwijze is beschreven in **AI_RULES.md**.
-
----
-
-# Projectstructuur
-
-Belangrijke onderdelen van RZD Builder zijn:
-
-- BuilderKernel
-- Compiler Pipeline
-- Metadata Services
-- Synchronisatie
-- Validators
-- WordPress-publicatie
-- Documentatiesuite
-
-Nieuwe functionaliteit sluit altijd aan op de bestaande architectuur.
+Informatie die al in een officiële bron wordt beheerd, wordt niet onnodig gekopieerd naar andere documenten.
 
 ---
 
-# Codekwaliteit
+# Bijdrageproces
 
-Nieuwe code voldoet minimaal aan de volgende uitgangspunten:
+## 1. Bepaal de opdracht
 
-- één duidelijke verantwoordelijkheid per component;
-- geen dubbele logica;
-- hergebruik van bestaande componenten;
-- consistente naamgeving;
-- leesbare structuur;
-- minimale afhankelijkheden;
-- bestaande architectuur respecteren.
+Voordat een wijziging wordt uitgevoerd:
 
----
+- bepaal het doel;
+- controleer welke onderdelen relevant zijn;
+- controleer of de opdracht aansluit op de bestaande architectuur;
+- bepaal welke documentatie eventueel moet worden bijgewerkt.
 
-# Testen
+Openstaande werkzaamheden worden beheerd in BACKLOG.md.
 
-Iedere wijziging wordt getest voordat deze wordt afgerond.
+## 2. Beperk de wijziging
 
-Afhankelijk van de wijziging kunnen onder andere de volgende controles worden uitgevoerd:
+- Wijzig alleen onderdelen die nodig zijn voor de opdracht.
+- Behoud bestaande functionaliteit, tenzij de opdracht expliciet anders bepaalt.
+- Vermijd onnodige refactoring.
+- Maak duidelijk welke onderdelen wel en niet zijn aangepast.
 
-- functionele testen;
-- regressietesten;
-- validatie;
-- foutafhandeling;
-- integratietesten.
+## 3. Controleer de wijziging
 
-Indien relevant worden testresultaten opgenomen in de documentatie.
+Voer passende controles uit wanneer dit mogelijk is.
 
----
+Maak onderscheid tussen:
 
-# Documentatie
+- codewijzigingen;
+- uitgevoerde tests;
+- mocktests;
+- lokale handmatige controles;
+- live-validatie.
 
-Documentatie maakt integraal onderdeel uit van iedere wijziging.
+Een testbestand is geen bewijs dat een test is uitgevoerd.
 
-Werk uitsluitend de documenten bij die inhoudelijk door de wijziging worden geraakt.
+Een mocktest is geen bewijs van een werkende live-integratie.
 
-Afhankelijk van de wijziging kunnen onder andere worden bijgewerkt:
+Vermeld alleen controles die daadwerkelijk zijn uitgevoerd.
 
-- PROJECT_STATUS.md
-- BACKLOG.md
-- ARCHITECTURE.md
-- CHANGELOG.md
-- CHECKPOINT.md
-- ROADMAP.md
-- RELEASE_NOTES.md
+## 4. Werk documentatie bij
 
-Documentatie is onderdeel van de definitie van **gereed**.
+Werk documentatie bij wanneer de wijziging gevolgen heeft voor de officiële documentatie.
 
----
+Gebruik hiervoor de bestaande documentrollen:
 
-# Git-richtlijnen
+- PROJECT_STATUS.md voor de actuele projectstatus;
+- BACKLOG.md voor openstaande werkzaamheden;
+- CHECKPOINT.md voor de laatste sessiestatus, validaties en volgende taak;
+- CHANGELOG.md voor belangrijke afgeronde wijzigingen;
+- ARCHITECTURE.md voor technische architectuur;
+- WORDPRESS_ARCHITECTURE.md voor WordPress-specifieke wijzigingen;
+- ROADMAP.md voor wijzigingen in de ontwikkelrichting.
 
-Bij het werken met Git gelden de volgende uitgangspunten:
-
-- één logisch samenhangende wijziging per commit;
-- duidelijke en beschrijvende commitberichten;
-- wijzigingen eerst testen;
-- relevante documentatie gelijktijdig bijwerken;
-- geen tijdelijke of gegenereerde bestanden committen.
+Voeg geen volledige backlog, sessiegeschiedenis of architectuurdetails toe aan CONTRIBUTING.md.
 
 ---
 
-# AI-ondersteuning
+# Afronding van werkzaamheden
 
-AI-assistenten ondersteunen de ontwikkeling, maar nemen geen architectuurbeslissingen zelfstandig.
+Een wijziging wordt niet uitsluitend op basis van codeaanpassing als volledig gevalideerd beschouwd.
 
-Voor iedere AI geldt:
+Bij afronding wordt duidelijk gemaakt:
 
-- volg de werkwijze uit **AGENTS.md**;
-- respecteer de bestaande architectuur;
-- analyseer voordat wijzigingen worden uitgevoerd;
-- doe geen aannames wanneer informatie ontbreekt;
-- onderbouw voorgestelde wijzigingen;
-- houd documentatie en broncode synchroon.
+- wat is gewijzigd;
+- welke bestanden zijn aangepast;
+- welke controles zijn uitgevoerd;
+- welke controles niet zijn uitgevoerd;
+- welke beperkingen of aandachtspunten blijven bestaan;
+- welke documentatie is bijgewerkt.
 
----
+Wanneer een wijziging nog niet volledig is gecontroleerd, wordt dit expliciet vermeld.
 
-# Gerelateerde documentatie
+Openstaande punten worden opgenomen in BACKLOG.md.
 
-Kern:
-
-- README.md
-- AGENTS.md
-- PROJECT_STATUS.md
-- BACKLOG.md
-- ARCHITECTURE.md
-- AI_RULES.md
-
-Aanvullend:
-
-- CHANGELOG.md
-- CHECKPOINT.md
-- DOCUMENTATION_ARCHITECTURE.md
-- ROADMAP.md
-- RELEASE_NOTES.md
-- WORDPRESS_ARCHITECTURE.md
+De actuele status en uitgevoerde validaties worden bijgewerkt in PROJECT_STATUS.md en CHECKPOINT.md.
 
 ---
 
-# Opmerking
+# Documentatieonderhoud
 
-CONTRIBUTING.md beschrijft de algemene ontwikkelrichtlijnen van RZD Builder.
+CONTRIBUTING.md wordt bijgewerkt wanneer:
 
-De dagelijkse ontwikkelworkflow is vastgelegd in **AI_RULES.md**.
+- ontwikkelrichtlijnen wijzigen;
+- het bijdrageproces wijzigt;
+- projectafspraken voor bijdragers wijzigen.
 
-De startprocedure voor AI-coding agents is beschreven in **AGENTS.md**.
+Het document bevat geen:
+
+- AI-specifieke werkwijze;
+- actuele taken;
+- projectstatus;
+- technische architectuurdetails;
+- wijzigingshistorie.
+
+Voor AI-specifieke instructies wordt verwezen naar AI_RULES.md.
+
+---
+
+# Uitgangspunt
+
+Wijzigingen aan RZD Builder worden gecontroleerd en beperkt uitgevoerd.
+
+De projectdocumentatie moet overeenkomen met de daadwerkelijk uitgevoerde werkzaamheden.
+
+Onbevestigde implementatie, tests of live-integratie worden niet als afgerond of gevalideerd beschreven.

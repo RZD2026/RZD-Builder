@@ -1,0 +1,147 @@
+# RZD Builder – Werkplan / overdracht
+
+Bijgewerkt: 05-11-2026\
+Status: Documentatiegroep 4 beoordeeld
+
+## 1. Werkwijze
+
+- We behandelen documenten één voor één.
+- Eerst beoordelen, daarna pas aanpassen.
+- Alleen noodzakelijke wijzigingen uitvoeren.
+- Geen tests, externe Airtable-/WordPress-aanroepen of Git-mutaties zonder expliciete toestemming.
+- Aanwezigheid van een testbestand betekent niet dat de test is uitgevoerd.
+- Documentstructuur en nummering behouden.
+- Dit werkplan is een overdracht. Het betekent niet dat lokale bestanden in VS Code zijn aangepast.
+
+## 2. Documenten beoordeeld
+
+| Document                             | Status     |
+| ------------------------------------ | ---------- |
+| `docs/PROJECT_STATUS.md`             | Beoordeeld |
+| `docs/CHECKPOINT.md`                 | Beoordeeld |
+| `docs/CHANGELOG.md`                  | Beoordeeld |
+| `docs/ARCHITECTURE.md`               | Beoordeeld |
+| `docs/WORDPRESS_ARCHITECTURE.md`     | Beoordeeld |
+| `docs/DOCUMENTATION_ARCHITECTURE.md` | Beoordeeld |
+
+## 3. Bevindingen documentatiegroep 4
+
+### DOCUMENTATION_ARCHITECTURE.md
+
+- De rollen van de documentatie zijn duidelijk beschreven.
+- `FIELD_SPECIFICATION` is aanvullend en niet de runtime-bron van waarheid.
+- De runtime-bron van waarheid blijft de daadwerkelijke code en Airtable-configuratie.
+- De verschillende documentrollen moeten gescheiden blijven.
+- De lifecycle Concept → Review → Actief → Gearchiveerd mist duidelijke archiveringscriteria.
+- De documentatie-index moet overeenkomen met de werkelijk aanwezige documenten.
+
+### CHECKPOINT.md
+
+- De tekst over wachten op toestemming voor de volgende documentatiegroep is verouderd.
+- De checkpoint moet aansluiten op de huidige voortgang.
+- Historische overdrachtsblokken bevatten oude taken en statusinformatie.
+- De volgende stap moet duidelijk en actueel worden beschreven.
+
+### WORDPRESS_ARCHITECTURE.md
+
+- De beschreven WordPress-flow betreft het maken en hergebruiken van conceptpagina's.
+- `--publish` maakt in deze flow een WordPress-concept aan; het bewijst geen openbare publicatie.
+- Bij hergebruik van een bestaande pagina wordt de status niet automatisch teruggezet.
+- Een bestaande openbare pagina kan daardoor openbaar blijven.
+- Een handmatige controle van de bestaande pagina-status blijft noodzakelijk.
+- Mocktests bewijzen geen live Airtable–WordPress-integratie.
+- De uiteindelijke WordPress-weergave is nog niet volledig gevalideerd.
+
+## 4. Bekende projectstatus
+
+### A002
+
+Openstaand. Actuele onderbouwing/evidence moet nog worden verzameld.
+
+### A003
+
+Beschreven als uitgevoerd in de huidige worktree.
+
+- Er is nog een verwijdering van `services/fieldDefinition.js` die niet is gecommit.
+- De historische builder-kopie is niet teruggevonden.
+- De status moet daarom niet worden geïnterpreteerd als volledig afgerond en veilig overgedragen.
+
+### A004
+
+Gedeeltelijk uitgevoerd.
+
+- CampingAggregate lokale preview.
+- WordPress-concept aanmaken/hergebruiken.
+- Geen openbare publicatie bevestigd.
+
+### A005
+
+Gedeeltelijk uitgevoerd.
+
+- WordPress-conceptflow beschreven.
+- Geen volledige end-to-end live test bevestigd.
+
+### Algemene technische status
+
+- Geen volledige live Airtable–WordPress end-to-end-validatie bevestigd.
+- De bestaande RZD 5.1-tabellen en gegevens blijven behouden.
+- Er wordt geen nieuwe Airtable-base of nieuwe tabel verondersteld.
+- Lokale/mocktests zijn geen bewijs van live integratie.
+- Alleen daadwerkelijk uitgevoerde controles mogen als testresultaat worden vermeld.
+
+## 5. Openstaande documentatiepunten
+
+1. De resterende documentatie één voor één beoordelen.
+2. `CHECKPOINT.md` later gecontroleerd actualiseren.
+3. Verouderde tekst over toestemming voor de volgende groep verwijderen.
+4. Actuele status, uitgevoerde controles, open punten en volgende taak vastleggen.
+5. `PROJECT_STATUS.md`, `CHANGELOG.md` en `CHECKPOINT.md` pas aanpassen wanneer de review formeel is afgerond en daarvoor toestemming is gegeven.
+6. Controleren of de documentatie-index overeenkomt met de aanwezige documenten.
+7. De documentrollen duidelijk houden en dubbele statusinformatie beperken.
+8. Beslissen of archiveringscriteria aan `DOCUMENTATION_ARCHITECTURE.md` moeten worden toegevoegd.
+
+## 6. WordPress aandachtspunten
+
+- Nieuwe pagina's worden als concept aangemaakt.
+- Bestaande pagina's kunnen worden hergebruikt.
+- Bij meerdere matches ontstaat een conflict.
+- `--update-existing` is een afzonderlijke update-flow.
+- `--dry-run` voert geen update uit.
+- Een bestaande pagina kan openbaar blijven wanneer deze wordt hergebruikt.
+- Pagina-ID 1554 en de eerder beschreven status zijn historische gegevens en moeten opnieuw worden gecontroleerd voordat ze als actuele status worden gebruikt.
+
+## 7. RZD-inhoudelijke uitgangspunten
+
+- Geen automatische toegankelijkheidsbeoordeling.
+- Geen automatische conclusie dat een locatie geschikt is voor rolstoelgebruik.
+- Concrete feiten en herkomst van informatie behouden.
+- Ontbrekende gegevens niet invullen op basis van aannames.
+- `No`, `false` en onbekend blijven afzonderlijke waarden.
+- AI-informatie en eigen waarnemingen blijven herkenbaar onderscheiden.
+- “Beoordeeld” betekent de status van de beoordeling.
+- No Surprises is geen score.
+- Accommodaties worden als Pages beschreven; nieuws en artikelen als Posts.
+- De uiteindelijke WordPress-layout is nog niet volledig gevalideerd.
+
+## 8. Volgende stappen
+
+1. Het volgende document uploaden en afzonderlijk beoordelen.
+2. De resterende documentatie-review afronden.
+3. De actuele projectstatus en openstaande punten consolideren.
+4. Daarna, met toestemming, de checkpoint gecontroleerd actualiseren.
+5. Vervolgens status- en changelog aanpassen waar dat inhoudelijk nodig is.
+6. Pas daarna bepalen welke technische controles of tests nodig zijn.
+
+## 9. Niet uitgevoerd
+
+- Geen lokale projectbestanden aangepast.
+- Geen tests uitgevoerd.
+- Geen Git-mutaties uitgevoerd.
+- Geen externe Airtable- of WordPress-aanroepen uitgevoerd.
+- Geen live publicatie uitgevoerd.
+
+## 10. Hervatten
+
+Laatste beoordeelde document: `docs/DOCUMENTATION_ARCHITECTURE.md`
+
+Volgende actie: upload het volgende document voor afzonderlijke beoordeling. Daarna wordt de centrale overdracht bijgewerkt op basis van de daadwerkelijk beoordeelde documenten.

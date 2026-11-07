@@ -1,0 +1,205 @@
+# RZD Builder – Ontwikkelplan
+
+Versie 1.0 · 5 november 2026
+
+## 1. Doel van het ontwikkelplan
+
+Dit document beschrijft de verdere ontwikkeling van RZD Builder: waar het project momenteel staat, welke onderdelen nog ontwikkeld moeten worden en welke stappen nodig zijn om tot een werkende, betrouwbare toepassing te komen.
+
+Het doel is om de ontwikkeling overzichtelijk te houden, bestaande functionaliteit te behouden en te voorkomen dat werkzaamheden dubbel worden uitgevoerd.
+
+## 2. Huidige projectstatus
+
+RZD Builder is opgebouwd rond de bestaande RZD 5.1 Airtable-structuur en de WordPress-integratie.
+
+De ontwikkeling richt zich onder andere op:
+
+- Het beheren en verwerken van campinggegevens.
+- Het synchroniseren van gegevens met de bestaande Airtable-structuur.
+- Het verwerken van campinginformatie voor WordPress.
+- Het ontwikkelen van een betrouwbare Content Engine.
+- Het verbeteren van de preview- en conceptpagina's.
+- Het bewaken van de toegankelijkheidsinformatie en de herkomst van gegevens.
+
+De bestaande Airtable-base en tabellen blijven behouden. Er wordt niet uitgegaan van een nieuwe base of nieuwe tabellen.
+
+## 3. Ontwikkelstatus
+
+| Onderdeel | Status                                                                         |
+| --------- | ------------------------------------------------------------------------------ |
+| A001      | Afgerond                                                                       |
+| A002      | Openstaand                                                                     |
+| A003      | Uitgevoerd in huidige worktree, maar nog niet volledig afgerond qua overdracht |
+| A004      | Gedeeltelijk uitgevoerd                                                        |
+| A005      | Gedeeltelijk uitgevoerd                                                        |
+
+### A002 – Openstaand
+
+De actuele status en onderbouwing moeten opnieuw worden vastgesteld.
+
+### A003 – Uitgevoerd, overdracht nog open
+
+De functionaliteit is volgens de huidige projectinformatie uitgevoerd.
+
+Er staat nog een verwijdering van `services/fieldDefinition.js` open die niet is gecommit.
+
+De historische builder-kopie is niet teruggevonden.
+
+### A004 – CampingAggregate
+
+De volgende onderdelen zijn beschreven als aanwezig:
+
+- CampingAggregate.
+- Lokale preview.
+- WordPress-concept aanmaken.
+- Bestaande WordPress-pagina's hergebruiken.
+
+Openstaand:
+
+- De volledige werking controleren.
+- Bestaande pagina's en hun status controleren.
+- Vaststellen welke onderdelen nog ontbreken.
+- Live integratie niet als bewezen beschouwen zolang deze niet daadwerkelijk is getest.
+
+### A005 – WordPress-integratie
+
+De conceptflow is gedeeltelijk aanwezig.
+
+Openstaand:
+
+- De volledige flow controleren.
+- De werking van bestaande en nieuwe pagina's controleren.
+- De verschillen tussen concept, update en openbare publicatie vastleggen.
+- Vaststellen welke controles nog nodig zijn voor een betrouwbare integratie.
+
+## 4. Ontwikkelgebieden
+
+### 4.1 Airtable en gegevensstructuur
+
+Doel: bestaande gegevens betrouwbaar verwerken zonder de huidige RZD 5.1-structuur te veranderen.
+
+Aandachtspunten:
+
+- Bestaande tabellen en velden behouden.
+- Gegevens correct verwerken.
+- Ontbrekende gegevens niet automatisch invullen.
+- Bestaande waarden en beoordelingen behouden.
+- Controleren of de verwerking overeenkomt met de actuele gegevensstructuur.
+- Voorkomen dat wijzigingen onbedoeld bestaande gegevens overschrijven.
+
+### 4.2 CampingAggregate
+
+Doel: campinggegevens op een consistente manier verwerken voor preview en WordPress.
+
+Aandachtspunten:
+
+- Campinggegevens correct verzamelen.
+- Gegevensstructuur controleren.
+- Preview en WordPress-verwerking gescheiden houden.
+- Controleren of alle relevante campinginformatie wordt meegenomen.
+- Ontbrekende informatie herkenbaar houden.
+
+### 4.3 Content Engine
+
+Doel: campinginformatie omzetten naar bruikbare RZD-content.
+
+Aandachtspunten:
+
+- Informatie correct verwerken.
+- Feiten en beoordelingen gescheiden houden.
+- Geen automatische toegankelijkheidsconclusies trekken.
+- Geen marketinginformatie gebruiken als vervanging voor concrete gegevens.
+- De bestaande RZD-inhoudelijke uitgangspunten behouden.
+
+### 4.4 WordPress-integratie
+
+Doel: campinginformatie gecontroleerd verwerken in WordPress.
+
+Aandachtspunten:
+
+- Nieuwe pagina's als concept aanmaken.
+- Bestaande pagina's correct herkennen.
+- Dubbele pagina's voorkomen.
+- Bestaande pagina's niet onbedoeld overschrijven.
+- Status van bestaande pagina's controleren.
+- Concept, update en openbare publicatie duidelijk onderscheiden.
+
+Openstaand: de volledige live Airtable–WordPress-flow is nog niet bevestigd.
+
+### 4.5 Preview
+
+Doel: campinginformatie vooraf kunnen controleren voordat deze in WordPress wordt verwerkt.
+
+Aandachtspunten:
+
+- Preview moet de verwerkte campinggegevens tonen.
+- Preview mag niet automatisch als openbare publicatie worden beschouwd.
+- Fouten en ontbrekende gegevens moeten herkenbaar zijn.
+- Preview en WordPress-flow moeten gescheiden blijven.
+
+### 4.6 Mobiele werking
+
+Doel: RZD Builder bruikbaar maken voor mobiel gebruik.
+
+De huidige projectinformatie beschrijft lokale controles met mocks, tijdelijke opslag en dry-run.
+
+Nog niet bevestigd:
+
+- Een volledige browser-naar-Airtable-test.
+- Automatische synchronisatie.
+- Een volledige live test van de mobiele workflow.
+
+## 5. Ontwikkelvolgorde
+
+1. Huidige status vaststellen
+
+   A002–A005 controleren en vastleggen wat daadwerkelijk aanwezig is.
+2. Openstaande technische punten oplossen
+
+   Eerst bestaande problemen en onvolledige onderdelen aanpakken.
+3. CampingAggregate controleren
+
+   De verwerking van campinggegevens en preview controleren.
+4. WordPress-flow controleren
+
+   Concept aanmaken, bestaande pagina herkennen en updates controleren.
+5. Content Engine verder ontwikkelen
+
+   De gegevensverwerking en inhoudelijke regels controleren.
+6. Mobiele werking beoordelen
+
+   Vaststellen welke mobiele onderdelen nog ontbreken.
+7. Integratie valideren
+
+   Pas wanneer de onderdelen voldoende stabiel zijn, de benodigde integratiecontroles uitvoeren.
+
+## 6. Belangrijke ontwikkelregels
+
+- Bestaande Airtable-gegevens blijven behouden.
+- Geen nieuwe Airtable-base of tabellen zonder expliciete beslissing.
+- Geen automatische publicatie zonder controle.
+- Geen toegankelijkheidsconclusies op basis van ontbrekende gegevens.
+- Preview, concept en openbare publicatie blijven afzonderlijke stappen.
+- Bestaande functionaliteit niet verwijderen zonder controle op afhankelijkheden.
+- Tests alleen als uitgevoerd rapporteren.
+- Mocktests niet presenteren als live integratietests.
+
+## 7. Openstaande vragen
+
+1. Welke onderdelen van A002 zijn nog daadwerkelijk open?
+2. Is A003 volledig overdraagbaar en kan de verwijdering worden afgerond?
+3. Welke onderdelen van CampingAggregate moeten nog worden gecontroleerd?
+4. Welke WordPress-functionaliteit ontbreekt nog?
+5. Welke onderdelen van de Content Engine zijn nog niet afgerond?
+6. Welke mobiele functionaliteit moet nog worden ontwikkeld?
+7. Welke live integratiecontroles zijn noodzakelijk voordat RZD Builder als betrouwbaar kan worden beschouwd?
+
+## 8. Volgende ontwikkelstap
+
+Eerst de actuele technische status van A002–A005 vaststellen.
+
+Daarna bepalen we op basis van de daadwerkelijke projectbestanden welke ontwikkeling als eerste moet worden uitgevoerd.
+
+De huidige documentatie-review is ondersteunend aan dit ontwikkelplan, maar vormt niet de hoofdontwikkeling van RZD Builder.
+
+Status: concept ontwikkelplan. De technische onderdelen en volgorde moeten nog worden bevestigd aan de hand van de actuele projectbestanden.

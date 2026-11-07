@@ -1,17 +1,21 @@
+
 <!-- ========================================================================== -->
+
 <!-- RZD Builder                                                                -->
-<!-- DOCUMENTATION ARCHITECTURE                                                  -->
+
+<!-- DOCUMENTATION ARCHITECTURE                                                 -->
+
 <!-- ========================================================================== -->
 
 # DOCUMENTATION ARCHITECTURE
 
 | Eigenschap | Waarde |
-|------------|--------|
+|---|---|
 | Document | DOCUMENTATION_ARCHITECTURE.md |
 | Project | RZD Builder |
 | Versie | 1.0 |
 | Status | Actief |
-| Laatste wijziging | 04-08-2026 |
+| Laatste wijziging | 06-11-2026 |
 | Eigenaar | Documentatiearchitectuur |
 
 ---
@@ -30,7 +34,7 @@
 10. Kernregel
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 1                                                                -->
+<!-- HOOFDSTUK 1                                                               -->
 <!-- DOEL                                                                        -->
 <!-- ========================================================================== -->
 
@@ -49,8 +53,8 @@ Het document legt vast:
 DOCUMENTATION_ARCHITECTURE.md is de bron van waarheid voor de structuur van de documentatiesuite.
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 2                                                                -->
-<!-- ALGEMENE ONTWERPPRINCIPES                                                  -->
+<!-- HOOFDSTUK 2                                                               -->
+<!-- ALGEMENE ONTWERPPRINCIPES                                                   -->
 <!-- ========================================================================== -->
 
 # Hoofdstuk 2 – Algemene ontwerpprincipes
@@ -86,8 +90,8 @@ Verwijzen heeft altijd de voorkeur boven herhalen.
 Een document verwijst naar een ander document wanneer aanvullende, actuele of historische informatie daar wordt beheerd.
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 3                                                                -->
-<!-- DOCUMENTATIESUITE                                                          -->
+<!-- HOOFDSTUK 3                                                               -->
+<!-- DOCUMENTATIESUITE                                                           -->
 <!-- ========================================================================== -->
 
 # Hoofdstuk 3 – Documentatiesuite
@@ -95,6 +99,7 @@ Een document verwijst naar een ander document wanneer aanvullende, actuele of hi
 De documentatiesuite bestaat uit de volgende documenten:
 
 - README.md
+- AGENTS.md
 - DOCUMENTATION_ARCHITECTURE.md
 - ARCHITECTURE.md
 - AI_RULES.md
@@ -107,17 +112,23 @@ De documentatiesuite bestaat uit de volgende documenten:
 - CONTRIBUTING.md
 - RELEASE_NOTES.md
 
+Deze lijst beschrijft de actieve suite die vanuit `docs/README.md` wordt geïndexeerd.
+
+## Aanvullende en historische bestanden
+
+`FIELD_SPECIFICATION.md` bestaat als beheerd referentiedocument en wordt via `developer/documentation/documentationMapping.js` sectiegericht gegenereerd. Het is momenteel niet opgenomen in `docs/README.md`; behandel het daarom als aanvullend en niet als runtime-bron van waarheid. De daadwerkelijke mapping en het runtimegedrag worden bepaald door de actuele code en Airtable-structuur. De tekst in FIELD_SPECIFICATION.md die zichzelf als leidend aanmerkt, is daarmee niet zelfstandig bewijs dat de runtime dit document volgt.
+
+`SESSION_STATE.md` is een historische momentopname en geen actuele projectstatus of sessieoverdracht. Gebruik voor de actuele status `PROJECT_STATUS.md`, `BACKLOG.md` en `CHECKPOINT.md`.
+
+Rootbestanden buiten `docs/`, waaronder eventuele gelijknamige status- en historiebestanden, behoren niet tot deze documentatiesuite. De documenten onder `docs/` zijn de canonieke documentatiekopieën; eventuele duplicaten moeten afzonderlijk worden afgestemd.
+
 ## Historisch ontwerpdocument
 
-Opzet documentatiesuite.txt is een historisch ontwerpdocument.
-
-Dit document behoort niet meer tot de actieve documentatiesuite.
-
-DOCUMENTATION_ARCHITECTURE.md is de officiële opvolger.
+`archive/DOCUMENTATION_INITIAL_DESIGN.md` is het aanwezige historische ontwerpdocument. Het behoort niet tot de actieve documentatiesuite; DOCUMENTATION_ARCHITECTURE.md beschrijft de huidige structuur.
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 4                                                                -->
-<!-- DOCUMENTHIËRARCHIE                                                         -->
+<!-- HOOFDSTUK 4                                                               -->
+<!-- DOCUMENTHIËRARCHIE                                                          -->
 <!-- ========================================================================== -->
 
 # Hoofdstuk 4 – Documenthiërarchie
@@ -125,6 +136,7 @@ DOCUMENTATION_ARCHITECTURE.md is de officiële opvolger.
 ```text
 README.md
 │
+├── AGENTS.md
 ├── DOCUMENTATION_ARCHITECTURE.md
 ├── ARCHITECTURE.md
 ├── AI_RULES.md
@@ -139,8 +151,8 @@ README.md
 ```
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 5                                                                -->
-<!-- ROLLEN VAN DOCUMENTEN                                                      -->
+<!-- HOOFDSTUK 5                                                               -->
+<!-- ROLLEN VAN DOCUMENTEN                                                       -->
 <!-- ========================================================================== -->
 
 # Hoofdstuk 5 – Rollen van documenten
@@ -168,6 +180,30 @@ README.md is het ingangspunt van de documentatiesuite.
 ### Bijwerken
 
 Bij wijzigingen in de documentatiestructuur of documentatie-index.
+
+---
+
+## AGENTS.md
+
+### Doel
+
+AGENTS.md is het praktische startpunt voor AI-coding agents en verwijst naar de actuele startdocumenten en werkwijze.
+
+### Officiële inhoud
+
+- startvolgorde;
+- selectie van aanvullende documentatie;
+- verwijzingen naar geldende ontwikkelrichtlijnen.
+
+### Hoort niet in dit document
+
+- technische architectuurdetails;
+- actuele projectstatus of volledige backlog;
+- testresultaten of wijzigingshistorie.
+
+### Bijwerken
+
+Wanneer de startsessie-werkwijze of de documentatieverwijzingen voor agents veranderen.
 
 ---
 
@@ -331,9 +367,11 @@ CHECKPOINT.md bevat de actuele stand van zaken na een werksessie.
 ### Officiële inhoud
 
 - laatste afgeronde werkzaamheden;
-- laatste succesvolle test;
+- validaties die in de laatste werksessie daadwerkelijk zijn uitgevoerd, inclusief niveau en scope; als er niets is uitgevoerd, dat expliciet vermelden;
 - volgende taak;
 - relevante overdrachtsinformatie voor de volgende sessie.
+
+Een testbestand of eerder testresultaat is geen bewijs dat een test in de huidige sessie is uitgevoerd. Onderscheid implementatie, mocktest, lokale controle en live-validatie.
 
 ### Hoort niet in dit document
 
@@ -414,10 +452,12 @@ WORDPRESS_ARCHITECTURE.md beschrijft de WordPress-integratie van RZD Builder.
 
 ### Officiële inhoud
 
-- WordPress-publicatiepipeline;
-- publicatiemodel;
+- gecontroleerde WordPress Page-conceptflow;
+- payloadvoorbereiding, bestaande Page-herkenning en expliciete updategrenzen;
 - Airtable-naar-WordPress-veldtoewijzing;
 - WordPress-specifieke toekomstige uitbreidingen.
+
+De huidige codeflow is een draft-flow en is geen bewijs van openbare publicatie of live-validatie.
 
 ### Hoort niet in dit document
 
@@ -483,9 +523,21 @@ RELEASE_NOTES.md bevat het release-overzicht.
 
 Bij een release.
 
+---
+
+## FIELD_SPECIFICATION.md (aanvullend referentiedocument)
+
+### Doel
+
+FIELD_SPECIFICATION.md bevat een beheerde veldstructuur- en RZD 5.1-mappingreferentie. Het bestand is momenteel niet opgenomen in de actieve index van `docs/README.md`.
+
+### Grenzen
+
+De specificatie is geen uitvoerbare schema- of mapperconfiguratie. Runtimegedrag moet worden vastgesteld aan de hand van de actuele code en Airtable-structuur. Een wijziging aan de documentgeneratie of de positie van dit bestand in de officiële suite vereist afzonderlijke afstemming.
+
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 6                                                                -->
-<!-- ÉÉN BRON PER INFORMATIETYPE                                                -->
+<!-- HOOFDSTUK 6                                                               -->
+<!-- ÉÉN BRON PER INFORMATIETYPE                                                 -->
 <!-- ========================================================================== -->
 
 # Hoofdstuk 6 – Eén bron per informatietype
@@ -494,20 +546,23 @@ Bij een release.
 |---|---|
 | Documentatiestructuur, documentrollen en onderhoudsregels | DOCUMENTATION_ARCHITECTURE.md |
 | Navigatie en leesvolgorde van documentatie | README.md |
+| Startsessie en documentselectie voor AI-agents | AGENTS.md |
 | Technische architectuur en componenten | ARCHITECTURE.md |
 | Werkwijze voor AI | AI_RULES.md |
 | Huidige projectstatus | PROJECT_STATUS.md |
 | Openstaande en lopende werkzaamheden | BACKLOG.md |
-| Laatste sessiestatus, test en volgende taak | CHECKPOINT.md |
+| Laatste sessiestatus, uitgevoerde validaties en volgende taak | CHECKPOINT.md |
 | Afgeronde wijzigingshistorie | CHANGELOG.md |
 | Toekomstige ontwikkelrichting en fasering | ROADMAP.md |
-| WordPress-integratie en WordPress-veldtoewijzing | WORDPRESS_ARCHITECTURE.md |
+| WordPress-conceptflow en WordPress-veldtoewijzing | WORDPRESS_ARCHITECTURE.md |
 | Ontwikkelrichtlijnen voor bijdragers | CONTRIBUTING.md |
 | Release-overzicht en wijzigingen per release | RELEASE_NOTES.md |
+| Aanvullende veldstructuur- en mappingreferentie | FIELD_SPECIFICATION.md (niet runtime-bron) |
+| Uitgevoerde test-/mock-/lokale-/live-validatieclaims | PROJECT_STATUS.md en CHECKPOINT.md; vermeld niveau en scope |
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 7                                                                -->
-<!-- VERWIJZINGSREGELS                                                          -->
+<!-- HOOFDSTUK 7                                                               -->
+<!-- VERWIJZINGSREGELS                                                           -->
 <!-- ========================================================================== -->
 
 # Hoofdstuk 7 – Verwijzingsregels
@@ -524,15 +579,15 @@ Het document verwijst in dat geval naar de officiële bron.
 
 - Een open taak wordt opgenomen in BACKLOG.md, niet in PROJECT_STATUS.md of CHECKPOINT.md.
 - Een afgeronde belangrijke wijziging wordt opgenomen in CHANGELOG.md.
-- De laatste sessiestatus en test worden opgenomen in CHECKPOINT.md.
+- De laatste sessiestatus en daadwerkelijk uitgevoerde validaties worden opgenomen in CHECKPOINT.md, met onderscheid tussen mock-, lokale en live-controles.
 - Architectuurdetails worden opgenomen in ARCHITECTURE.md.
 - Toekomstige fasering wordt opgenomen in ROADMAP.md.
 - WordPress-specifieke architectuur wordt opgenomen in WORDPRESS_ARCHITECTURE.md.
 - AI-werkwijze wordt opgenomen in AI_RULES.md.
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 8                                                                -->
-<!-- DOCUMENTLEVENSCYCLUS                                                       -->
+<!-- HOOFDSTUK 8                                                               -->
+<!-- DOCUMENTLEVENSCYCLUS                                                        -->
 <!-- ========================================================================== -->
 
 # Hoofdstuk 8 – Documentlevenscyclus
@@ -554,7 +609,7 @@ Actief
 Gearchiveerd
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 9                                                                -->
+<!-- HOOFDSTUK 9                                                               -->
 <!-- ONDERHOUD VAN DE DOCUMENTATIESUITE                                         -->
 <!-- ========================================================================== -->
 
@@ -595,8 +650,8 @@ Bestaande wijzigingsregels worden niet overschreven.
 Wijzigingen in documentrollen, documentstructuur, informatietypen of onderhoudsregels worden vastgelegd in DOCUMENTATION_ARCHITECTURE.md.
 
 <!-- ========================================================================== -->
-<!-- HOOFDSTUK 10                                                               -->
-<!-- KERNREGEL                                                                  -->
+<!-- HOOFDSTUK 10                                                              -->
+<!-- KERNREGEL                                                                   -->
 <!-- ========================================================================== -->
 
 # Hoofdstuk 10 – Kernregel

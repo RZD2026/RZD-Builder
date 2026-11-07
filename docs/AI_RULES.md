@@ -1,8 +1,7 @@
-
 # AI_RULES
 
 | Eigenschap | Waarde |
-|------------|--------|
+|---|---|
 | Project | RZD Builder |
 | Document | AI_RULES.md |
 | Status | Actief |
@@ -35,6 +34,34 @@ Iedere wijziging verloopt volgens dezelfde volgorde.
 7. Checkpoint maken
 
 Er worden geen stappen overgeslagen.
+
+---
+
+# Copilot-werkwijze
+
+- Eerst analyseren of de wijziging werkelijk nodig is.
+- Eén concrete wijziging per Copilot-opdracht.
+- Normaal één bestand tegelijk.
+- Bestaande code, services en tests hergebruiken.
+- Geen nieuwe bestanden of hulpfuncties zonder noodzaak.
+- Geen brede refactors of ongevraagde optimalisaties.
+- Alleen noodzakelijke tests uitvoeren.
+- Bij een mislukte patch eerst de actuele bestandsinhoud gebruiken.
+- Documentatie alleen op afgesproken checkpoints bijwerken.
+- Bij twijfel eerst stoppen en beoordelen.
+
+Tot 11-10-2026 mag beschikbare Copilot-capaciteit actief worden benut vanwege de naderende vakantie, maar onnodig creditgebruik blijft vermijden.
+
+---
+
+# WordPress-werkwijze
+
+- Bestaande RZD-layout blijft leidend.
+- Geen redesign zonder expliciete opdracht.
+- Eerst structuur, daarna styling.
+- Kleine controleerbare wijzigingen.
+- Desktop en mobiel controleren.
+- GenerateBlocks/Blocksy alleen gericht aanpassen.
 
 ---
 
@@ -179,9 +206,9 @@ De AI bewaakt logische stopmomenten.
 
 Bij voorkeur wordt een sessie beëindigd nadat een volledige taak is afgerond:
 
-Analyse
-→ Wijziging
-→ Test
+Analyse  
+→ Wijziging  
+→ Test  
 → Documentatie
 
 Er wordt bij voorkeur niet gestopt:
@@ -212,27 +239,27 @@ Deze bevat minimaal:
 
 Voordat een nieuwe taak start vermeldt de AI altijd:
 
-Bestand:
+**Bestand:**
 
 ...
 
-Doel:
+**Doel:**
 
 ...
 
-Geschatte duur:
+**Geschatte duur:**
 
 ...
 
-Verwacht stopmoment:
+**Verwacht stopmoment:**
 
 ...
 
-Benodigde test:
+**Benodigde test:**
 
 ...
 
-Documentatie bijwerken:
+**Documentatie bijwerken:**
 
 Ja / Nee
 
@@ -245,6 +272,8 @@ Pas daarna wordt met de analyse begonnen.
 Wanneer een lopende taak binnen korte tijd volledig kan worden afgerond, adviseert de AI deze eerst af te ronden voordat aan een nieuwe taak wordt begonnen.
 
 Voorkeur gaat uit naar volledig afgeronde taken boven meerdere half afgeronde taken.
+
+---
 
 ## 7. Geen aannames
 

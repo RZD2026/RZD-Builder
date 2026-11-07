@@ -63,7 +63,9 @@ Deze documenten vormen samen de minimale context voor iedere ontwikkelsessie.
 ## Stap 2 – Taak bepalen
 
 Bepaal vervolgens:
-
+- welk bestand als eerste wordt behandeld;
+- welke testen na afloop uitgevoerd moeten worden;
+- of documentatie moet worden bijgewerkt.
 - de actuele projectstatus;
 - de eerstvolgende taak;
 - welke onderdelen van de architectuur relevant zijn;
@@ -99,6 +101,7 @@ Respecteer altijd de architectuur uit:
 Na iedere afgeronde taak wordt eerst bepaald welke documentatie daadwerkelijk door de wijziging is geraakt.
 
 Werk uitsluitend de documenten bij waarvoor een inhoudelijke wijziging noodzakelijk is.
+Historische informatie wordt uitsluitend toegevoegd aan CHANGELOG.md en nooit overschreven.
 
 Pas nooit documentatie aan zonder inhoudelijke aanleiding.
 
@@ -135,6 +138,7 @@ Bij iedere taak:
 6. Voer de benodigde testen uit.
 7. Bepaal welke documentatie moet worden bijgewerkt.
 8. Geef een overzicht van alle gewijzigde bestanden.
+9. Werk CHECKPOINT.md bij wanneer de sessie wordt beëindigd.
 
 ---
 
@@ -173,8 +177,10 @@ Aanvullend:
 
 # Opmerking
 
-AGENTS.md is uitsluitend bedoeld als **ingangspunt voor AI-coding agents**.
+# Opmerking
 
-Dit document bevat geen projectstatus, geen architectuurbeschrijving en geen ontwikkelregels.
+AGENTS.md fungeert uitsluitend als toegangspunt voor AI-coding agents.
 
-Die informatie blijft ondergebracht in de daarvoor aangewezen documenten volgens de documentatiearchitectuur van RZD Builder.
+Alle projectinformatie blijft ondergebracht in de daarvoor aangewezen documenten van de documentatiesuite.
+
+Dit document verwijst naar die informatie, maar dupliceert of vervangt deze niet.

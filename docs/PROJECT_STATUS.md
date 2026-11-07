@@ -1,8 +1,13 @@
 # PROJECT STATUS
 
-**Project:** RZD Builder
-
-Dit document beschrijft de actuele status van het project. Het dient als centraal dashboard voor ontwikkelaars en AI-assistenten en wordt aan het begin van iedere ontwikkelsessie geraadpleegd.
+| Eigenschap | Waarde |
+|---|---|
+| Project | RZD Builder |
+| Document | PROJECT_STATUS.md |
+| Status | Actief |
+| Rol | Centraal projectdashboard |
+| Laatste wijziging | 06-11-2026 |
+| Eigenaar | Pascalle Vroegop |
 
 ---
 
@@ -14,42 +19,122 @@ RZD Builder
 
 ## Versie
 
-Builder 2.0 Final (Stabiele basis)
+RZD Builder 2.0 is de stabiele basis.
+Builder 3.0 is actief in ontwikkeling.
 
 ## Doel
 
-RZD Builder is het ontwikkelplatform voor **Reizen zonder Drempels (RZD)**.
+RZD Builder is het ontwikkelplatform voor Reizen zonder Drempels (RZD).
 
-De Builder beheert niet alleen Airtable-schema's, maar vormt de centrale ontwikkelomgeving voor het complete RZD-platform.
+De Builder vormt de centrale ontwikkelomgeving voor het beheren, valideren, verwerken en synchroniseren van gegevens binnen het RZD-platform.
 
-De Builder werkt vanuit één Canon Model en synchroniseert dit naar meerdere platformen.
+De Builder werkt vanuit het Canon Model.
+
+De bestaande RZD 5.1 Airtable-structuur blijft de actieve database.
+
+Airtable is één van de synchronisatiedoelen. Het Canon Model vormt het uitgangspunt voor verdere ontwikkeling.
 
 ---
 
-# Huidige Status
+# Huidige status
 
-| Onderdeel    | Status                   |
-| ------------ | ------------------------ |
-| Ontwikkeling | 🟢 Actief                |
-| Builder 2.0  | 🟢 Afgerond              |
-| Builder 3.0  | 🟢 Actief                |
-| Canon Model  | 🟢 Actief                |
-| Teststatus   | 🟢 Alle testen succesvol |
-| Documentatie | 🟢 Actief onderhouden    |
+| Onderdeel | Status |
+|---|---|
+| Ontwikkeling | Actief |
+| Builder 2.0 | Stabiele basis |
+| Builder 3.0 | Actief in ontwikkeling |
+| Canon Model | Actief |
+| Content Engine | In ontwikkeling |
+| Documentation Engine | Gevalideerd tot en met fase 3G |
+| CampingAggregate | Lokale preview en draft-flow aanwezig |
+| WordPress | Draft-flow; geen openbare publicatie aangetoond |
+| Mobiele review | Lokale reviewketen en handmatige synchronisatie aanwezig |
+| Teststatus | Gerichte tests; geen actuele volledige suite |
+| Documentatie | Actief onderhouden |
 
 ---
 
 # Samenvatting
 
-Builder 2.0 is functioneel afgerond.
+Builder 2.0 is de stabiele basis van het project.
 
-Alle kernonderdelen zijn geïmplementeerd en succesvol getest.
+Nieuwe functionaliteit wordt ontwikkeld binnen Builder 3.0.
 
-De resterende verschillen bestaan uitsluitend uit inhoudelijke metadata (zoals descriptions) en zijn geen programmeerfouten.
+De huidige ontwikkelfase richt zich op de Content Engine, het Canon Model en de koppeling met de bestaande RZD 5.1 Airtable-structuur.
 
-Vanaf dit punt wordt alle nieuwe functionaliteit ontwikkeld binnen Builder 3.0.
+De Canon-naar-RZD 5.1 tabelmapping is vastgesteld en in de Builder vastgelegd.
 
-De huidige ontwikkelfase richt zich op de Content Engine en de koppeling van het Canon Model aan de bestaande RZD 5.1 Airtable-structuur.
+De Documentation Engine is gevalideerd tot en met fase 3G.
+
+## Actuele technische taken
+
+### A001
+
+Status: AFGEROND / COMPLETED
+
+### A002 — Volledige review BuilderKernel
+
+Status: OPEN — HERBEVESTIGING NODIG
+
+De eerdere afrondingsclaim is niet opnieuw onderbouwd met actuele code- en testevidence.
+
+De taak blijft open totdat de huidige werkboom is gecontroleerd op:
+
+- verantwoordelijkheden;
+- afhankelijkheden;
+- resterende legacy;
+- actieve build-pipeline;
+- overeenstemming tussen eerdere afrondingsclaims en actuele code-/testevidence.
+
+### A003 — Legacy Cleanup
+
+Status: AFGEROND IN DE HUIDIGE WERKBOOM; COMMITSTATUS NIET BEVESTIGD
+
+- `services/fieldDefinition.js` is in de huidige werkboom verwijderd.
+- De eerder genoemde historische kopie `builders/builder_werkend_2026-07-26.js` is niet aangetroffen.
+- De verwijdering is niet bevestigd als Git-commit.
+
+De afgeronde status geldt voor de huidige werkboom en niet als bevestiging van de gecommitte repositorystatus.
+
+### A004 — CampingAggregate presentatie-/publicatielaag
+
+Status: GEDEELTELIJK GEREALISEERD — LOKALE PREVIEW EN DRAFT-FLOW; RESTANT OPEN
+
+- `services/campingReadService.js` levert het CampingAggregate.
+- `scripts/previewCamping.js` bevat een lokale HTML- en JSON-previewrunner.
+- `wordpressMapper.mapCampingAggregate()` en `wordpressPublisher.preparePage()` bereiden en valideren de WordPress-payload.
+- De inhoudelijke volledigheid van het aggregate en de actuele preview zijn niet opnieuw gevalideerd.
+- De bestaande Airtable-tabel `Accommodaties` bevat aanvullende toegankelijkheidsvelden die nog niet allemaal door `buildCamping()` worden gelezen.
+- Het veld `Foto's` bestaat niet in de actuele metadata/schema van `Accommodaties`.
+- Er is geen openbare WordPress-publicatie aangetoond.
+
+Resterend:
+
+- gegevensdekking van het aggregate beoordelen;
+- preview-inhoud controleren met actuele gegevens;
+- ontbrekende informatie niet invullen;
+- eventuele WordPress-uitbreidingen gecontroleerd als draft voorbereiden.
+
+### A005 — WordPress-publicatie op basis van CampingAggregate
+
+Status: GEDEELTELIJK GEREALISEERD — DRAFT-CREATE/HERGEBRUIK; RESTANT OPEN
+
+- De code ondersteunt payloadvalidatie.
+- Page-lookup vindt plaats op `rzd_camping_id`.
+- Eén bestaande match wordt hergebruikt.
+- Meerdere matches worden geblokkeerd.
+- De huidige create-flow houdt de Page op `draft`.
+- Een bestaande Page wordt bij hergebruik niet automatisch bijgewerkt.
+- De afzonderlijke update-flow heeft een dry-run- en apply-modus.
+- Lokale mocktests zijn aanwezig, maar tijdens de documentatie-update niet uitgevoerd.
+- Een gecombineerde live Airtable-/WordPress-eindtest is niet aangetoond.
+
+De eerder gedocumenteerde live draft voor Piani di Clodia is niet opnieuw gecontroleerd.
+
+Openstaand:
+
+- live-validatie alleen na expliciete toestemming en met gecontroleerde scope;
+- openbare publicatie valt niet onder de huidige draft-flow.
 
 ---
 
@@ -57,21 +142,17 @@ De huidige ontwikkelfase richt zich op de Content Engine en de koppeling van het
 
 De Builder is opgebouwd rondom het Canon Model.
 
-                Canon Model
-                     │
-      ┌──────────────┼──────────────┐
-      │              │              │
-      ▼              ▼              ▼
- Airtable      WordPress        Exports
-      │              │              │
-      └──────────────┼──────────────┘
-                     │
-                     ▼
-               RZD Platform
+Het Canon Model vormt het uitgangspunt voor synchronisatie naar verschillende platformen.
 
-Het Canon Model vormt de enige bron van waarheid.
+De bestaande schema-sync-engine bestaat uit:
 
-Alle synchronisaties vertrekken vanuit dit model.
+- BuilderKernel;
+- BuilderWorkflow;
+- SynchronizationCoordinator.
+
+De CampingAggregate-read- en previewflow staat hier bewust los van.
+
+De verschillende workflows delen onderdelen, maar vormen geen enkele algemene publicatiepipeline.
 
 ---
 
@@ -79,12 +160,11 @@ Alle synchronisaties vertrekken vanuit dit model.
 
 ## Status
 
-🟢 Afgerond
+STABIELE BASIS
 
-### Geïmplementeerd
+## Geïmplementeerd
 
 - Canon Model
-- FieldDefinition
 - BuilderContext
 - SchemaValidator
 - Comparison Engine
@@ -101,29 +181,204 @@ Alle synchronisaties vertrekken vanuit dit model.
 - JSON Reports
 - Markdown Reports
 
+De huidige documentatie-update bevestigt niet opnieuw de volledige werking van alle onderdelen.
+
+---
+
+# Builder 3.0
+
+## Status
+
+ACTIEF IN ONTWIKKELING
+
+## Focus
+
+- Content Engine
+- RZD 5.1 mapping
+- Documentation Engine
+- Export Engine
+- CampingAggregate
+- gecontroleerde WordPress-draft-flow
+
+Nieuwe functionaliteit wordt binnen Builder 3.0 ontwikkeld.
+
 ---
 
 # Teststatus
 
-Succesvol getest:
+`package.json` bevat geen projectbrede test-runner.
 
-- validate
-- build
-- dry-run
-- rollback
-- metadata updates
-- synchronisatie
-- rapportgeneratie
-- Airtable-verbinding
-- Airtable schema dry-run
-- dependency dry-run
-- execution safety dry-run
+`npm test` is een placeholder die met een foutmelding afsluit.
 
-Alle testen succesvol.
+Tests worden als afzonderlijke Node-scripts uitgevoerd.
 
-De Airtable-verbinding en schema-functionaliteit zijn succesvol gevalideerd.
+## Documentatie-update 06-11-2026
 
-Er heeft recent een gecontroleerde productie-execute plaatsgevonden voor één geval (Karios, `recQzECjVOUbQjc5g`) na uitgebreide dry-runs en validaties. Deze execute betrof gecontroleerde updates en is bewust uitgevoerd door het team.
+Tijdens deze documentatie-update zijn geen tests uitgevoerd.
+
+De hieronder genoemde resultaten zijn eerder in projectdocumentatie vastgelegd en zijn niet opnieuw uitgevoerd.
+
+## Historisch gerapporteerde resultaten
+
+- `validate`, `build`, dry-run, rollback, metadata-updates, synchronisatie, rapportgeneratie en diverse Airtable-/dependency-dry-runs zijn eerder als succesvol beschreven.
+- Een validatie is eerder gerapporteerd als 3/3 modules valid, 0 errors.
+- Een test-build met `--dry-run` is eerder als succesvol beschreven, zonder productie-write.
+- De publication-readiness-test van 28-10-2026 gebruikte fixtures en controleerde uitsluitend readinesslogica.
+- WordPress- en CampingAggregate-tests bestaan als afzonderlijke tests.
+- `scripts/testPublishCamping.js` gebruikt mocks voor aggregate-read en postservice.
+- `testWordPressCampingPageReuseFlow.js` test payloadvoorbereiding en postservice met een gemockte `fetch`.
+- De mapper wordt afzonderlijk getest.
+
+Deze tests vormen samen geen gecombineerde live end-to-end-test.
+
+Eerdere projectnotities melden:
+
+- een gecontroleerde productie-execute voor Karios (`recQzECjVOUbQjc5g`);
+- een WordPress-draft voor Piani di Clodia (Page-ID `1554`).
+
+Dit zijn historische live-validatieclaims. Ze zijn tijdens deze documentatie-update niet opnieuw gecontroleerd.
+
+---
+
+# Mobiele RZD-reviewlaag
+
+## Status
+
+LOKALE REVIEWKETEN EN EENVOUDIGE MOBIELE BROWSER-UI GEBOUWD EN GETEST.
+
+GECOMBINEERDE PRODUCTIE-/AIRTABLE-E2E-FLOW NOG NIET AANWEZIG.
+
+De technische mobiele reviewketen loopt momenteel van:
+
+`accommodatie → module → beoordelingspunt → invoermodel → waarde → lokale opslag → status → opgeslagen lijst → handmatige synchronisatie`
+
+## Gebouwd en eerder getest
+
+- selectie van accommodatie, module en beoordelingspunt via `services/mobileReviewSelection.js` en bestaande selection viewmodels;
+- bestaande inputmodellen voor `Ja/Nee`, `Meting` en `Tekst`;
+- lokale review-opslag via `services/mobileReviewStorage.js`;
+- unieke `localId` en standaard `pending`-opslag;
+- statusweergave en lijstitems;
+- eenvoudige browser-UI in `mobile-review.html` en `mobile-review.js`;
+- HTTP-selectieroutes en `POST /mobile-review/reviews`;
+- `GET /mobile-review/reviews` voor lokale lijstitems;
+- menselijke accommodatie- en puntnamen wanneer deze zijn opgehaald, met ID als fallback;
+- reset van afhankelijke browserstate bij nieuwe keuzes;
+- bescherming tegen verouderde responses;
+- bescherming tegen dubbele review-POSTs;
+- pending/error-selectie;
+- sequentiële synchronisatiequeue;
+- statusovergangen `syncing`, `synced`, `error` en `conflict`;
+- bestaande adapter naar `reviewWriteService.upsertReview()`;
+- handmatige synchronisatie via `POST /mobile-review/sync`;
+- opnieuw laden van de lokale reviewlijst na synchronisatie;
+- relevante browser-, opslag-, flow-, adapter- en synchronisatietests.
+
+De mobiele browserflow bewaart reviews lokaal.
+
+De browser voert geen automatische synchronisatie uit.
+
+De bestaande lijstitems bevatten geen `moduleId`. Een module-naam kan daarom niet betrouwbaar worden getoond zonder uitbreiding buiten de huidige lijstgegevens.
+
+De tests gebruiken lokale tijdelijke opslag en mocks/dry-run op de write-grens.
+
+Op 21-09-2026 zijn daarnaast gecontroleerde Airtable-updates uitgevoerd voor twee bestaande records. Er zijn geen nieuwe Airtable-punten toegevoegd.
+
+## Mobiele reviewmapping
+
+De actuele mobiele reviewmapping bevat vijf exacte koppelingen:
+
+| RZD key | Airtable pointId | Airtable-naam | Type |
+|---|---|---|---|
+| `parking` | `recI6rZO6eGjP4tUS` | Parkeerplaats bij accommodatie aanwezig | checkbox |
+| `accessible_parking` | `rec2bCHQvPPxwxn4O` | GPK-plaats aanwezig | checkbox |
+| `parking_notes` | `recwAXGNhEwG4JTz9` | Parkeren opmerkingen | text |
+| `entrance_threshold` | `reccLP2AChiYS9cS0` | Drempelhoogte entree | number |
+| `entrance_turning_circle` | `recActExxUP7FcKLy` | Draaicirkel bij entree | number |
+
+Voor parkeren zijn `parking` en `accessible_parking` de twee vaste ja/nee-punten.
+
+Aanvullende parkeerinformatie wordt als vrije tekst opgeslagen bij `parking_notes`.
+
+`parking_distance`, `parking_surface` en `entrance_route` zijn geen zelfstandige content- of beoordelingspunten.
+
+De oude Accommodaties-velden voor afstand, ondergrond en route zijn eveneens verwijderd.
+
+De korte accommodatiebeschrijving blijft bedoeld voor algemene informatie.
+
+De drie resterende punten zijn bewust `NO_MATCH`:
+
+- `route_slope`
+- `main_entrance_accessible`
+- `automatic_door`
+
+De bestaande review-writeflow is read-only gecontroleerd voor de gekoppelde punten.
+
+De bestaande `upsertReview()`-logica:
+
+- 0 matches → CREATE
+- 1 match → UPDATE
+- meer dan 1 match → BLOCKED_MULTIPLE_MATCHES
+
+## Mobiele Airtable-writecontrole — 21-09-2026
+
+De vier gekoppelde mobiele punten zijn in de actieve RZD 5.1-base gecontroleerd.
+
+| RZD key | Reviewrecord | Waarde |
+|---|---|---|
+| `parking` | `recA1UUj3TIya4X4q` | `"Ja"` |
+| `accessible_parking` | `recRfB4HqAXzQqkKJ` | `"Ja"` |
+| `entrance_threshold` | `recdL6KIPXiYS9cS0` | `"10"` |
+| `entrance_turning_circle` | `recn8pyCAoJBapCPH` | `"150"` |
+
+De twee meetwaarden worden als tekst doorgegeven, passend bij het Airtableveld `Waarde / Resultaat` van type `multilineText`.
+
+De eerdere HTTP 422 op numerieke meetwaarden is hiermee opgelost.
+
+De relevante tests zijn eerder geslaagd:
+
+- `testMobileReviewAdapter.js`
+- `testMobileReviewInput.js`
+- `testMobileReviewFlow.js`
+
+De laatste gecombineerde read-only controle bevestigde alle vier waarden.
+
+De terminaluitvoer van de laatste writeopdracht was beschadigd. De afzonderlijke actievelden konden daardoor niet betrouwbaar worden uitgelezen; de read-only eindcontrole bevestigde wel de actuele waarden.
+
+Er zijn geen nieuwe Airtable-punten toegevoegd.
+
+Een gecombineerde echte browser-tot-Airtable-E2E-test blijft open.
+
+## E2E-test-readiness audit — 21-09-2026
+
+De actieve Airtable-base is:
+
+`appImdZ7AGoXCAlto`
+
+De vier bestaande beoordelingspunten zijn beschikbaar en bruikbaar.
+
+De historisch en code-matig genoemde testaccommodatie-IDs:
+
+- `receCbuC0qSuQAZK0`
+- `recu7druA9BMOZhDk`
+
+bestaan niet in de actuele tabel `Accommodaties`.
+
+Karios (`recQzECjVOUbQjc5g`) bestaat wel, maar is geen veilige testscope: voor de relevante punten zijn daar al bestaande reviewrecords aanwezig.
+
+Er is geen aantoonbaar veilige dedicated testaccommodatie en geen veilige CREATE-scope.
+
+Er zijn geen testmarker-records aangetroffen.
+
+De huidige delete-/cleanup-logica biedt geen voldoende harde isolatiegarantie om zonder risico een productie-record te verwijderen.
+
+Conclusie:
+
+Een echte Airtable E2E-test is voorlopig niet verantwoord.
+
+Tijdens deze audit zijn geen Airtable-writes uitgevoerd, is geen code gewijzigd en zijn geen tests uitgevoerd.
+
+Er is geen nieuwe testaccommodatie of nieuw beoordelingspunt aangemaakt.
 
 ---
 
@@ -133,11 +388,11 @@ RZD 5.1 is de actieve database.
 
 De juiste Airtable-base is bevestigd:
 
-Base ID: appImdZ7AGoXCAlto
+`appImdZ7AGoXCAlto`
 
 De Builder kan de bestaande RZD 5.1-structuur uitlezen.
 
-Bevestigde tabellen:
+## Bevestigde tabellen
 
 - Accommodaties
 - Modules
@@ -147,10 +402,11 @@ Bevestigde tabellen:
 - Opmerkingen
 - Verbeterpunten
 - Reizigerservaringen
+- Voorzieningen
 
-Belangrijke ontwerpbeslissing:
+## Ontwerpbeslissingen
 
-De tabel **Accommodaties** bevat uitsluitend basisgegevens.
+De tabel `Accommodaties` bevat uitsluitend basisgegevens.
 
 Toegankelijkheidsgegevens worden niet langer opgeslagen als honderden kolommen.
 
@@ -162,147 +418,44 @@ Bestaande tabellen worden niet onnodig vervangen of opnieuw aangemaakt.
 
 ---
 
-# Definitieve Databasestructuur
+# Definitieve databasestructuur
 
-    Accommodaties
-          │
-          ▼
-       Modules
-          │
-          ▼
-    Beoordelingspunten
-          │
-          ▼
-    Accommodatie Beoordelingen
+Accommodaties  
+↓  
+Modules  
+↓  
+Beoordelingspunten  
+↓  
+Accommodatie Beoordelingen
 
-Hiermee blijft de database schaalbaar en onderhoudbaar.
+De database blijft schaalbaar en onderhoudbaar.
 
-De Canon-benamingen moeten waar nodig worden gekoppeld aan de bestaande RZD-benamingen:
-
-    Content Modules
-          ↓
-       Modules
-
-    Beoordelingspunten
-          ↓
-    Beoordelingspunten
-
-    Accommodatie Beoordelingen
-          ↓
-    Accommodatie beoordelingen
+De Canon-benamingen worden waar nodig gekoppeld aan bestaande RZD-benamingen.
 
 De bestaande tabellen blijven leidend.
 
 ---
 
-# Builder 3.0
+# CampingAggregate en read-architectuur
 
-## Status
-
-🟢 Actief
-
-Builder 3.0 bouwt voort op de stabiele basis van Builder 2.0.
-
-Nieuwe functionaliteit wordt uitsluitend nog binnen Builder 3.0 ontwikkeld.
-
-De huidige focus ligt op de **Content Engine** en de koppeling met de bestaande RZD 5.1-structuur.
-De Canon-naar-RZD 5.1 tabelmapping is vastgesteld en in de Builder vastgelegd.
-
-De Documentation Engine is inmiddels gevalideerd tot en met fase 3G.
+- `services/campingReadService.js` bevat `getCampingAggregate(campingId)`.
+- Het CampingAggregate bevat camping-basisgegevens, voorzieningen met eigen gegevens/beoordelingen, campingbeoordelingen en de accommodatie-laag.
+- De huidige Airtable-tabel `Accommodaties` bevat aanvullende toegankelijkheidsvelden die nog niet allemaal door `buildCamping()` worden gelezen.
+- Het veld `Foto's` bestaat niet in de actuele metadata/schema van `Accommodaties`.
+- De harde regel blijft maximaal 3 camping-specifieke Airtable-readcalls: camping-record, alle voorzieningen en alle relevante beoordelingen in één gecombineerde query.
+- Nooit één call per voorziening.
+- `services/pointLookupCache.js` bevat een procesbrede lazy cache voor Modules/Beoordelingspunten.
+- De ontbrekende paginatie in de onderliggende resolver-methoden is een bekend, nog niet opgelost aandachtspunt.
+- De bestaande Builder-kern blijft een schema-sync-engine.
+- `campingReadService.js` staat hier bewust los van.
 
 ---
 
-# Geplande Engines
-
-## Schema Engine
-
-Beheert:
-
-- tabellen
-- velden
-- relaties
-
-De Schema Engine kan inmiddels schema's, velden, afhankelijkheden en linked-table relaties als dry run opbouwen.
-
-De volgende stap is het correct mappen van de bestaande RZD 5.1-structuur in plaats van nieuwe tabellen te creëren.
-
----
-
-## Content Engine
-
-Beheert:
-
-- Modules
-- Beoordelingspunten
-- Templates
-- Vragenstructuren
-
-De Canon ContentDefinition ondersteunt momenteel de typen:
-
-- checkbox
-- number
-- text
-- longtext
-- select
-- attachment
-
-De volgende technische stap is het koppelen van deze Canon-structuur aan de bestaande tabellen **Modules**, **Beoordelingspunten** en **Accommodatie beoordelingen**.
-
----
-
-## RZD 5.1 Mapping & Write Safety
-
-De RZD 5.1 Canon point mapping/resolver is inmiddels read-only gevalideerd.
-
-De gecombineerde dry-run heeft 10 Canon-punten behandeld. De huidige `pointMappings.js` bevat 6 × EXACT, 1 × POSSIBLE en 3 × NO_MATCH entries. Niet alle genoemde entries zijn automatisch via de resolver verwerkt; enkele blijven `NO_MATCH` of `POSSIBLE` en vereisen een inhoudelijke beslissing.
-
-Er zijn 7 bestaande Airtable-records gevonden.
-
-Alle 6 EXACT mappings hebben een geldig Airtable Beoordelingspunt-record-ID.
-
-De write-flow is beveiligd zodat uitsluitend mappings met status `EXACT` schrijfbaar zijn. Dit is toegepast in `bulkRecordWriteFinal.js` en `bulkRecordWriteSafe2.js`.
-
-`automatic_door` blijft `NO_MATCH` en wordt niet geschreven.
-
-
-De gecombineerde mapping dry-run en de Final Bulk Write dry-run zijn succesvol uitgevoerd.
-
-Operationele update (2026-08-14):
-
-- `services/reviewWriteService.js` is ingevoerd als centrale upsert-service voor `Accommodatie beoordelingen`. De service implementeert duplicate-safety: 0 matches → CREATE, 1 match → UPDATE, >1 matches → BLOCKED_MULTIPLE_MATCHES (geen automatische keuze/verwijdering).
-- Diverse scripts zijn gemigreerd naar het gebruik van `reviewWriteService.upsertReview(...)` (o.a. `writeMappedRecords.js`, `bulkRecordWrite.js`, `bulkRecordWriteFinal.js`, `bulkRecordWriteSafe2.js`).
-- Gecontroleerde execute uitgevoerd voor accommodatie Karios (`recQzECjVOUbQjc5g`): 5 vooraf geverifieerde lege duplicaten verwijderd; na opschoning 7 beoordelingen en 0 duplicaten; `writeMappedRecords.js --execute` resulteerde in 6 updates, 0 creates en 0 deletes.
-
-Mapping status (canon module `toegang`, samenvatting): 10 Canon-punten verwerkt — 6 × EXACT, 1 × POSSIBLE, 3 × NO_MATCH. De huidige `pointMappings.js` bevat:
-
-- 4 × EXACT (parking gerelateerd)
-- `entrance_threshold` — EXACT
-- `entrance_turning_circle` — EXACT
-- `entrance_route` — POSSIBLE
-- `route_slope` — NO_MATCH
-- `main_entrance_accessible` — NO_MATCH
-- `automatic_door` — NO_MATCH
-
-Besluit rond NO_MATCH (beleid): een `NO_MATCH` betekent niet automatisch dat er een nieuw Airtable-beoordelingspunt gemaakt wordt. Teambesluiten:
-
-- `route_slope` wordt niet toegevoegd als apart Airtable-punt; hellingsinformatie kan binnen beoordeling/omschrijving worden vastgelegd.
-- `automatic_door` blijft voorlopig `NO_MATCH`.
-- `main_entrance_accessible` blijft voorlopig `NO_MATCH`.
-- `entrance_route` wordt niet automatisch aangemaakt zonder expliciet inhoudelijk besluit.
-
-Open technisch aandachtspunt:
-
-- De Canon content IDs en de `pointMappings.js` keys verschillen op enkele punten (bijv. `route_to_entrance` vs `entrance_route`, `turning_circle` vs `entrance_turning_circle`). De huidige resolver (`content/mapping/airtablePointResolver.js`) matcht uitsluitend op `contentPoint.id` en kent geen alias/ID‑vertaling laag. Dit is een open technisch aandachtspunt dat nog besloten moet worden; het wordt hier geregistreerd maar niet automatisch opgelost.
-
-`scripts/testCombinedPointMapping.js` is toegevoegd als read-only regressietest en succesvol uitgevoerd.
-
----
-
-## Documentation Engine
+# Documentation Engine
 
 De Documentation Engine is ontwikkeld en gevalideerd tot en met fase 3G.
 
-De afgeronde fases zijn:
+## Afgeronde fases
 
 - 3A — documentatiestructuur en veiligheidsregels
 - 3B — bron-naar-document mapping
@@ -310,13 +463,19 @@ De afgeronde fases zijn:
 - 3D — concrete documentgeneratie dry-run
 - 3E — sectiecontrole
 - 3F — managed-block dry-run
-- - 3G — gecontroleerde document-write uitgevoerd en geverifieerd
+- 3G — gecontroleerde document-write uitgevoerd en geverifieerd
 
-**Write-status:** gecontroleerde document-write uitgevoerd.
+## Write-status
 
-**Airtable:** de Documentation Engine voerde geen ongecontroleerde Airtable-writes uit.
+Gecontroleerde document-write uitgevoerd.
 
-**GitHub:** wijzigingen zijn lokaal gecommit en naar GitHub gepusht.
+## Airtable
+
+De Documentation Engine voerde geen ongecontroleerde Airtable-writes uit.
+
+## GitHub
+
+Wijzigingen zijn lokaal gecommit en naar GitHub gepusht.
 
 De engine werkt met RZD-AUTO START/END managed blocks.
 
@@ -328,9 +487,9 @@ CHANGELOG.md blijft append-only.
 
 ---
 
-## Export Engine
+# Export Engine
 
-Synchroniseert het Canon Model naar:
+De Export Engine is bedoeld voor synchronisatie van het Canon Model naar:
 
 - Airtable
 - WordPress
@@ -338,23 +497,23 @@ Synchroniseert het Canon Model naar:
 - API
 - AI
 
+De volledige werking van alle exportdoelen is niet opnieuw gevalideerd tijdens deze documentatie-update.
+
 ---
 
 # Prioriteiten
 
-## P1
+## P1 — Architectuur
 
-Builder 2.0 Final
+Actuele openstaande taken staan in `BACKLOG.md`.
 
-Status
+- A002 — BuilderKernel-review herbevestigen
+- A004 — CampingAggregate presentatie-/publicatielaag afronden
+- A005 — WordPress-publicatieflow afronden
 
-🟢 Afgerond
+A003 is afgerond in de huidige werkboom; commitstatus is niet bevestigd.
 
----
-
-## P2
-
-Builder 3.0
+## P2 — Builder 3.0
 
 Focus:
 
@@ -362,10 +521,9 @@ Focus:
 - RZD 5.1 mapping
 - Documentation Engine
 - Export Engine
+- CampingAggregate
 
-Status
-
-🟢 Actief
+Status: ACTIEF
 
 ---
 
@@ -374,37 +532,51 @@ Status
 - Werk altijd aan één bestand tegelijk.
 - Analyseer vóór iedere wijziging.
 - Test direct na iedere wijziging.
-- Gebruik Windows CMD voor alle testcommando's.
+- Gebruik Windows CMD voor testcommando's.
 - Wacht op volledige testuitvoer voordat conclusies worden getrokken.
 - Grote architectuurwijzigingen worden vooraf ontworpen.
-- Het Canon Model is altijd leidend.
+- Het Canon Model is leidend.
 - Bestaande RZD 5.1-tabellen en data worden niet onnodig vervangen.
 - Maak geen nieuwe Airtable-base.
 - Maak geen parallelle tabellen wanneer de bestaande RZD 5.1-tabel dezelfde functie heeft.
 - Voer geen productie-write uit voordat een volledige dry-run succesvol en gecontroleerd is.
+- Historische testresultaten worden niet als actuele testresultaten gepresenteerd.
+- Live-validatie wordt alleen als actueel bevestigd wanneer deze opnieuw is gecontroleerd.
 
 ---
 
 # Volgende ontwikkelsessie
 
-1. documentationMapping.js controleren en synchroniseren met de definitieve Documentation Engine-status.
-2. CHANGELOG.md aanvullen met de afgeronde Documentation Engine-werkzaamheden.
-3. Volledige documentatie-audit uitvoeren.
-4. Bestaande tabel Modules analyseren.
-5. Bestaande tabel Beoordelingspunten analyseren.
-6. Bestaande tabel Accommodatie beoordelingen analyseren.
-7. Exacte Canon-naar-Airtable veldmapping bepalen.
-8. Naam-/tabelmapping in de Builder definiëren.
-9. Builder aanpassen waar nodig.
-10. Volledige dry-run uitvoeren.
-11. Resultaat controleren.
-12. Pas daarna eventueel productie-synchronisatie uitvoeren.
+De actuele openstaande werkzaamheden en hun prioriteit staan in `BACKLOG.md`.
+
+Start iedere nieuwe ontwikkelsessie met:
+
+1. README.md
+2. PROJECT_STATUS.md
+3. BACKLOG.md
+4. CHECKPOINT.md
+
+Daarna:
+
+1. Analyse
+2. Bespreken
+3. Goedkeuring
+4. Wijzigen
+5. Testen
+6. Documentatie bijwerken
+7. CHANGELOG bijwerken indien afgerond
+8. Nieuw CHECKPOINT maken
+
+De volgende technische taak wordt bepaald aan de hand van de actuele backlog.
 
 ---
 
 # Gerelateerde documentatie
 
+- README.md
 - ARCHITECTURE.md
+- WORDPRESS_ARCHITECTURE.md
+- DOCUMENTATION_ARCHITECTURE.md
 - CHANGELOG.md
 - BACKLOG.md
 - CHECKPOINT.md
@@ -416,32 +588,16 @@ Status
 
 Builder 2.0 wordt beschouwd als de stabiele basis van het project.
 
-Vanaf dit moment wordt alle nieuwe ontwikkeling uitgevoerd binnen Builder 3.0.
+Nieuwe ontwikkeling vindt plaats binnen Builder 3.0.
 
-De Builder wordt niet langer ontworpen rondom Airtable, maar rondom het Canon Model. Airtable is daarmee één van de synchronisatiedoelen geworden, naast WordPress, exports en toekomstige API-koppelingen.
+De Builder wordt ontworpen rondom het Canon Model en niet uitsluitend rondom Airtable.
 
-De bestaande RZD 5.1 Airtable-base blijft daarbij de actieve database.
+Airtable is één van de synchronisatiedoelen, naast WordPress, exports en toekomstige API-koppelingen.
 
-De volgende sessie moet niet opnieuw beginnen met het aanmaken van Airtable-tabellen of het instellen van een nieuwe base.
+De bestaande RZD 5.1 Airtable-base blijft de actieve database.
 
-De verbinding met RZD 5.1 is al succesvol gevalideerd.
+Er wordt geen nieuwe Airtable-base aangemaakt.
 
-De eerstvolgende taak is het analyseren en mappen van de bestaande structuur.
+De eerstvolgende technische stap is het herbevestigen van A002 en het verder afronden van A004/A005 volgens de actuele backlog.
 
-<!-- RZD-AUTO:START PROJECT_STATUS -->
-### Documentation Engine actuele status
-
-- 3A — documentatiestructuur gevalideerd
-- 3B — documentation mapping vastgesteld
-- 3C — mapping geladen en toegepast
-- 3D — concrete documentgeneratie getest
-- 3E — bestaande headings gevalideerd
-- 3F — managed-block diff gevalideerd
-- 3G — gecontroleerde document-write beschikbaar
-
-**Write-status:** gecontroleerde write-fase actief.
-
-**Airtable:** geen writes uitgevoerd door de Documentation Engine.
-
-**GitHub:** wijzigingen worden via de lokale Git-workflow gecommit en gepusht.
-<!-- RZD-AUTO:END PROJECT_STATUS -->
+Historische statusnotities en testresultaten blijven herkenbaar als historisch en worden niet zonder actuele verificatie als huidige werking gepresenteerd.

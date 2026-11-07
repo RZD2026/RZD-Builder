@@ -1,0 +1,3482 @@
+RZD BUILDER — MASTER WERKDOSSIER
+
+Historische reviews + controlebestand + Copilot-instructies
+
+Versie 2 | samengesteld op basis van beschikbare bestanden en terugvindbare context
+
+Doel
+
+Morgen gericht verder met Copilot; controles niet onnodig herhalen.
+
+Bronnen
+
+Diep hersteld reviewdossier + controle bestanden.txt + eerder werkdossier.
+
+Belangrijke beperking
+
+Dit is een herstelbundel van beschikbare bronnen, niet bewijs dat iedere oude chat of code-run teruggevonden is.
+
+Statuscode
+
+Eerder beoordeeld ≠ actuele code bevestigd. Copilot moet actuele repository en git-status eerst inspecteren.
+
+
+RZD Builder Master Werkdossier | historische bronnen + controlebestand | niet gelijk aan actuele code-audit
+
+1. Broninventaris en betrouwbaarheid
+
+controle bestanden.txt — gebruikersbestand met 1.214 regels; opgenomen als volledige bronappendix.
+
+RZD_Builder_Diep_Hersteld_ReviewDossier.docx — eerdere herstelbundel met per-bestand reviews, architectuur-notities, open punten en expliciete beperkingen.
+
+RZD_Builder_Copilot_Werkdossier_Compleet.docx — eerdere Copilot-startinstructies en werkpakketten; opgenomen als bron, maar niet als bewijs van volledige historische dekking.
+
+Terugvindbare chatsamenvatting — context over projectstructuur en eerder besproken aandachtspunten; alleen verwerkt waar inhoud expliciet beschikbaar is.
+
+Geen bevinding is als opgelost gemarkeerd zonder bewijs van codewijziging en test. ‘Gecontroleerd’ in oude dossiers betekent dat het bestand eerder besproken/beoordeeld is, niet dat de huidige repository is gevalideerd.
+
+2. Reconciliatie: eerder dossier naast controlebestand
+
+De volgende registerregels combineren concrete aandachtspunten uit beide bronnen. De prioriteit is werkvolgorde, niet een nieuwe technische vaststelling.
+
+ID / bestand
+
+Historische bevinding
+
+Prioriteit
+
+Status
+
+SYNC-01
+services/synchronizationService.js
+
+Update-teller werd verhoogd vóór daadwerkelijke uitvoering; kan ook tellen bij ontbrekende update of fout.
+
+P0
+
+Open — opnieuw bevestigen in actuele code
+
+SYNC-02
+services/synchronizationService.js
+
+Per-item errors worden opgevangen en run gaat door; partial run mogelijk.
+
+P1
+
+Beleid bepalen; partial status expliciet rapporteren
+
+SYNC-03
+services/synchronizationService.js + write helpers
+
+DryRun lijkt centrale writes te blokkeren, maar alle Airtable/MCP writepaden moeten getest worden.
+
+P0
+
+Niet bewezen volledig
+
+SYNC-04
+services/synchronizationService.js
+
+Meerdere subacties per veld kunnen gedeeltelijk slagen; geen transactie/automatische rollback.
+
+P1
+
+Open; per subactie resultaat vastleggen
+
+SYNC-05
+services/synchronizationService.js
+
+Onbekende action kan stil worden genegeerd; create-plan validatie upstream niet bewezen.
+
+P1
+
+Open; expliciete fout/validatie
+
+KERNEL-01
+core/BuilderKernel.js
+
+lifecycleCompleted pas na report; report failure na writes kan run als incomplete laten gelden.
+
+P1
+
+Open
+
+KERNEL-02
+core/BuilderKernel.js
+
+logger.end(0,0) hardcoded in finally; aantallen/status mogelijk misleidend.
+
+P1
+
+Open
+
+KERNEL-03
+core/BuilderKernel.js
+
+bootstrap null kan stil returnen; module.fields.length vertrouwt op bootstrap-validatie.
+
+P1
+
+Open
+
+BOOT-01
+core/bootstrap/BuilderBootstrap.js
+
+Airtable getFields buiten try; vroege fouten kunnen audit/logger-afsluiting missen.
+
+P1
+
+Open
+
+LOGGER-01
+services/logger.js
+
+start/write/end lifecycle, end sluit mogelijk niet af; write-before-start en concurrente runs aandachtspunt.
+
+P1
+
+Open
+
+AUDIT-01
+services/auditService.js
+
+record spread kan runId/timestamp overschrijven; getRecords geeft interne array; finish/clear lifecycle en vroege exits.
+
+P1
+
+Open
+
+ROLL-01
+services/rollbackPlanner.js + RollbackService.js
+
+Planner toont plan, maar BuilderKernel voert niet vanzelf rollback uit; rollback-data en restore coverage beperkt.
+
+P2
+
+Open
+
+ROLL-02
+RollbackService.js
+
+Lege options, veldnaam/type, create, stop bij eerste fout, stack blijft bestaan, interne stack blootgesteld.
+
+P2
+
+Open
+
+REPORT-01
+core/reporting/ReportingCoordinator.js + reportGenerator.js
+
+JSON/Markdown timestamps kunnen verschillen; rapportagefout kan logger lifecycle onvolledig laten; contract arrays controleren.
+
+P2
+
+Open
+
+CTX-01
+services/runContextFactory.js
+
+Eerder als goed beoordeeld: metadata/auditSummary/plans worden samengesteld; syncSummary in report contract opnieuw verifiëren.
+
+P2
+
+Open — behoud bestaande contracten
+
+MCP-01
+services/mcpService.js + mcp/protocol.js + router/handler
+
+Readiness/handshake, timeout server lifecycle, graceful disconnect, request validation, errors/notifications onvoldoende vastgesteld.
+
+P3
+
+Open
+
+MCP-02
+services/engines/mcpEngine.js + updateChoices.js
+
+Choice shape, lege keuzes, onbekende properties, toolresultaat en dryRun moeten end-to-end bewezen worden.
+
+P0/P3
+
+Open
+
+AIR-01
+services/airtableAdapter.js
+
+Token/base validation, createMissingFields type/option validation, createField validatie en dryRun centralisatie controleren.
+
+P3
+
+Open
+
+CHOICE-01
+services/engines/choicesEngine.js
+
+Direct PATCH options.choices; API-compatibiliteit, lege choices en objectvorm verifiëren; geen betrouwbaarheid claim zonder test.
+
+P0/P3
+
+Open
+
+TEST-01
+package.json / test tree
+
+Geen werkend testscript bekend; framework niet vastgesteld. Eerst bestaande scripts/tree inspecteren, niet blind framework installeren.
+
+P0
+
+Open
+
+RUNTIME-01
+core/runtime/Runtime.js
+
+finish() zet endTime/duration; stats niet gevuld en aanroepketen niet bewezen.
+
+P2
+
+Open
+
+ENTRY-01
+index.js + actuele entrypoint
+
+Protocol/server lifecycle en volledige buildroute nog verifiëren tegen projectboom.
+
+P2
+
+Open
+
+ARCH-01
+CampingAggregate / WordPress routes
+
+Eerder vastgelegd als aparte routes, niet onderdeel van actuele BuilderKernel buildroute; niet vermengen zonder bewijs.
+
+Context
+
+Behouden als architectuurgrens
+
+3. Copilot vaste instructie — volledige historische discipline
+
+Je werkt aan RZD Builder v2.0. Lees dit masterdossier en de actuele repository. De documenten zijn historische aanwijzingen; actuele code is de bron voor bevestiging.
+- Maak eerst repository-, branch-, git-status-, package-script- en testinventaris. Geen wijzigingen, geen installaties.
+- Koppel ieder dossier-ID aan actueel bestand/functie/regels. Markeer BEVESTIGD / NIET BEVESTIGD / VERVALLEN / OPGELOST (bewijs vereist).
+- Per bestand: status, concrete bevindingen, codebewijs, risico, minimale wijziging, wat behouden blijft, afhankelijkheden, testplan.
+- Onderscheid bewezen bug, mogelijk risico, ontwerpkeuze en verbetering. Geen ‘moet’ bij ontwerpkeuze.
+- Bewaar alle eerdere bevindingen; wijzig status, verwijder ze niet.
+- Na elke review: update register, open punten, tests en exact één volgende nog-niet-gecontroleerde file. Als projectboom ontbreekt, vraag erom; niet gokken.
+- Geen code wijzigen, dependencies toevoegen of refactoren zonder expliciete toestemming.
+- DryRun moet aantoonbaar 0 mutatiecalls uitvoeren over Airtable én MCP.
+- Geen secrets/Authorization-headers in logs.
+- Na akkoord: minimale patch, tests, diff, resultaten, resterend risico en rollback.
+
+4. Startprompt — repository inventarisatie
+
+Lees dit masterdossier volledig. Inspecteer de huidige repository uitsluitend read-only.
+1. Toon git branch/status en projectboom.
+2. Controleer package.json, scripts, testframework, tests en entrypoint.
+3. Maak mapping van alle IDs uit hoofdstuk 2 naar actuele bestanden/functies.
+4. Geef per ID status + bewijs; geen code wijzigen.
+5. Identificeer ontbrekende historische files of claims die niet kunnen worden bevestigd.
+6. Geef maximaal 5 eerstvolgende taken op basis van P0/P1.
+7. Eindig met: bestanden bekeken, IDs bevestigd/niet bevestigd, open tests, volgende file.
+
+5. Geconsolideerde prompts per taak
+
+P0 — Geheimen/logging
+
+Traceer alle loggers en request headers. Toon concrete codeplaatsen waar tokens/secrets mogelijk gelogd worden. Stel masking/removal en tests voor. Nog niet wijzigen.
+
+P0 — DryRun complete mutatiebarrière
+
+Traceer alle Airtable PATCH/POST/DELETE en MCP-mutaties vanaf kernel tot adapter/engine. Ontwerp spies/mocks voor create, metadata update, choices, MCP. Verwacht 0 mutaties in dryRun. Nog niet wijzigen.
+
+P0 — update teller/unknown actions
+
+Bevestig wanneer summary.updated verhoogd wordt; ontwerp planned/succeeded counters; onbekende action moet expliciet failure/warning/audit krijgen. Tests success, missing item.update, thrown error, unknown action.
+
+P1 — partial sync
+
+Leg per veld en subactie metadata/choices/MCP vast; bepaal partial status en voortzettingsbeleid. Test partial success en failure; geen automatische rollback claim.
+
+P1 — kernel/bootstrap/logger/audit lifecycle
+
+Maak matrix van bootstrap/schema/API/sync/report failures en success. Trace logger start/write/end, audit clear/add/finishRun, Runtime.finish, kernel finally. Ontwerp één lifecycle-safe afsluiting zonder dubbel finish.
+
+P2 — rollback
+
+Maak wijzigingstype→snapshot→restore coverage tabel. Test empty options, description, name/type, create, fail-on-one, retry/double rollback. Onderscheid plan van daadwerkelijke uitvoering.
+
+P2 — report/run context
+
+Controleer shared timestamp/runId, JSON+Markdown filenames, metadata/summary/audit/plans/syncSummary contract, arrays absent, report partial failure. Behoud bestaande reportstructuur.
+
+P3 — MCP protocol/service
+
+Inspecteer JSON-RPC request validation, router/params, readiness handshake, timeout, server alive after timeout, graceful shutdown, notification/error paths. Tests, nog niet wijzigen.
+
+P3 — Airtable/choices
+
+Controleer credentials/base/table/field validation, create field type/options, choices payload API compatibility, empty choices and choice object shape. Verifieer actuele SDK/API; markeer externe aannames.
+
+P0 — test setup
+
+Bepaal bestaande test runner/scripts en projectstructuur. Geen framework toevoegen voordat bestaand project en package-lock onderzocht zijn. Stel minimale testmatrix voor.
+
+6. Testmatrix als minimum vóór codewijzigingen
+
+DryRun: create, update metadata, choices, MCP — elk moet nul write/tool calls opleveren.
+
+Update: success, ontbrekende update, geen wijziging, API exception, multi-action partial success.
+
+Run lifecycle: bootstrap null/error, schema validation error, getFields error, sync error, report error, success; audit/logger één keer afsluiten.
+
+Rollback: oude metadata/choices, lege options, onherstelbaar create, één restore failure, meerdere records.
+
+MCP: invalid request, invalid params, tool unavailable, timeout, disconnect, invalid response, server cleanup.
+
+Reports: dezelfde runId/timestamp, lege arrays, partial sync, report save error.
+
+Security: token en sensitive headers ontbreken in logs.
+
+7. Historische status en grenzen
+
+core/registry/Registry.js — eerder eenvoudige Map register/get/has; geen concrete wijziging vastgesteld.
+
+core/events/EventBus.js en core/queue/QueueProcessor.js — door gebruiker als leeg bevestigd; overslaan tenzij bestanden veranderd zijn.
+
+CampingAggregate-preview en WordPress-flow — afzonderlijke routes; niet automatisch onderdeel van actuele BuilderKernel-buildroute.
+
+RZD 5.1 Airtable blijft leidend; geen nieuwe base of onnodige tabellen. Eerder genoemde tabellen: Accommodaties, Modules, Beoordelingspunten, Accommodatie beoordelingen, Standaard beoordelingssets, Opmerkingen, Verbeterpunten, Reizigerservaringen, Voorzieningen.
+
+Projectboom/overige services/imports/tests ontbreken in de historische bronnen; Copilot moet actuele repository inventariseren.
+
+8. Volledige historische reviewbundel (bronappendix A)
+
+De volledige eerdere herstelde reviewbundel is hieronder opgenomen, zodat geen inhoud uit die bron verloren gaat.
+
+RZD Builder v2.0 – Diep hersteld reviewdossier
+
+Samengesteld uit drie eerder opgeslagen review-/overdrachtsdocumenten en het recente hersteldossier. Dit is een herstelbundel, geen claim dat elk eerder chatbericht woordelijk is teruggevonden. Dubbele onderdelen zijn samengevoegd waar herkenbaar; statussen en onzekerheden blijven expliciet.
+
+Bronnen en betrouwbaarheid
+
+RZD_Builder_Copilot_Overdracht_met_reviews.docx
+
+RZD_Builder_Review_Dossier_detail.docx
+
+RZD_Builder_CodeReview_uitgebreid.docx
+
+RZD_Builder_Review_Handoff_Herstelversie.docx
+
+De oudere documenten bevatten concrete reviewstatussen, maar melden zelf ook dat volledige oorspronkelijke reviews voor sommige bestanden ontbreken. Die lacunes zijn niet ingevuld met verzonnen bevindingen.
+
+Bronextractie: RZD_Builder_Copilot_Overdracht_met_reviews.docx
+
+RZD Builder v2.0
+Copilot overdracht & reviewdossier
+
+Doel: morgen verder zonder de eerdere chat nodig te hebben
+
+Instructie voor Copilot / volgende AI
+
+Je werkt aan RZD Builder v2.0. Gebruik dit document als overdracht. Lees eerst het hele dossier. Herhaal geen reeds gecontroleerde bestanden, tenzij een afhankelijkheid of concrete fout dat noodzakelijk maakt. Verzin geen repository-paden en beweer niet dat je bestanden hebt gelezen die niet zijn aangeleverd.
+
+Per bestand moet je een afzonderlijke review schrijven met: bestandspad, beoordeling, concrete bevindingen, codefragment of exacte plek, waarom het een probleem/aandachtspunt is, voorgestelde wijziging, wat behouden moet blijven, afhankelijkheden en status.
+
+Maak onderscheid tussen bewezen bug, mogelijk risico, ontwerpkeuze en verbetering. Gebruik geen ‘moet aanpassen’ wanneer het alleen een keuze is.
+
+Neem alle bevindingen op in het overdrachtsdocument. Verwijder of overschrijf eerdere bevindingen niet; markeer ze als opgelost, afgewezen of nog open.
+
+Na elke review: werk de checklist bij en geef exact één volgende nog-niet-gecontroleerde bestandsnaam. Als de projectboom ontbreekt, vraag om die; gok niet.
+
+Bij voorgestelde codewijzigingen: toon vóór/na of een volledige vervangende code, vermeld welk bestand wordt aangepast en controleer imports/aanroepers. Geen wijzigingen uitvoeren zonder expliciete toestemming.
+
+Sluit af met: bestanden bekeken, open bevindingen, wijzigingen die moeten gebeuren, tests die nog moeten draaien en volgende file.
+
+Review: services/synchronizationService.js
+
+Status: gecontroleerd. Deze reviewtekst is door Pascalle aangeleverd en moet als concrete bevindingen worden behouden.
+
+Beoordeling: hier zitten meerdere concrete aandachtspunten. Vooral foutafhandeling en telling van updates zijn belangrijk.
+
+1. Updates worden geteld voordat ze werkelijk zijn uitgevoerd
+
+Code:
+case "update":
+    summary.updated++;
+
+Dit gebeurt ook wanneer item.update ontbreekt, er geen metadatawijziging is, of de update uiteindelijk een fout oplevert. Daardoor kan summary.updated hoger zijn dan het aantal daadwerkelijk bijgewerkte velden.
+
+Voorgestelde actie: Maak onderscheid tussen geplande updates en succesvol uitgevoerde updates. Verhoog de succesvolle teller pas nadat de updateactie(s) zijn afgerond. Definieer ook wat ‘updated’ betekent wanneer één veld meerdere updateonderdelen heeft.
+
+2. Fouten worden opgevangen, maar synchronisatie gaat door
+
+Code:
+} catch (error) {
+    summary.errors++;
+    auditService.add({
+        action: "error",
+        field: fieldName,
+        message: error.message
+    });
+}
+
+Een fout bij één veld stopt de volledige synchronisatie niet; volgende items worden nog verwerkt. Dat kan bewust zijn, maar betekent dat een build gedeeltelijk kan slagen.
+
+Voorgestelde actie: Behouden tenzij het gewenste gedrag is dat één fout de volledige synchronisatie stopt. Maak in rapportage duidelijk dat er gedeeltelijke uitvoering was; behandel errors niet als een volledig succesvolle build.
+
+3. dryRun voorkomt niet alle wijzigingen
+
+Bij create wordt Airtable alleen aangepast wanneer dryRun false is. Bij update worden metadata, keuzes en MCP afzonderlijk uitgevoerd. Deze updateonderdelen worden alleen bereikt wanneer dryRun false. Dat lijkt correct, maar onderdelen kunnen afzonderlijk slagen of falen.
+
+Voorgestelde actie: Controleer dat alle write-paden achter dezelfde dryRun-guard zitten, inclusief eventuele helpers. Test dryRun met create én update en verifieer dat geen Airtable-write of MCP-uitvoering plaatsvindt.
+
+4. Update wordt geteld als één update, ook bij meerdere acties
+
+Een veld kan achtereenvolgens metadata aanpassen, keuzes aanpassen en MCP uitvoeren. Als metadata slaagt en keuzes faalt, wordt het veld als fout geregistreerd terwijl metadata al aangepast is. Er is geen rollback in deze methode.
+
+Voorgestelde actie: Dit is geen volledige transactie. Documenteer partial-update gedrag en rapporteer per onderdeel wat gelukt/mislukt is. Rollback is een aparte ontwerpkeuze; niet aannemen dat eerdere writes automatisch worden teruggedraaid.
+
+5. auditService.finishRun() wordt wel aangeroepen
+
+Code:
+auditService.finishRun();
+auditService.printSummary();
+
+Audit wordt aan het einde van execute() afgerond. Maar als airtable.getTable() faalt vóór de loop, worden deze regels niet bereikt. Ook onverwachte fouten buiten de individuele try/catch kunnen finishRun overslaan.
+
+Voorgestelde actie: Zorg voor een finally-achtige afsluiting van audit, of verplaats finishRun naar een gegarandeerde lifecycle-afsluiting. Controleer eerst hoe auditService met een ontbrekende/lege run omgaat en voorkom dubbel finishen.
+
+6. Geen default in de switch
+
+De switch verwerkt create, skip en update. Onbekende acties worden stil genegeerd; er komt geen waarschuwing, foutmelding of auditrecord. Dat maakt fouten in een synchronisatieplan lastig zichtbaar.
+
+Voorgestelde actie: Voeg een default-case toe die onbekende action als planfout registreert (audit + errors/warnings) en bepaal of de run doorgaat. Voorkom stil overslaan.
+
+7. create wordt niet gecontroleerd op ontbrekende velden
+
+Code:
+await airtable.createField(
+    tableName,
+    item.field
+);
+
+De service vertrouwt erop dat plan en schema-validatie correcte velden bevatten. Dat kan, maar validatie moet dan betrouwbaar vóór deze service gebeuren.
+
+Voorgestelde actie: Controleer waar planvalidatie plaatsvindt. Als daar een harde garantie bestaat, documenteer het contract en houd de service simpel. Anders valideer vóór createField en registreer een begrijpelijke fout voor ontbrekende/ongeldige item.field.
+
+Wat behouden voor synchronizationService
+
+Fout bij één item mag de rest laten doorgaan, tenzij het gewenste beleid verandert.
+
+dryRun-guard voor create en update.
+
+Auditrecords per fout.
+
+Metadata, keuzes en MCP als afzonderlijke updateonderdelen, zolang gedeeltelijke uitvoering expliciet wordt gerapporteerd.
+
+Open beslissingen voor dit bestand
+
+Moet één veldupdate atomair zijn, of is gedeeltelijke update toegestaan?
+
+Moet één itemfout de hele run stoppen, of mag de run doorgaan met errors?
+
+Is summary.updated bedoeld als aantal velden, aantal acties of aantal volledig succesvolle items?
+
+Moet audit altijd worden afgesloten, ook als getTable of een onverwachte stap faalt?
+
+Welke laag garandeert planvalidatie: workflow, coordinator of service?
+
+Reviewregister: huidige status
+
+core/kernel/BuilderKernel.js
+
+Status: Gecontroleerd
+
+Lifecycle: finally logger.end(0,0) kan een misleidende nul-samenvatting geven bij gedeeltelijke uitvoering. ReportingCoordinator sluit logger af bij succes; lifecycleCompleted voorkomt dubbele afsluiting. module.fields en coordinator-returncontract moeten aanwezig zijn.
+
+core/bootstrap/BuilderBootstrap.js
+
+Status: Gecontroleerd
+
+Contract vanuit kernel: bootstrap moet module en tableName leveren; module.fields wordt gebruikt. Geen volledige eerdere reviewtekst beschikbaar.
+
+core/workflow/BuilderWorkflow.js
+
+Status: Gecontroleerd
+
+Levert plan, rollbackPlan en summary; summary gebruikt voor console/logger. Geen directe fout vastgesteld.
+
+core/synchronization/SynchronizationCoordinator.js
+
+Status: Gecontroleerd
+
+Contract moet metadata, syncSummary, auditSummary en audit opleveren; ook bij dryRun/partial errors controleren.
+
+services/synchronizationService.js
+
+Status: Gecontroleerd
+
+7 aandachtspunten hierboven; vooral tellersemantiek, partial updates, audit-afsluiting, default switch en validatie.
+
+core/reporting/ReportingCoordinator.js
+
+Status: Gecontroleerd
+
+JSON/Markdown afzonderlijk opslaan; fout bij tweede rapport kan logger.end overslaan. syncSummary wordt doorgegeven maar RunContext/buildReport-contract moet worden gecontroleerd.
+
+services/reportGenerator.js
+
+Status: Gecontroleerd
+
+Timestamp kan tussen JSON/Markdown verschillen; syncSummary mogelijk ontbreekt in rapport; metadata/audit verwacht aanwezig; save-methodes retourneren paden en die worden gelogd. Details staan hieronder.
+
+services/runContextFactory.js
+
+Status: Gecontroleerd
+
+Controleer of summary synchronisatiegegevens bevat en of metadata/audit gegarandeerd zijn. Dit bepaalt reportGenerator-contract.
+
+services/logger.js
+
+Status: Gecontroleerd
+
+Lifecycle-contract met logger.end moet worden gecontroleerd; volledige eerdere bevindingen niet beschikbaar.
+
+services/auditService.js
+
+Status: Gecontroleerd
+
+Audit moet consistent zijn met synchronizationService en guaranteed finish lifecycle. Volledige eerdere review niet beschikbaar.
+
+core/runtime/Runtime.js
+
+Status: Gecontroleerd
+
+finish() zet endTime/duration; niet vastgesteld dat finish() wordt aangeroepen. Eerst call chain controleren.
+
+core/registry/Registry.js
+
+Status: Gecontroleerd
+
+Map registry met register/get/has; geen wijziging nodig op basis van bekeken code.
+
+core/events/EventBus.js
+
+Status: Leeg volgens gebruiker
+
+Overslaan tot bestand inhoud heeft.
+
+core/queue/QueueProcessor.js
+
+Status: Leeg volgens gebruiker
+
+Overslaan tot bestand inhoud heeft.
+
+Review: services/reportGenerator.js
+
+Status: gecontroleerd. Reviewbevindingen die Pascalle eerder aanleverde:
+
+JSON en Markdown kunnen verschillende bestandsnamen krijgen doordat createTimestamp() afzonderlijk per save wordt aangeroepen. Maak timestamp één keer per run en hergebruik die.
+
+ReportingCoordinator geeft syncSummary door, maar buildReport verwacht metadata, summary, audit, synchronizationPlan en rollbackPlan. Controleer runContextFactory om te zien of summary al sync-statistieken bevat; zo niet, voeg syncSummary expliciet aan RunContext/rapport toe.
+
+Object.entries(report.metadata) en report.audit.length vereisen metadata en audit. Garandeer dit centraal in runContextFactory of valideer de RunContext daar; geen losse checks nodig als het contract gegarandeerd is.
+
+Behouden: JSON/Markdown, huidige rapportstructuur, synchronizationPlan, rollbackPlan, audit, veldnaam-resolutie en reports/ output.
+
+saveJson/saveMarkdown retourneren bestandspaden, geen inhoud. ReportingCoordinator logt dus paden. Dat is niet fout; wijzig alleen als log ook volledige rapportinhoud moet bevatten.
+
+Nog te controleren
+
+Exacte resterende paden moeten uit de actuele projectboom komen; niet gokken:
+
+☐ Entry-point/CLI die buildModule aanroept.
+
+☐ Overige core-bestanden die nog niet in dit register staan.
+
+☐ Overige services en helpers die door de gecontroleerde bestanden worden geïmporteerd.
+
+☐ Airtable/MCP-client en configuratie.
+
+☐ Tests en package scripts.
+
+☐ Volledige runflow en contracten bij dryRun, fout en gedeeltelijke synchronisatie.
+
+Copilot werkwijze vanaf nu
+
+Bij elk nieuw bestand: maak een review in hetzelfde detailniveau als synchronizationService.js. Neem de volledige review op in dit dossier en update het register. Geef daarna één volgende file die zeker nog niet bekeken is. Als dat niet uit de zichtbare projectboom blijkt, vraag om de boom en geef geen gok.
+
+Bronextractie: RZD_Builder_Review_Dossier_detail.docx
+
+RZD Builder v2.0
+Volledig review- en wijzigingsdossier
+
+Bestemd om morgen verder te werken zonder de eerdere chat nodig te hebben
+
+Leeswijzer en betrouwbaarheid
+
+Dit dossier legt de beschikbare reviewbevindingen vast. De gedetailleerde review van services/reportGenerator.js hieronder is overgenomen uit de reviewtekst die Pascalle opnieuw heeft aangeleverd. Voor andere bestanden staan alleen bevindingen die in de huidige context aantoonbaar zijn. Waar de oorspronkelijke volledige review niet beschikbaar is, staat dat expliciet vermeld; daar is geen inhoud verzonnen.
+
+1. Bestand: services/reportGenerator.js
+
+Status: gecontroleerd. De onderstaande review is de door Pascalle aangeleverde reviewtekst.
+
+Beoordeling
+
+De rapportgenerator werkt logisch, maar er zijn 3 concrete aandachtspunten.
+
+1. JSON en Markdown krijgen mogelijk verschillende bestandsnamen
+
+Code:
+
+createFileName(extension) {
+    return `RZD_Builder_${this.createTimestamp()}.${extension}`;
+}
+
+De timestamp bevat seconden. Omdat saveJson() en saveMarkdown() afzonderlijk createTimestamp() aanroepen, kunnen ze verschillende timestamps krijgen wanneer ze over een secondegrens heen lopen. Dan horen JSON en Markdown niet meer direct bij elkaar op basis van hun bestandsnaam.
+
+Voorgestelde oplossing: maak de timestamp één keer per rapport-run aan en gebruik diezelfde timestamp voor beide bestandsnamen. Bijvoorbeeld: createFileName(extension, timestamp), waarbij ReportingCoordinator of buildReport de timestamp één keer vastlegt. Nog te beslissen: of de timestamp bij het aanmaken van de RunContext hoort, of binnen reportGenerator wordt gedeeld.
+
+2. Rapportage mist de synchronisatiesamenvatting
+
+In ReportingCoordinator wordt syncSummary meegegeven, maar buildReport() verwacht:
+
+buildReport({
+    metadata,
+    summary,
+    audit,
+    synchronizationPlan = [],
+    rollbackPlan = []
+})
+
+De synchronisatiesamenvatting wordt dus niet rechtstreeks in het rapport opgenomen. Of summary dezelfde gegevens bevat, moet worden gecontroleerd in services/runContextFactory.js.
+
+Voorgestelde oplossing: controleer runContextFactory. Als summary geen created/updated/skipped/warnings/errors bevat, voeg syncSummary expliciet toe aan de RunContext en laat buildReport die opnemen. Pas de bestaande rapportstructuur niet aan voordat duidelijk is of summary deze data al bevat.
+
+3. Metadata en audit kunnen ontbreken
+
+Kwetsbare toegang:
+
+Object.entries(report.metadata)
+
+report.audit.length
+
+De generator verwacht dat metadata en audit bestaan. Als de RunContext onvolledig is, kan rapportgeneratie crashen. Dit hoeft niet te worden opgelost met extra controles als runContextFactory deze gegevens gegarandeerd levert.
+
+Voorgestelde oplossing: controleer de garanties in runContextFactory en de returnwaarde van SynchronizationCoordinator. Als ze gegarandeerd bestaan, documenteer dat contract en laat de generator ongewijzigd. Als ze niet gegarandeerd bestaan, kies één centrale validatie bij het bouwen van de RunContext, in plaats van losse checks verspreid door de generator.
+
+Wat behouden
+
+JSON- en Markdown-rapporten.
+
+De huidige rapportstructuur.
+
+Synchronisatieplan, rollbackplan en audit.
+
+De huidige veldnaam-resolutie.
+
+Rapporten opslaan in reports/.
+
+Belangrijk voor de lifecycle
+
+saveJson() en saveMarkdown() retourneren bestandspaden, geen rapportinhoud. Daarom schrijft ReportingCoordinator momenteel de paden naar het logbestand via logger.write(jsonReport) en logger.write(markdownReport). Dat is niet fout, maar het log bevat dus niet de volledige rapportinhoud.
+
+Keuze: behoud logging van paden als dat de bedoeling is; wijzig dit alleen als het log expliciet de rapportinhoud moet bevatten.
+
+2. Bestand: core/reporting/ReportingCoordinator.js
+
+Status: gecontroleerd; gebruiker bevestigde dat dit het enige bestand in de reporting-map is.
+
+Bekende codeflow: maakt RunContext via runContextFactory, slaat JSON en Markdown op via reportGenerator, logt de geretourneerde paden en sluit de logger af met syncSummary.created en syncSummary.skipped.
+
+Aandachtspunt: als JSON opslaan lukt maar Markdown opslaan faalt, wordt logger.end() niet bereikt. Overweeg rapportstappen afzonderlijk af te handelen en lifecycle-afsluiting te garanderen. Dit is een robuustheidsverbetering; geen bewezen fout in de normale flow.
+
+Koppeling met reportGenerator: ReportingCoordinator geeft syncSummary door, maar de huidige RunContext/buildReport-contract lijkt die niet rechtstreeks te gebruiken. Controleer runContextFactory en beslis daarna of syncSummary onderdeel van het rapport moet worden.
+
+3. Bestand: core/kernel/BuilderKernel.js
+
+Status: gecontroleerd; niet opnieuw als volgende file voorstellen.
+
+Bekende flow uit de besproken code:
+
+Bootstrap maakt module en tableName beschikbaar; bij ontbrekende bootstrap wordt vroeg teruggekeerd.
+
+BuilderWorkflow levert plan, rollbackPlan en summary.
+
+Rollbackplan wordt geprint vóór synchronisatie; het wordt hier niet uitgevoerd.
+
+summary wordt in console en logger weergegeven.
+
+SynchronizationCoordinator.run ontvangt moduleName, tableName, plan en dryRun.
+
+ReportingCoordinator.run ontvangt metadata, auditSummary, audit, synchronizationPlan, rollbackPlan en syncSummary.
+
+lifecycleCompleted wordt pas true na succesvolle rapportage.
+
+Bij onvoltooide lifecycle probeert finally logger.end(0, 0) uit te voeren.
+
+Aandachtspunten
+
+logger.end(0, 0) kan bij een fout een nul-samenvatting tonen, ook als synchronisatie al deels heeft plaatsgevonden. Overweeg een expliciete failure/abort-afsluiting of gebruik de beschikbare syncSummary.
+
+ReportingCoordinator sluit bij succes zelf de logger af. De kernel-finally voorkomt dubbele afsluiting via lifecycleCompleted, maar dit contract moet bewust blijven.
+
+module.fields wordt gelezen vóór synchronisatie; bootstrap moet module.fields dus leveren.
+
+SynchronizationCoordinator-returncontract moet metadata, syncSummary, auditSummary en audit leveren, ook bij dryRun of gedeeltelijke uitvoering.
+
+Status wijziging: geen wijziging als verplicht vastgesteld. Bovenstaande zijn concrete lifecycle- en contractcontroles.
+
+4. Bestand: core/bootstrap/BuilderBootstrap.js
+
+Status: gecontroleerd.
+
+De volledige oorspronkelijke reviewtekst is niet beschikbaar in deze context. Geen specifieke wijziging als bevestigd registreren. Relevant contract vanuit BuilderKernel: bootstrap moet module en tableName leveren; module.fields wordt gebruikt voor de totaaltelling.
+
+5. Bestand: core/workflow/BuilderWorkflow.js
+
+Status: gecontroleerd.
+
+Bekend: workflow vergelijkt/bouwt plan en rollbackplan, print informatie en retourneert summary. BuilderKernel gebruikt summary voor console/logger. Geen directe fout vastgesteld. De volledige eerdere reviewtekst is niet beschikbaar; geen extra wijziging verzinnen.
+
+6. Bestand: core/synchronization/SynchronizationCoordinator.js
+
+Status: gecontroleerd; niet opnieuw als volgende file voorstellen.
+
+Bekend contract: coördineert synchronisatie en levert metadata, syncSummary, auditSummary en audit aan BuilderKernel/ReportingCoordinator. Geen specifieke codewijziging bevestigd in de beschikbare reviewnotities. Controleer in vervolg vooral of returnwaarden ook bij dryRun en gedeeltelijke fouten compleet zijn.
+
+7. Bestand: services/synchronizationService.js
+
+Status: gecontroleerd.
+
+Synchronisatie-service is besproken; volledige eerdere reviewtekst en exacte wijzigingsvoorstellen zijn niet beschikbaar in de huidige context. Geen concrete wijziging als bevestigd opnemen. Contractueel controleren: created/updated/skipped/warnings/errors en auditgegevens moeten aansluiten op SynchronizationCoordinator.
+
+8. Bestand: services/runContextFactory.js
+
+Status: gecontroleerd.
+
+Bekend: maakt context met metadata, auditSummary, synchronizationPlan, rollbackPlan en audit. Belangrijkste open controle: bevat summary ook de synchronisatiesamenvatting, of wordt syncSummary daarin niet opgenomen? Deze vraag bepaalt of reportGenerator aangepast moet worden.
+
+Voorgestelde actie: inspecteer de daadwerkelijke returnstructuur; voeg syncSummary alleen toe als de rapportage die data moet bevatten en deze nog niet in summary zit.
+
+9. Bestand: services/logger.js
+
+Status: gecontroleerd.
+
+Geen concrete wijziging uit de beschikbare reviewnotities te reconstrueren. Lifecycle-afspraken uit BuilderKernel/ReportingCoordinator zijn wel afhankelijk van de logger-end semantics. Bij vervolg controleren of logger.end meerdere keren veilig is en wat logger.end(0,0) bij een fout betekent.
+
+10. Bestand: services/auditService.js
+
+Status: gecontroleerd.
+
+Geen concrete wijziging uit de beschikbare reviewnotities te reconstrueren. Contractuele aandacht: audit/summary moet beschikbaar zijn voor RunContext en rapportgenerator.
+
+11. Bestand: core/runtime/Runtime.js
+
+Status: gecontroleerd.
+
+Bekend: Runtime bewaart options/startTime/stats/metadata/audit; finish() zet endTime en duration. In de bekeken code was niet vastgesteld dat finish() wordt aangeroepen. Eerst de aanroepketen controleren; niet zonder bewijs wijzigen.
+
+12. Bestand: core/registry/Registry.js
+
+Status: gecontroleerd.
+
+Registry gebruikt Map met register/get/has. get() geeft een duidelijke fout als service ontbreekt. Geen wijziging nodig op basis van de bekeken code.
+
+13. Lege bestanden
+
+core/events/EventBus.js — gebruiker bevestigde dat bestand leeg is; overslaan.
+
+core/queue/QueueProcessor.js — gebruiker bevestigde dat bestand leeg is; overslaan.
+
+14. Nog te controleren – exacte lijst moet uit projectboom komen
+
+Deze bestanden/paden zijn nog niet vastgesteld. Stuur de volledige projectboom om er exacte namen van te maken:
+
+Entry-point/CLI dat buildModule aanroept.
+
+Overige bestanden in core/ die niet hierboven staan.
+
+Overige services/ die door bootstrap/workflow/synchronisatie/reporting worden geïmporteerd.
+
+Airtable/API-client, configuratie en utilities.
+
+Tests en package scripts.
+
+Volledige import- en lifecycle-keten van entry-point tot rapportage.
+
+15. Morgen verder – concrete volgorde
+
+Bekijk projectboom en maak een volledige inventaris met exacte paden.
+
+Controleer eerst runContextFactory: bevat summary synchronisatiegegevens? Dit bepaalt de reportGenerator-aanpassing.
+
+Beslis en implementeer timestamp-sharing tussen JSON en Markdown.
+
+Controleer lifecycle: rapportfout, logger.end, Runtime.finish en gedeeltelijke synchronisatie.
+
+Controleer resterende services en entry-point op contracten en imports.
+
+Run dryRun/tests en voeg resultaten toe aan dit dossier.
+
+16. Belangrijke beperking
+
+Dit dossier is nu uitgebreider en bevat de concrete reportGenerator-review die opnieuw is aangeleverd. Het kan echter niet alle eerdere per-bestand-commentaren volledig reproduceren die niet meer in de huidige context staan. Voor een écht compleet auditdossier moeten die eerdere reviews opnieuw worden aangeleverd of moeten de bestanden opnieuw worden bekeken. De status “gecontroleerd” betekent niet automatisch dat een bestand wijziging nodig heeft.
+
+Bronextractie: RZD_Builder_CodeReview_uitgebreid.docx
+
+RZD Builder v2.0
+Code review – bevindingen, wijzigingen en open controle
+
+Werkdocument op basis van de code die in deze chat daadwerkelijk is besproken.
+
+Lees dit eerst
+
+Dit document bundelt de reviewstatus en de concrete aandachtspunten die uit de besproken bestanden bekend zijn. Ik kan niet eerlijk alle eerdere losse opmerkingen woordelijk reconstrueren als ze niet in de huidige context staan. Daarom markeer ik per bestand wat bevestigd is, wat een aandachtspunt is en wat nog niet inhoudelijk is gecontroleerd. Er worden geen niet-bekeken bestanden als gecontroleerd aangemerkt.
+
+1. Per bestand: status en voorgestelde actie
+
+core/kernel/BuilderKernel.js
+
+Status: Gecontroleerd
+
+Review / actie: Geen nieuwe wijziging vastgesteld. De lifecycle en finally-afhandeling zijn besproken. Niet opnieuw controleren tenzij er later een concrete foutmelding is.
+
+core/bootstrap/BuilderBootstrap.js
+
+Status: Gecontroleerd
+
+Review / actie: Geen concrete wijziging genoteerd in de beschikbare reviewnotities.
+
+services/logger.js
+
+Status: Gecontroleerd
+
+Review / actie: Geen concrete wijziging genoteerd in de beschikbare reviewnotities.
+
+services/auditService.js
+
+Status: Gecontroleerd
+
+Review / actie: Geen concrete wijziging genoteerd in de beschikbare reviewnotities.
+
+core/synchronization/SynchronizationCoordinator.js
+
+Status: Gecontroleerd
+
+Review / actie: Geen concrete wijziging genoteerd. Coördinator levert metadata, syncSummary, auditSummary en audit aan de volgende stap.
+
+services/synchronizationService.js
+
+Status: Gecontroleerd
+
+Review / actie: Geen concrete wijziging genoteerd. De synchronisatie-afhandeling is besproken; geen bewezen wijziging vastgelegd.
+
+core/reporting/ReportingCoordinator.js
+
+Status: Gecontroleerd
+
+Review / actie: Aandachtspunt: JSON-rapport kan opgeslagen zijn voordat Markdown-rapport faalt. Dan wordt logger.end niet bereikt. Overweeg rapportage afzonderlijk af te handelen en logger-afsluiting te garanderen. Dit is een robuustheidsverbetering, geen fout in de normale flow.
+
+services/runContextFactory.js
+
+Status: Gecontroleerd
+
+Review / actie: Context bevat metadata en samenvattingsgegevens, waaronder auditSummary, synchronizationPlan en rollbackPlan. Geen concrete wijziging vastgesteld.
+
+services/reportGenerator.js
+
+Status: Gecontroleerd
+
+Review / actie: Geen concrete wijziging genoteerd in beschikbare reviewnotities.
+
+core/runtime/Runtime.js
+
+Status: Gecontroleerd
+
+Review / actie: Aandachtspunt: finish() bestaat, maar in de bekeken code was niet vastgesteld dat deze wordt aangeroepen. Eerst de volledige aanroepketen controleren; niet zomaar wijzigen.
+
+core/workflow/BuilderWorkflow.js
+
+Status: Gecontroleerd
+
+Review / actie: summary wordt teruggegeven en door BuilderKernel gebruikt voor console/logger-samenvatting. Geen directe fout vastgesteld.
+
+core/registry/Registry.js
+
+Status: Gecontroleerd
+
+Review / actie: Map-based registry is eenvoudig en correct voor register/get/has. Geen wijziging nodig op basis van de bekeken code.
+
+core/events/EventBus.js
+
+Status: Leeg volgens gebruiker
+
+Review / actie: Overslaan zolang bestand leeg blijft.
+
+core/queue/QueueProcessor.js
+
+Status: Leeg volgens gebruiker
+
+Review / actie: Overslaan zolang bestand leeg blijft.
+
+2. Actuele BuilderKernel-flow: extra aandachtspunten
+
+In de laatst geplakte buildModule-code zijn de volgende punten zichtbaar:
+
+rollbackPlanner.print(rollbackPlan) wordt uitgevoerd vóór de synchronisatie. Dit lijkt bewust: rollbackplan wordt getoond, niet uitgevoerd.
+
+dryRun wordt uitsluitend bepaald met options.dryRun === true en aan SynchronizationCoordinator doorgegeven.
+
+lifecycleCompleted wordt pas true na ReportingCoordinator.run(). Als een stap eerder faalt, voert finally logger.end(0, 0) uit.
+
+Let op: logger.end(0, 0) in de fout-/onvolledige lifecycle kan een misleidende nul-samenvatting geven. Overweeg een aparte logger-finish voor failure/abort, of geef de echte syncSummary door wanneer die beschikbaar is.
+
+ReportingCoordinator.run() lijkt zelf logger.end(syncSummary.created, syncSummary.skipped) aan te roepen. Daardoor moet worden nagegaan of kernel-finally en reporting geen dubbele of tegenstrijdige afsluiting veroorzaken. In de normale succesvolle flow wordt finally niet opnieuw afgesloten omdat lifecycleCompleted true is.
+
+module.fields wordt gebruikt voor de totaalregel. Bootstrap moet module en fields dus altijd leveren; anders faalt de samenvatting vóór synchronisatie.
+
+De destructuring van SynchronizationCoordinator.run() verwacht metadata, syncSummary, auditSummary en audit. Controleer dat deze altijd worden teruggegeven, ook bij dryRun en fout-/gedeeltelijke runs.
+
+3. Wijzigingen die nu echt zijn voorgesteld
+
+Geen verplichte codewijzigingen zijn bevestigd voor de gecontroleerde bestanden. De volgende verbeteringen zijn aandachtspunten om bewust te beslissen:
+
+ReportingCoordinator: foutafhandeling per rapport toevoegen zodat een mislukte Markdown-save niet ongemerkt de lifecycle-afsluiting overslaat.
+
+Lifecycle/logging: onderscheid maken tussen succesvol afgerond, afgebroken en mislukt; logger.end(0,0) niet als gewone succesvolle samenvatting presenteren.
+
+Runtime: controleren waar Runtime.finish() wordt aangeroepen. Pas daarna beslissen of integratie ontbreekt.
+
+Coordinator-contracten: vastleggen welke velden SynchronizationCoordinator.run() altijd retourneert, inclusief dryRun en fouten.
+
+Rapportage-contract: vastleggen dat reportGenerator.saveJson/saveMarkdown dezelfde runContext-vorm verwachten.
+
+4. Nog te controleren – exacte paden nog niet vastgesteld
+
+De volledige projectboom is niet in de huidige chat beschikbaar. De onderstaande items zijn categorieën, geen verzonnen bestandsnamen:
+
+☐ Entry-point/CLI die buildModule aanroept.
+
+☐ Overige bestanden in core/ die nog niet in de gecontroleerde lijst hierboven staan.
+
+☐ Overige services/ die door bootstrap, workflow, synchronisatie of rapportage worden geïmporteerd.
+
+☐ Configuratie, Airtable-client/API-laag en utilities die door de builder worden gebruikt.
+
+☐ Tests (unit/integratie) en eventuele package scripts.
+
+☐ Controle van importpaden en de volledige run-flow van entry-point tot rapportage.
+
+5. Niet opnieuw als volgende file aanbieden
+
+core/kernel/BuilderKernel.js
+
+core/synchronization/SynchronizationCoordinator.js
+
+core/reporting/ReportingCoordinator.js
+
+core/runtime/Runtime.js
+
+core/workflow/BuilderWorkflow.js
+
+core/registry/Registry.js
+
+services/logger.js
+
+services/auditService.js
+
+services/synchronizationService.js
+
+services/runContextFactory.js
+
+services/reportGenerator.js
+
+core/events/EventBus.js (leeg)
+
+core/queue/QueueProcessor.js (leeg)
+
+6. Morgen: aanpak
+
+Stuur één screenshot van de volledige mappenboom, inclusief services, core, entry-point, config en tests.
+
+Maak op basis daarvan een exacte checklist met elk pad en status: nog bekijken / bekeken / wijziging nodig / klaar.
+
+Bekijk alleen nog niet gecontroleerde bestanden en noteer per bestand: huidige werking, probleem, exacte wijziging en reden.
+
+Voer daarna tests of een dryRun uit en voeg eventuele foutmeldingen als aparte bevindingen toe.
+
+Belangrijk: Dit is uitgebreider dan het vorige overzicht, maar het is nog geen definitieve volledige repository-audit. Voor “alle wijzigingen per bestand” moet de ontbrekende eerdere reviewtekst of de resterende bestanden opnieuw beschikbaar zijn; ik vul die niet op basis van aannames in.
+
+Bronextractie: RZD_Builder_Review_Handoff_Herstelversie.docx
+
+RZD Builder v2.0 – Review- en overdrachtsdossier
+
+Herstelversie op basis van de in deze chat teruggevonden bestanden en reviewnotities.
+
+1. Doel en betrouwbaarheid
+
+Dit dossier bundelt de concrete reviewbevindingen die teruggevonden zijn in de geplakte code- en projectbestanden. Het is geen claim dat alle eerder besproken bestanden volledig zijn teruggelezen. Bevindingen zijn hieronder gescheiden van open beslissingen en projectstatus.
+
+2. Code reviews – concrete bevindingen
+
+2.1 services/reportGenerator.js
+
+Bestandsnamen kunnen uiteenlopen: createFileName(extension) roept createTimestamp() aan. saveJson() en saveMarkdown() kunnen daardoor bij een secondegrens verschillende timestamps en dus verschillende bestandsnamen krijgen. Aanbeveling: één run-timestamp maken en voor beide rapporten hergebruiken.
+
+ReportingCoordinator geeft syncSummary door, maar reportGenerator.buildReport() accepteert metadata, summary, audit, synchronizationPlan en rollbackPlan; syncSummary ontbreekt. Eerst controleren of runContextFactory.summary de synchronisatieaantallen al bevat. Zo niet, syncSummary expliciet opnemen in RunContext.
+
+buildReport() verwacht metadata en audit. Object.entries(report.metadata) en report.audit.length kunnen crashen als deze ontbreken. Contract centraal garanderen of één duidelijke contractvalidatie toevoegen; geen dubbele checks op meerdere lagen.
+
+Lifecycle/logging: saveJson() en saveMarkdown() geven paden terug, geen rapportinhoud. ReportingCoordinator logt de paden. Dit is functioneel, maar als volledige rapportinhoud in de console gewenst is, is dat een afzonderlijke loggingkeuze.
+
+2.2 services/synchronizationService.js
+
+ summary.updated wordt vóór daadwerkelijke uitvoering verhoogd. Daardoor kan de teller een update melden terwijl item.update ontbreekt, er geen wijziging plaatsvindt of uitvoering faalt. Tel succesvolle updates na uitvoering; onderscheid geplande aantallen van werkelijk uitgevoerde aantallen.
+
+Fouten worden per item opgevangen en de synchronisatie loopt door. Dit kan bewust zijn, maar leidt tot gedeeltelijke runs. Behoud voortzetting alleen als beleid; rapporteer partial status expliciet.
+
+Dry-run lijkt create/update te blokkeren via guards. Controleer dat alle schrijfvarianten (metadata, choices, MCP en create/update) achter dry-run staan. Test dry-run zonder Airtable/MCP-writes.
+
+Een update kan meerdere subacties bevatten (metadata, choices, MCP). Als één subactie slaagt en een volgende faalt, kan een gedeeltelijke mutatie achterblijven. Niet transactioneel; documenteer per actie en bepaal of rollback/atomiciteit vereist is.
+
+auditService.finishRun() en printSummary() staan aan het einde. Als getTable() of een eerdere stap faalt, kan audit niet worden afgesloten. Afsluiten via gegarandeerde lifecycle/finally onderzoeken; voorkom dubbel afsluiten en behandel lege runs.
+
+Geen default switch-action: onbekende planactie kan stil worden genegeerd. Voeg expliciete waarschuwing/error/audit toe en bepaal of de run doorgaat.
+
+create gebruikt airtable.createField(tableName,item.field) zonder lokale validatie. Controleer of upstream workflow/planner planvalidatie garandeert; anders duidelijke validatie toevoegen.
+
+3. Architectuur en overige code-notities
+
+BuilderKernel coördineert de actuele index.js build-route via bootstrap, workflow, SynchronizationCoordinator en ReportingCoordinator. CampingAggregate-preview en WordPress-flow zijn afzonderlijke routes; Compiler en Pipeline worden niet als stappen van de actuele build-route beschreven.
+
+BuilderKernel toont rollbackPlan vooraf, maar voert daarmee geen rollback uit. Bij incomplete lifecycle roept finally logger.end(0,0) aan; na gedeeltelijke synchronisatie kunnen nulwaarden misleidend zijn. Laat daadwerkelijke runstatus/aantallen doorgeven.
+
+ReportingCoordinator maakt JSON en Markdown, logt rapportpaden en sluit logger af met syncSummary.created/skipped. Als rapportgeneratie halverwege faalt, kan logger.end uitblijven.
+
+runContextFactory bevat metadata, summary (auditSummary), synchronizationPlan, rollbackPlan en audit. Controleer of syncSummary nodig is voor rapportage.
+
+Registry is eenvoudige Map-register/get/has; geen concrete bevinding vastgesteld. EventBus en QueueProcessor waren leeg; geen inhoudelijke reviewconclusie vastgelegd.
+
+4. RZD 5.1 en review-/campingarchitectuur
+
+RZD 5.1 Airtable blijft leidend. Geen nieuwe base of onnodige tabellen. Bevestigde tabellen: Accommodaties, Modules, Beoordelingspunten, Accommodatie beoordelingen, Standaard beoordelingssets, Opmerkingen, Verbeterpunten, Reizigerservaringen en Voorzieningen.
+
+Camping/park is primair object en blijft record in Accommodaties met Type accommodatie = Camping/Vakantiepark. Geen aparte Campings-tabel.
+
+Voorzieningen zijn afzonderlijke records in Voorzieningen, gekoppeld via Camping / park. Meerdere voorzieningen van hetzelfde type blijven aparte records (bijv. Sanitairgebouw 1 en 2).
+
+Accommodatie beoordelingen ondersteunt Accommodation- en Facility-reviews via links Accommodatie en Voorziening, mutually exclusive per review. reviewWriteService heeft optioneel accommodationId en voorzieningId; deduplicatie gebruikt juiste link.
+
+airtableMapping.js bevat Voorziening in REVIEW_FIELDS/review.links. airtablePointResolver.js en pointMappings.js bleven ongewijzigd omdat entity-agnostisch.
+
+writeVoorzieningReview.js gebruikt bestaande mapping/resolver en optionele --point=CANON_ID. E2E bevestigd: Sanitairgebouw 1 → Draaicirkel bij entree.
+
+campingReadService.getCampingAggregate(campingId) bouwt campingbasis, voorzieningen met eigen reviews, campingBeoordelingen en accommodatieLaag. Maximaal 3 camping-specifieke Airtable reads: campingrecord, alle voorzieningen, gecombineerde relevante reviews. Geen call per voorziening.
+
+Accommodaties bevat toegankelijkheidsvelden die buildCamping() nog niet allemaal leest. Foto’s bestaat niet in actuele metadata/schema.
+
+Geen automatische placeholder-reviews. Camping- en voorzieningreviews blijven gescheiden via ownerType/ownerId. Status-only/lege punten worden in preview niet als inhoud getoond.
+
+Aangepaste accommodatie is nu alleen beschikbaarheidslaag: Ja/Nee/Onbekend, type en opmerking. Individuele beoordeling van bungalow/stacaravan is later werk.
+
+5. E2E-test readiness en veiligheidsstatus
+
+Read-only audit 21-09-2026: actieve base appImdZ7AGoXCAlto. Vier bestaande punten bevestigd: recI6rZO6eGjP4tUS (Parkeerplaats bij accommodatie aanwezig), rec2bCHQvPPxwxn4O (GPK-plaats aanwezig), reccLP2AChiYS9cS0 (Drempelhoogte entree), recActExxUP7FcKLy (Draaicirkel bij entree).
+
+Historische testaccommodatie-IDs receCbuC0qSuQAZK0 en recu7druA9BMOZhDk bestaan niet in actuele Accommodaties. Karios recQzECjVOUbQjc5g bestaat, maar heeft bestaande reviews en is geen veilige testscope. Geen dedicated testaccommodatie, testmarkers of harde cleanup-isolatie aangetoond. Echte Airtable E2E-test niet verantwoord. Tijdens die audit: geen writes, codewijzigingen of tests.
+
+6. Preview en WordPress status
+
+Previewroute scripts/previewCamping.js → CampingReadService → Airtable read-only → CampingAggregate → WordPressMapper → lokale HTML/JSON. Preview is geen schema-sync en gebruikt BuilderKernel niet als orchestrator.
+
+WordPress conceptflow: standaardrunner doet geen WordPress-call. Expliciete API-flow maakt Page als draft of hergebruikt bestaande Page zonder die automatisch bij te werken. Lookup status=any betekent bestaande Page kan openbaar zijn; status vooraf controleren.
+
+Live WordPress/themaweergave niet bewezen. Mock/fixturetests zijn niet live-validatie.
+
+Piani di Clodia previewtest: payload title Piani di Clodia, status draft, camping ID rec4HsMZa4ZSnBHZP. Tests controleerden inhoud/HTML-match, uitsluiten van lege/status-only inhoud en verwachte parkeerlabels.
+
+7. Open beslissingen / vervolg
+
+Bepalen hoe CampingAggregate beschikbaar komt (script/CLI-subcommand), additief; niet onnodig BuilderKernel/BuilderWorkflow/SynchronizationCoordinator wijzigen.
+
+Exacte Canon → Airtable field mapping en tabel-/naam-mapping controleren; mapping is technisch deels bevestigd maar exacte veldmapping moet nog gecontroleerd.
+
+Volledige dry-run en inspectie vóór productie-sync. Productiesync pas na expliciete controle.
+
+Facility-type-specifieke reviewcriteria, bron/verificatievelden en detailbeoordeling aangepaste accommodatie zijn toekomstige uitbreidingen.
+
+Reviewstatus A002 Full review BuilderKernel: status mismatch; projectstatus “complete” versus backlog open, teruggezet naar OPEN; bewijs nodig om als voltooid te markeren.
+
+Open sync-beleidskeuzes: partial vs atomic update, doorgaan vs stoppen bij itemfout, semantiek van updated-count, audit lifecycle bij fout, en waar planvalidatie gegarandeerd wordt.
+
+8. Beperking van deze herstelversie
+
+Deze versie bevat de reviewbevindingen die in de teruggevonden chatbestanden en eerdere reviewnotities concreet beschikbaar waren. De volledige individuele reviewtekst van alle eerder genoemde 50+ bestanden is hiermee niet bewezen teruggehaald. Bestandsnamen die alleen in een projectinventaris voorkomen zijn niet automatisch inhoudelijk gereviewd.
+
+9. Review core/reporting/ReportingCoordinator.js
+
+Bron: door Pascalle aangeleverde code en reviewtekst. Deze review is specifiek gebaseerd op de hier getoonde implementatie.
+
+Codegedrag
+
+ReportingCoordinator.run() ontvangt metadata, auditSummary, audit, synchronizationPlan, rollbackPlan en syncSummary.
+
+runContextFactory.create() krijgt metadata, auditSummary, audit, synchronizationPlan en rollbackPlan. syncSummary wordt niet aan de factory doorgegeven.
+
+Daarna worden JSON- en Markdown-rapporten aangemaakt via reportGenerator.saveJson(runContext) en saveMarkdown(runContext). De geretourneerde waarden worden als paden weergegeven en naar logger.write() gestuurd.
+
+Logger wordt afgesloten met logger.end(syncSummary.created, syncSummary.skipped).
+
+Als JSON opslaan lukt maar Markdown opslaan faalt, wordt logger.end() niet bereikt. De aangeleverde review geeft aan dat de foutafhandeling hoger in BuilderKernel.js plaatsvindt.
+
+Bij succes is er volgens de review geen dubbele logger-afsluiting: ReportingCoordinator sluit af; BuilderKernel doet dit alleen als de lifecycle niet voltooid is.
+
+Reviewconclusie
+
+Geen directe aanpassing nodig volgens de aangeleverde review. De samenwerking tussen ReportingCoordinator.js, runContextFactory.js en reportGenerator.js is logisch. Het aandachtspunt rond gedeeltelijke rapportgeneratie blijft: bij fout in Markdown na succesvolle JSON wordt de logger hier niet afgesloten; de hogere kernel-foutafhandeling moet dit opvangen.
+
+Let op: de eerdere algemene reviewnotitie over mogelijke ontbrekende syncSummary in het RunContext blijft een controlepunt, maar deze aangeleverde review concludeert dat de huidige samenwerking logisch is. Niet als bewezen bug opnemen zonder runContextFactory/reportGenerator-contract opnieuw te controleren.
+
+Aanvullende herstelinput – 6 november 2026
+
+Deze sectie verwerkt de nieuwe geplakte tekst. De inhoud hieronder is gebaseerd op de aangeleverde review en code; de geplakte tekst bevat geen afgeronde review van RollbackService.
+
+ReportingCoordinator.js – aangeleverde review
+
+Status volgens de aangeleverde review: AANPASSEN. Rapportage is logisch gescheiden: runContextFactory maakt de context en reportGenerator slaat JSON en Markdown op. Audit, auditSummary, synchronizationPlan en rollbackPlan worden doorgegeven.
+
+syncSummary wordt gebruikt door logger.end(); ontbreekt het, dan ontstaat een fout.
+
+JSON en Markdown worden volledig naar het logbestand geschreven; controleer de omvang.
+
+Fouten van runContextFactory of reportGenerator worden niet lokaal afgehandeld.
+
+Belangrijkste aandachtspunt volgens deze review: foutafhandeling tijdens rapportgeneratie en opslag.
+
+Review-instructie: nog niet aanpassen.
+
+reportGenerator.js – aangeleverde review
+
+Status volgens de aangeleverde review: AANPASSEN. De generator maakt JSON en Markdown afzonderlijk en is overzichtelijk opgebouwd.
+
+Rapportmap reports wordt gemaakt onder process.cwd(); de locatie hangt dus af van de startmap van Builder.
+
+Bestandsnaam gebruikt een timestamp tot op seconden. Runs binnen dezelfde seconde kunnen dezelfde naam opleveren en bestaande rapporten overschrijven.
+
+buildMarkdownReport verwacht metadata, summary en audit; ontbrekende waarden kunnen generatie laten vastlopen.
+
+Audit toont record.field rechtstreeks, terwijl synchronisatie- en rollbackacties getFieldName() gebruiken.
+
+Schrijffouten worden niet lokaal afgehandeld.
+
+Conclusie: aandachtspunten zijn opslaglocatie, mogelijke overschrijving en validatie van ontbrekende gegevens.
+
+Review-instructie: nog niet aanpassen.
+
+RollbackService.js – code ontvangen, review nog niet aangeleverd
+
+De geplakte code bevat een singleton RollbackService met clear(), register(), rollback(), getAll(), count() en print(). De reviewtekst bevat geen expliciete beoordeling van dit bestand. Daarom zijn hieronder alleen controlepunten opgenomen, geen definitieve bevindingen.
+
+register() bewaart before/after snapshots van name, type, description en options; options wordt met structuredClone gekopieerd.
+
+rollback() loopt de stack in omgekeerde volgorde af en roept updateService.updateField() aan.
+
+Rollback herstelt in de getoonde payload description en options; name/type worden niet meegegeven aan updateField.
+
+Bij een fout halverwege rollback stopt de loop; er is in deze code geen lokale foutafhandeling of voortgangsrapportage.
+
+Rollback voltooid wordt alleen geprint als de hele loop zonder exception eindigt.
+
+Dit zijn code-observaties om later te toetsen; niet als goedgekeurde review of wijzigingsopdracht behandelen.
+
+Contextcorrectie
+
+De geplakte tekst noemt eerst builderMetadata.js als volgende bestand, maar daarna corrigeert de gebruiker het pad naar ReportingCoordinator.js en levert reportGenerator.js plus RollbackService.js. Er is geen builderMetadata.js-code in deze input. De genoemde runContextFactory.js is ook niet daadwerkelijk aangeleverd.
+
+Aanvullende herstelinput – 6 november 2026 (vervolg)
+
+RollbackService.js – aangeleverde review
+
+Status volgens de aangeleverde review: AANPASSEN. De rollback werkt gedeeltelijk, maar is volgens de review niet betrouwbaar genoeg om alle wijzigingen volledig terug te draaien.
+
+Veldnaam en type worden niet hersteld; alleen description en options worden aan updateService.updateField() doorgegeven.
+
+Rollback stopt bij de eerste fout. Latere stack-items worden dan niet teruggezet.
+
+De stack blijft gevuld na rollback, waardoor dezelfde rollback opnieuw kan worden uitgevoerd.
+
+Lege oorspronkelijke options worden niet teruggezet; gewijzigde opties kunnen blijven bestaan.
+
+getAll() geeft de interne stack rechtstreeks terug, waardoor andere code de stack kan aanpassen.
+
+Volgende controle volgens de aangeleverde tekst: services/synchronizationService.js nagaan of rollback-items worden geregistreerd en rollback bij synchronisatiefouten wordt uitgevoerd.
+
+SynchronizationService.js – aangeleverde review
+
+Status volgens de aangeleverde review: AANPASSEN. De service voert synchronisatie uit, maar rollback is niet geïntegreerd.
+
+DryRun voorkomt de daadwerkelijke wijzigingen in deze service.
+
+Auditregels worden bijgehouden; fouten per veld worden opgevangen zodat de synchronisatie doorgaat; de samenvatting wordt teruggegeven.
+
+Rollback wordt niet geregistreerd: rollbackService.register() wordt nergens aangeroepen.
+
+Rollback wordt niet uitgevoerd bij fouten; de service registreert de fout en gaat verder met het volgende veld.
+
+Update kan dubbel worden uitgevoerd: updateService.updateField() krijgt metadata, waarna updateChoices() afzonderlijk wordt aangeroepen voor choices. Mogelijk dubbele API-aanroepen.
+
+summary.updated wordt verhoogd vóór uitvoering; daardoor telt de teller ook mislukte updates en geeft hij geplande in plaats van succesvolle updates weer.
+
+Onbekende item.action wordt stilletjes overgeslagen; geen warning/error.
+
+airtable.getTable() wordt ook uitgevoerd bij een lege planlijst, waardoor een lege synchronisatie alsnog kan mislukken.
+
+Conclusie: belangrijkste aandachtspunt is dat rollback niet in de synchronisatie is geïntegreerd.
+
+BuilderKernel.js – code opnieuw aangeleverd, review eerder gedaan
+
+De gebruiker leverde de BuilderKernel-code opnieuw aan. De eerdere review blijft volgens de geplakte tekst van kracht: bootstrap/workflow/synchronisatie/rapportage worden aangeroepen, foutafhandeling en logger-afsluiting zijn aanwezig; geen nieuwe bevindingen en geen aanpassing nodig.
+
+Registry.js – reviewstatus
+
+Review uit de aangeleverde tekst: correct en eenvoudig opgebouwd. constructor maakt een lege service-map; register() registreert; get() haalt op en geeft een duidelijke fout als service ontbreekt; has() controleert registratie. Conclusie: geen fout gevonden, geen aanpassing nodig.
+
+Projectscope – geen 4000 bestanden handmatig nalopen
+
+De afgesproken aanpak is gericht: alleen hoofdbestanden die de werking bepalen, imports volgen om daadwerkelijk gebruikte onderdelen te vinden, scripts met mogelijke echte Airtable-mutaties apart behandelen, bestanden niet dubbel beoordelen en daarna een overzicht maken van behouden/aanpassen/nader onderzoeken. De volgende relevante file die in de geplakte tekst wordt gevraagd is services/airtableAdapter.js; mcpEngine.js is al bekeken.
+
+Kernel lifecycle – aanvullende observaties uit de aangeleverde code
+
+buildModule() zet lifecycleCompleted pas true nadat ReportingCoordinator.run() succesvol is afgerond.
+
+Bij fout wordt error gelogd en opnieuw gegooid; finally roept logger.end(0, 0) aan wanneer lifecycle niet voltooid is.
+
+Daardoor kan een mislukte run na gedeeltelijke synchronisatie toch met 0/0 worden afgesloten; de eerdere documentnotitie over misleidende eindstatus blijft relevant.
+
+De code toont dryRun als options.dryRun === true en geeft die door aan SynchronizationCoordinator.run().
+
+Rollbackplan wordt geprint, maar deze kernel-code voert rollbackPlanner.rollback() niet uit.
+
+Geconsolideerde bestandstatus – aantoonbaar teruggevonden
+
+Project-/testreviews die geen individuele bestandreview zijn
+
+RZD 5.1 Airtable blijft leidend; geen nieuwe base/tabel. Camping/park in Accommodaties, voorzieningen in Voorzieningen.
+
+CampingAggregate review: campingrecord, alle voorzieningen en relevante reviews gecombineerd; geen N+1 reads.
+
+Review write flow: Accommodatie- en Voorziening-review via bestaande mapping/resolver, mutually exclusive links en dedup.
+
+E2E audit: historische testaccommodaties verdwenen; Karios bevat echte reviews; dedicated testrecord/cleanup ontbreekt; geen veilige live write test aangetoond.
+
+WordPress: preview los van schema-sync; mapper/publisher concept; mock tests bewijzen geen live thema- of WP-validatie.
+
+Open keuzes: atomic vs partial sync, stop vs continue, actual/planned counters, audit closure, rollback integration, field mapping, accommodation detail later.
+
+Telling en beperking
+
+Deze bundel consolideert 22 concrete bestandsvermeldingen/statusregels plus project- en testreviews. Dat is geen telling van 22 volledig inhoudelijk gereviewde bestanden: meerdere entries zijn alleen genoemd/gecontroleerd met beperkte reviewtekst. De bronextracties zijn achterin behouden om terug te kunnen zoeken.
+
+Historische tabel:
+
+Bestand
+
+Teruggevonden status / review
+
+core/kernel/BuilderKernel.js
+
+Gecontroleerd; geen nieuwe wijziging vastgesteld. Lifecycle, dryRun, rollbackplan-print en finally logger.end(0,0) besproken. Mogelijk misleidende nulstatus bij gedeeltelijke run.
+
+core/bootstrap/BuilderBootstrap.js
+
+Gecontroleerd; volledige oorspronkelijke review ontbreekt. Bekend contract: module en tableName leveren; module.fields gebruikt voor telling.
+
+core/workflow/BuilderWorkflow.js
+
+Gecontroleerd; plan, rollbackPlan en summary. Geen directe fout vastgesteld; volledige review ontbreekt.
+
+core/synchronization/SynchronizationCoordinator.js
+
+Gecontroleerd; coördineert synchronisatie en levert metadata, syncSummary, auditSummary en audit.
+
+core/reporting/ReportingCoordinator.js
+
+Review ontvangen. Context factory en rapporten, syncSummary logger.end. Foutafhandeling/lifecycle aandachtspunt; geen bewezen normale-flow bug.
+
+core/runtime/Runtime.js
+
+Gecontroleerd; options/startTime/stats/metadata/audit en finish(). Aanroep finish() niet vastgesteld.
+
+core/registry/Registry.js
+
+Gecontroleerd; Map register/get/has; geen aanpassing nodig.
+
+core/events/EventBus.js
+
+Leeg volgens gebruiker; overslaan zolang leeg.
+
+core/queue/QueueProcessor.js
+
+Leeg volgens gebruiker; overslaan zolang leeg.
+
+services/logger.js
+
+Gecontroleerd genoemd in overdracht; lifecycle-afstemming met audit/synchronization aandachtspunt.
+
+services/auditService.js
+
+Gecontroleerd genoemd; audit moet consistent zijn met synchronisatie en finish lifecycle; volledige eerdere review ontbreekt.
+
+services/reportGenerator.js
+
+Concrete bevindingen: timestamp per save kan verschillende namen opleveren; metadata/audit validatie; syncSummary contract; report paths vs contents logging; opslag/foutafhandeling.
+
+services/synchronizationService.js
+
+Concrete bevindingen: updated teller vóór succes; per-field continue bij errors; rollback niet geregistreerd/uitgevoerd; onbekende action stil; lege plan doet getTable; choices mogelijk dubbele update; geen lokale atomiciteit.
+
+services/RollbackService.js
+
+Review: AANPASSEN. Name/type niet hersteld; stop bij eerste fout; stack niet geleegd; lege options niet teruggezet; getAll geeft interne stack direct.
+
+services/airtableAdapter.js
+
+Als volgende/relevant genoemd in projectreview; geen volledige code-reviewstatus in teruggevonden documenten.
+
+services/mcpEngine.js
+
+Eerder bekeken volgens gebruiker; volledige bevindingen niet in de beschikbare dossierextracten.
+
+services/campingReadService.js
+
+Architectuurreview: CampingAggregate; maximaal 3 camping reads; aanvullende accessibility fields nog niet allemaal gelezen; Foto's veld ontbreekt in schema.
+
+content/mapping/airtableMapping.js
+
+Review/context: Voorziening toegevoegd aan REVIEW_FIELDS/review.links; Voorziening review-write flow.
+
+services/airtablePointResolver.js
+
+Entity-agnostisch; geen wijziging nodig volgens projectnotitie.
+
+pointMappings.js
+
+Entity-agnostisch; geen wijziging nodig volgens projectnotitie.
+
+services/pointLookupCache.js
+
+Nieuw; lazy cache Modules/Beoordelingspunten; koude start 2 extra reads; paginatie ontbreekt in resolver als bekend aandachtspunt.
+
+scripts/writeVoorzieningReview.js
+
+Nieuwe write flow; optionele --point; E2E Sanitairgebouw 1 → Draaicirkel bij entree genoemd.
+
+scripts/previewCamping.js
+
+Read-only previewflow; lokaal HTML/JSON; mocks/fixtures zijn geen live validatie.
+
+scripts/publishCamping.js
+
+Conceptflow; bestaande Page hergebruik maar niet automatisch update; status=any lookup kan publieke Page matchen; live productie niet aangetoond.
+
+9. Volledige controle bestanden.txt (bronappendix B)
+
+De volledige oorspronkelijke controletekst is opgenomen; inhoud niet samengevat of gecorrigeerd.
+
+A002 — BuilderKernel review
+
+Bestand: core/BuilderKernel.js
+
+Review: 🟡 AANPASSEN
+
+Wijzigingen: Geen. Alleen analyse.
+
+Wat goed is
+
+- BuilderKernel coördineert de bestaande services.
+
+- Bootstrap, workflow, synchronisatie en rapportage zijn gescheiden.
+
+- dryRun wordt expliciet doorgegeven aan de synchronisatie.
+
+- Rollbackplan wordt vóór synchronisatie weergegeven.
+
+- Fouten worden gelogd en opnieuw doorgegeven.
+
+- finally bewaakt de afsluiting bij onvoltooide uitvoering.
+
+Aandachtspunten
+
+Onderdeel Bevinding
+
+lifecycleCompleted Wordt pas na rapportage true. Als rapportage mislukt nadat synchronisatie is uitgevoerd, wordt de uitvoering als onvolledig behandeld.
+
+logger.end(0, 0) De waarden zijn hardcoded. Uit deze code blijkt niet of dit correcte foutstatistieken oplevert.
+
+bootstrap Bij een ontbrekende bootstrap wordt stil teruggekeerd. De gebruiker krijgt hier geen expliciete melding vanuit deze functie.
+
+module.fields.length Wordt gebruikt zonder lokale controle. Of dit veilig is, hangt af van de validatie in BuilderBootstrap.
+
+Rollback Het rollbackplan wordt getoond, maar deze functie voert zelf geen rollback uit.
+
+dryRun Wordt hier alleen aan SynchronizationCoordinator doorgegeven. De werking binnen die coordinator moet afzonderlijk worden gecontroleerd.
+
+Conclusie
+
+De structuur is overzichtelijk en sluit aan op de bestaande architectuur.
+
+Deze code bewijst nog niet dat A002 volledig is afgerond. Daarvoor moeten vooral de foutafhandeling, logger-afsluiting en dryRun-grens worden gecontroleerd.
+
+Volgende stap
+
+Bestand: core/BuilderKernel.js
+
+Eerst onderzoeken:
+
+1. Wat logger.end(0, 0) daadwerkelijk doet.
+
+2. Of BuilderBootstrap ontbrekende of ongeldige modules afhandelt.
+
+3. Of SynchronizationCoordinator bij dryRun gegarandeerd geen Airtable-wijzigingen uitvoert.
+
+Controle services/logger.js
+
+Status: 🟡 AANPASSEN
+
+Bevindingen
+
+1. logger.end(0, 0)
+
+In BuilderKernel worden bij een fout altijd nullen doorgegeven. Daardoor kan het logbestand een misleidend resultaat tonen: 0 aangemaakt en 0 overgeslagen.
+
+2. logger.write() vóór logger.start()
+
+write() gebruikt this.file. Als start() niet eerst is uitgevoerd, kan het loggen mislukken.
+
+3. Geen controle op actief logbestand
+
+start() stelt het bestand in, maar er is geen controle of de logger al gestart is.
+
+4. end() sluit de logger niet af
+
+Het schrijft alleen een resultaat. Er is geen status die voorkomt dat daarna nog geschreven wordt.
+
+Koppeling met BuilderKernel
+
+De belangrijkste concrete bevinding: BuilderKernel roept logger.end(0, 0) aan bij een niet-voltooide lifecycle. Dat is niet betrouwbaar als eindresultaat.
+
+Controle BuilderBootstrap.js
+
+Status: 🟡 AANPASSEN
+
+Bevindingen
+
+1. Logger wordt correct gestart met logger.start(moduleName).
+
+2. Module niet gevonden: er wordt een fout gelogd, maar return null zorgt ervoor dat BuilderKernel stil stopt.
+
+3. Schemafouten: worden gelogd en de builder stopt. Dat werkt duidelijk.
+
+4. Airtable-fout: airtable.getFields(tableName) staat buiten de try. Als dit mislukt, komt de fout bij BuilderKernel terecht.
+
+5. Logger afsluiten: bij module- of schemafouten wordt logger.end() niet aangeroepen. Daardoor ontbreekt het resultaat in het logbestand.
+
+Conclusie
+
+De logger start hier correct. Het probleem zit vooral in de afhandeling van fouten en het ontbreken van een eindresultaat.
+
+Controle SynchronizationCoordinator.js
+
+Status: 🟡 AANPASSEN
+
+Bevindingen
+
+1. DryRun
+
+- dryRun wordt correct doorgegeven aan synchronizationService.execute().
+
+- Of er daadwerkelijk geen Airtable-wijzigingen plaatsvinden, kan ik pas controleren in de synchronisatieservice.
+
+2. Foutafhandeling
+
+- Er staat geen try/catch in deze coordinator.
+
+- Bij een fout in de synchronisatie wordt metadata niet afgerond en wordt het synchronisatieresultaat niet gelogd.
+
+3. Metadata
+
+- builderMetadata.finish(metadata) wordt pas uitgevoerd nadat de synchronisatie succesvol is afgerond.
+
+- Bij een synchronisatiefout ontbreekt dus mogelijk de afgeronde metadata.
+
+4. Logger
+
+- De logger wordt hier niet gestart, maar dat gebeurt in BuilderBootstrap.
+
+- De synchronisatieresultaten worden correct naar het logbestand geschreven als de synchronisatie een resultaat teruggeeft.
+
+Conclusie
+
+De coordinator geeft dryRun correct door, maar kan niet bewijzen dat dryRun veilig is. Daarvoor moeten we de daadwerkelijke synchronisatieservice controleren.
+
+Volgende bestand
+
+Bestand: synchronizationService.js
+
+Map: RZD Builder / services / synchronizationService.js
+
+Volledig pad: services/synchronizationService.js
+
+Controle synchronizationService.js
+
+Status: 🔴 KRITIEK PUNT GEVONDEN
+
+Bestand: synchronizationService.js
+
+Map: RZD Builder / services / synchronizationService.js
+
+Volledig pad: services/synchronizationService.js
+
+1. DryRun – aanmaken
+
+Bij create wordt dryRun gecontroleerd voordat Airtable wordt aangepast.
+
+✅ Geen Airtable-veld wordt aangemaakt tijdens dryRun.
+
+2. DryRun – bijwerken
+
+Bij update wordt dryRun gecontroleerd voordat de update wordt uitgevoerd.
+
+✅ Metadata-updates en MCP-updates worden overgeslagen.
+
+3. 🔴 Choices-update
+
+De functie updateChoices() wordt alleen bereikt wanneer dryRun false is. Dat is goed.
+
+4. 🔴 Samenvatting klopt niet volledig
+
+Bij update wordt summary.updated++ al verhoogd voordat gecontroleerd wordt of er daadwerkelijk een wijziging is.
+
+Ook bij dryRun worden velden als bijgewerkt geteld, terwijl er niets wordt aangepast.
+
+5. Fouten worden niet doorgegeven
+
+De catch verhoogt summary.errors, logt de fout en gaat verder met het volgende veld.
+
+Daardoor kan de synchronisatie eindigen met fouten zonder dat BuilderKernel een exception ontvangt.
+
+6. Rollback
+
+De audit registreert before en after, maar deze service voert zelf geen rollback uit.
+
+De rollback blijft dus afhankelijk van andere onderdelen.
+
+Conclusie A002
+
+DryRun lijkt in deze service veilig voor de getoonde Airtable-wijzigingen. De daadwerkelijke uitvoering van updateService, updateChoices en mcpEngine moet nog afzonderlijk worden gecontroleerd.
+
+Controle updateService.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: updateService.js
+
+Map: RZD Builder / services / updateService.js
+
+Volledig pad: services/updateService.js
+
+Bevindingen
+
+1. Airtable-update werkt via PATCH. De service stuurt het payload naar de juiste metadata-endpoint.
+
+2. Fout wordt doorgegeven. throw error zorgt ervoor dat de synchronisatieservice de fout kan registreren.
+
+3. Payload wordt aangepast. Lege options en lege objecten worden verwijderd. Dit gebeurt direct op het oorspronkelijke payload-object.
+
+4. Gevoelige gegevens in logs. Requestheaders worden volledig gelogd. Dat kan de Authorization-token bevatten. Dit is een beveiligingsrisico.
+
+5. DryRun: deze service heeft zelf geen dryRun-controle. Dat is op zich geen fout, omdat de synchronisatieservice dryRun vóór deze functie controleert. Maar direct aanroepen van updateField() kan wel een Airtable-update uitvoeren.
+
+Conclusie
+
+DryRun wordt in de huidige synchronisatieflow vóór deze service afgevangen. De logger kan echter mogelijk gevoelige headers loggen.
+
+Controle choicesEngine.js
+
+Status: 🔴 KRITIEK – Airtable-update mogelijk niet ondersteund
+
+Bestand: choicesEngine.js
+
+Map: RZD Builder / services / engines / choicesEngine.js
+
+Volledig pad: services/engines/choicesEngine.js
+
+Bevindingen
+
+1. DryRun: deze functie heeft geen eigen dryRun-controle. In de huidige workflow wordt hij wel overgeslagen tijdens dryRun.
+
+2. Airtable PATCH: de functie probeert rechtstreeks de options.choices van een veld te wijzigen. Dit endpoint ondersteunt niet zomaar het wijzigen van select-opties. Daardoor kan de update mislukken.
+
+3. Geen foutafhandeling: een API-fout wordt doorgegeven aan SynchronizationService, waar die wordt geregistreerd.
+
+4. Geen controle op lege keuzes: een lege array wordt wel doorgestuurd en kan mogelijk bestaande opties beïnvloeden.
+
+5. Token: de functie gebruikt AIRTABLE_TOKEN uit de omgeving.
+
+Conclusie
+
+De huidige choicesEngine.js is niet bewezen werkend. De directe PATCH van select-opties is een belangrijk aandachtspunt. Dit moet eerst worden geverifieerd voordat we A002 kunnen afronden.
+
+Controle mcpEngine.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: mcpEngine.js
+
+Map: RZD Builder / services / engines / mcpEngine.js
+
+Volledig pad: services/engines/mcpEngine.js
+
+Bevindingen
+
+1. MCP wordt correct aangeroepen voor options.choices.
+
+2. DryRun: wordt hier niet gecontroleerd. In de huidige synchronisatieflow wordt deze engine wel overgeslagen tijdens dryRun.
+
+3. Foutafhandeling: fouten worden doorgegeven aan SynchronizationService, waar ze worden geregistreerd.
+
+4. Onbekende properties: worden alleen gelogd. De synchronisatie kan daardoor doorgaan zonder dat de wijziging is uitgevoerd.
+
+5. Choices-update: deze engine gebruikt mcpService.call("airtable.field.updateChoices", ...). Of deze MCP-tool beschikbaar is en de opties correct bijwerkt, moet nog worden gecontroleerd in mcpService.
+
+Conclusie A002
+
+De dryRun-controle in SynchronizationService voorkomt dat deze engine wordt aangeroepen tijdens dryRun.
+
+De werking van de MCP-update zelf is nog niet bewezen. Ook is de foutafhandeling in SynchronizationService een aandachtspunt: fouten worden geregistreerd, maar niet doorgegeven aan BuilderKernel.
+
+Controle mcpService.js
+
+Status: 🔴 AANPASSEN
+
+Bestand: mcpService.js
+
+Map: RZD Builder / services / mcpService.js
+
+Volledig pad: services/mcpService.js
+
+Bevindingen
+
+1. MCP-verbinding
+
+- Start via index.js met argument mcp.
+
+- Starttimeout: 10 seconden.
+
+- Verzoektimeout: 30 seconden.
+
+2. Verzoeken
+
+- JSON-RPC-verzoeken krijgen een uniek ID.
+
+- Antwoorden worden gekoppeld aan het juiste verzoek.
+
+- Timeout en MCP-fouten worden doorgegeven.
+
+3. 🔴 Verbinding kan blijven hangen
+
+- connect() wacht op spawn, maar dat betekent niet dat de MCP-server klaar is om verzoeken te verwerken.
+
+- Er is geen MCP-handshake of initialisatie zichtbaar.
+
+4. 🔴 Timeout
+
+- Bij een verzoektimeout wordt alleen dat verzoek afgewezen.
+
+- De MCP-server blijft draaien. Een laat antwoord wordt genegeerd.
+
+5. 🔴 Verbinding afsluiten
+
+- disconnect() beëindigt het proces.
+
+- Er is geen graceful shutdown zichtbaar.
+
+- closePromise wordt niet opnieuw ingesteld bij een nieuwe verbinding.
+
+6. Foutafhandeling
+
+- JSON-fouten en procesfouten worden afgehandeld.
+
+- Een fout in child.stdin.write() leidt tot het afwijzen van openstaande verzoeken.
+
+Conclusie
+
+De MCP-service heeft een basis voor procesbeheer en verzoekafhandeling, maar de MCP-verbinding is nog niet volledig bewezen betrouwbaar.
+
+Belangrijk voor de Preview: een MCP-timeout of fout kan de synchronisatie beïnvloeden. De synchronisatieservice registreert fouten, maar geeft ze niet automatisch door aan BuilderKernel.
+
+Controle index.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: index.js
+
+Map: RZD Builder / (projectroot)
+
+Volledig pad: index.js
+
+Bevindingen
+
+1. MCP-start: protocol.listen() start de server. De daadwerkelijke handshake hangt af van mcp/protocol.js.
+
+2. Build: BuilderKernel wordt aangeroepen met de module en dryRun.
+
+3. MCP afsluiten: bij build wordt mcpService.disconnect() altijd aangeroepen.
+
+4. Foutafhandeling: buildfouten worden opgevangen door de buitenste catch, waarna het proces met exitcode 1 stopt.
+
+5. MCP-command: de mcp-opdracht start de server, maar hier is geen expliciete afsluit- of foutafhandeling voor de server zichtbaar.
+
+Conclusie
+
+De startstructuur is duidelijk. De correcte MCP-initialisatie en het antwoordprotocol kunnen we pas beoordelen in de protocolcode.
+
+A002 nog niet afronden. We hebben nu de volledige route van BuilderKernel tot de MCP-service bekeken. De belangrijkste resterende controle is de protocol- en routerlaag.
+
+Controle mcp/protocol.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: RZD Builder/mcp/protocol.js
+
+Bevindingen
+
+1. Geen validatie van JSON-RPC-verzoeken
+
+Alleen JSON-parsing wordt gecontroleerd. Een verzoek met ontbrekende method of id gaat alsnog naar de router.
+
+2. Geen foutafhandeling rond requestHandler
+
+Als de handler een fout gooit, wordt die niet in dit bestand afgehandeld. index.js vangt dit wel op.
+
+3. Geen ondersteuning voor notificaties expliciet
+
+Verzoeken zonder id worden ook doorgestuurd. Dat kan goed zijn voor notificaties, maar de router moet dit correct afhandelen.
+
+4. listen() kan meerdere keren worden gestart
+
+Er is geen controle of de readline-interface al bestaat.
+
+5. JSON-foutmelding
+
+Bij ongeldige JSON wordt id: null gebruikt. Dat is passend voor een parsefout.
+
+Conclusie
+
+De basis is overzichtelijk. De belangrijkste aandachtspunten zijn validatie van inkomende verzoeken en afhandeling van fouten vanuit de handler.
+
+Controle mcp/router.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: RZD Builder/mcp/router.js
+
+Bevindingen
+
+1. Methode wordt niet gevalideerd
+
+method wordt rechtstreeks uit het verzoek gehaald. Bij een ontbrekende methode komt er een foutmelding.
+
+2. Geen controle op params
+
+Als params ontbreekt of geen geldig object is, kan updateChoices.execute(params) een fout geven.
+
+3. Foutafhandeling
+
+Onbekende methodes geven een fout. index.js vangt die op en stuurt een MCP-fout terug.
+
+4. Router ondersteunt één methode
+
+Alleen airtable.field.updateChoices wordt verwerkt. Dat is prima voor de huidige functionaliteit, maar uitbreiden vereist een nieuwe case.
+
+Conclusie
+
+De router is simpel en overzichtelijk. De belangrijkste aandachtspunten zijn validatie van method en params.
+
+Controle services/mcpHandlers/updateChoices.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: RZD Builder/services/mcpHandlers/updateChoices.js
+
+Bevindingen
+
+1. Controle van parameters
+
+tableId, fieldId en choices worden gecontroleerd. Dat is goed.
+
+2. Geen controle op lege waarden
+
+Een lege choices-array wordt geaccepteerd. Daardoor kan een onbedoelde lege lijst worden doorgestuurd.
+
+3. Geen controle van individuele keuzes
+
+De inhoud van choices wordt niet gecontroleerd. Bijvoorbeeld of iedere keuze een geldig object bevat.
+
+4. Foutafhandeling
+
+Fouten vanuit choicesEngine worden doorgegeven aan de router en uiteindelijk aan index.js. Dat past bij de huidige structuur.
+
+5. Base ID
+
+AIRTABLE_BASE_ID wordt gecontroleerd voordat de update wordt uitgevoerd.
+
+Conclusie
+
+De basiscontrole is aanwezig. De belangrijkste aandachtspunten zijn validatie van de afzonderlijke keuzes en voorkomen dat een lege lijst onbedoeld wordt doorgestuurd.
+
+Controle services/engines/choicesEngine.js
+
+Status: 🔴 BLOKKEERT
+
+Bestand: RZD Builder/services/engines/choicesEngine.js
+
+Bevindingen
+
+1. Airtable API ⚠️
+
+De code probeert via PATCH de options.choices van een veld te wijzigen. Dit is een belangrijk probleem: de Airtable Metadata API ondersteunt deze wijziging niet op de manier waarop deze code het probeert. De community verwijst hiervoor naar de beperkingen van de API. Airtable Community
+
+2. Geen controle op API-token
+
+AIRTABLE_TOKEN wordt niet gecontroleerd. Bij ontbrekende token wordt alsnog een request uitgevoerd.
+
+3. Ongeldige keuzes
+
+choice.name wordt gebruikt zonder te controleren of choice een geldig object is. Een null-waarde kan een fout veroorzaken.
+
+4. Geen foutafhandeling
+
+Axios-fouten worden doorgegeven. Dat is op zichzelf goed, maar er ontbreekt een duidelijke foutmelding voor Airtable.
+
+5. Geen resultaat teruggegeven
+
+De functie retourneert geen API-resultaat. Daardoor krijgt de MCP-handler geen expliciete bevestiging van de wijziging.
+
+Conclusie
+
+De grootste blokkade is de Airtable API-aanpak. De code kan niet betrouwbaar de keuzelijst aanpassen zoals bedoeld.
+
+Controle services/mcpService.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: RZD Builder/services/mcpService.js
+
+Bevindingen
+
+1. MCP-server gereedmelding
+
+child.once("spawn") bevestigt dat het proces gestart is, maar niet dat de MCP-server klaar is om verzoeken te verwerken.
+
+2. Timeout
+
+Verzoeken krijgen een timeout van 30 seconden. Bij timeout wordt het verzoek afgewezen, maar de MCP-server blijft draaien.
+
+3. Foutafhandeling
+
+Bij verbindingsfouten worden openstaande verzoeken afgewezen. Dat is goed.
+
+4. JSON-RPC-validatie
+
+Het antwoord wordt gecontroleerd op JSON en op result of error. De volledige JSON-RPC-structuur wordt niet gecontroleerd.
+
+5. Verbinding sluiten
+
+disconnect() beëindigt het proces en wacht op afsluiting. Dat is goed.
+
+6. Geen controle op timeoutMs
+
+Een ongeldige timeoutwaarde wordt niet vooraf gecontroleerd.
+
+Conclusie
+
+De verbinding, verzoekafhandeling en afsluiting zijn behoorlijk uitgewerkt.
+
+Het belangrijkste aandachtspunt is het onderscheid tussen proces gestart en MCP-server daadwerkelijk klaar. Daarnaast verdient de validatie van JSON-RPC-antwoorden aandacht.
+
+Controle services/auditService.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: RZD Builder/services/auditService.js
+
+Bevindingen
+
+1. Run-ID kan overschreven worden
+
+In add(record) staat ...record achter runId en timestamp. Daardoor kan het record deze waarden overschrijven.
+
+2. Records zijn rechtstreeks toegankelijk
+
+getRecords() geeft de interne array terug. Andere code kan daardoor auditrecords aanpassen.
+
+3. Geen controle op finishRun()
+
+De functie kan meerdere keren worden aangeroepen en overschrijft dan finishedAt.
+
+4. clear() start een nieuwe run
+
+Dit reset de run-ID en records. Dat is belangrijk wanneer eerdere auditgegevens nog nodig zijn.
+
+5. Samenvatting
+
+De tellingen voor create, update, skip, warning en error zijn overzichtelijk.
+
+Conclusie
+
+De belangrijkste aandachtspunten zijn bescherming van auditrecords en behoud van de juiste run-ID.
+
+Controle services/rollbackPlanner.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: RZD Builder/services/rollbackPlanner.js
+
+Bevindingen
+
+1. Rollback bij update
+
+item.rollback wordt gekopieerd. Als deze ontbreekt, bevat de rollbackactie geen herstelgegevens.
+
+2. Rollback bij create
+
+Er wordt alleen het veld opgeslagen. Geen Airtable-field-ID of aanvullende gegevens.
+
+3. Volgorde
+
+reverse() draait de rollbackacties om. Dat is logisch: laatst uitgevoerde actie eerst terugdraaien.
+
+4. Rollback wordt niet uitgevoerd
+
+Dit bestand bouwt en toont alleen het rollbackplan. Het voert geen herstelacties uit.
+
+5. Controle van plan
+
+Er wordt niet gecontroleerd of plan een geldige array is.
+
+Conclusie
+
+De rollbackplanner maakt een overzicht, maar garandeert niet dat alle acties daadwerkelijk teruggedraaid kunnen worden.
+
+Controle ReportingCoordinator.js
+
+Status: 🟡 AANPASSEN
+
+Bevindingen
+
+1. Rapportage wordt uitgevoerd
+
+JSON en Markdown worden aangemaakt via reportGenerator. Dat is duidelijk gescheiden.
+
+2. syncSummary
+
+Wordt gebruikt voor logger.end(). Als syncSummary ontbreekt, ontstaat een fout.
+
+3. Rapporten worden gelogd
+
+JSON en Markdown worden volledig naar het logbestand geschreven. Controleer bij het rapportgenereren of deze inhoud niet te groot wordt.
+
+4. Geen foutafhandeling
+
+Fouten van runContextFactory of reportGenerator worden niet lokaal afgehandeld.
+
+5. Auditgegevens
+
+Audit, auditSummary, synchronizationPlan en rollbackPlan worden meegenomen in de context.
+
+Conclusie
+
+De rapportage is logisch opgebouwd. Belangrijkste aandachtspunt is foutafhandeling tijdens het genereren en opslaan van rapporten.
+
+Controle services/reportGenerator.js
+
+Status: 🟡 AANPASSEN
+
+Bestand: RZD Builder/services/reportGenerator.js
+
+Bevindingen
+
+1. Rapportbestanden
+
+JSON en Markdown worden afzonderlijk opgeslagen. Dat is logisch.
+
+2. Opslaglocatie
+
+reports wordt aangemaakt vanuit process.cwd(). Daardoor hangt de locatie af van de map waarin je Builder start.
+
+3. Bestandsnamen
+
+De timestamp bevat seconden. Twee runs binnen dezelfde seconde kunnen dezelfde bestandsnaam krijgen en bestaande rapporten overschrijven.
+
+4. Ontbrekende gegevens
+
+buildMarkdownReport() verwacht onder andere metadata, summary en audit. Als die ontbreken, kan het rapportgenereren vastlopen.
+
+5. Auditvelden
+
+Bij auditregels wordt record.field rechtstreeks weergegeven. Bij synchronisatie- en rollbackacties wordt wel getFieldName() gebruikt.
+
+6. Foutafhandeling
+
+Problemen bij het schrijven van rapporten worden niet lokaal afgehandeld.
+
+Conclusie
+
+De rapportgenerator is overzichtelijk opgebouwd. De belangrijkste aandachtspunten zijn de opslaglocatie, mogelijke overschrijving van rapporten en controle op ontbrekende gegevens.
+
+Controle services/RollbackService.js
+
+Status: 🟡 AANPASSEN
+
+Wat goed is
+
+- Rollback-items worden opgeslagen met de oorspronkelijke en nieuwe veldgegevens.
+
+- structuredClone() voorkomt dat objecten rechtstreeks worden gedeeld.
+
+- Rollback loopt in omgekeerde volgorde. Dat is correct.
+
+- Bij een lege stack wordt netjes gemeld dat rollback niet nodig is.
+
+Aandachtspunten
+
+1. Rollback herstelt niet alles
+
+- before.name en before.type worden opgeslagen, maar niet teruggezet.
+
+- De payload bevat alleen description en eventueel options.
+
+- Daardoor wordt een gewijzigde veldnaam of type niet teruggedraaid.
+
+2. Options kunnen ontbreken
+
+- Als before.options leeg is, wordt options niet opgenomen.
+
+- Een wijziging waarbij opties zijn verwijderd, kan daardoor niet goed worden hersteld.
+
+3. Rollback stopt bij eerste fout
+
+- Als één updateField() faalt, stopt de volledige rollback.
+
+- Er wordt dan ook geen melding "Rollback voltooid" bereikt.
+
+4. Stack wordt niet geleegd
+
+- Na een succesvolle rollback blijven de items in this.stack.
+
+- Een volgende rollback probeert dezelfde wijzigingen opnieuw terug te draaien.
+
+5. getAll() geeft interne stack terug
+
+- Andere code kan de rollback-items rechtstreeks aanpassen.
+
+6. Geen controle op rollback-resultaat
+
+- De service vertrouwt erop dat updateField() succesvol is.
+
+- Er is geen overzicht van welke velden wel of niet zijn teruggezet.
+
+Belangrijkste conclusie
+
+De rollback is bruikbaar voor het terugzetten van beschrijvingen en opties, maar herstelt momenteel niet gegarandeerd de volledige oorspronkelijke veldconfiguratie.
+
+Ook belangrijk: deze service voert rollback daadwerkelijk uit via Airtable. Dat is iets anders dan de eerder bekeken rollbackPlanner, die alleen een rollback-plan opstelt.
+
+Controle services/runContextFactory.js
+
+Status: 🟢 GOED
+
+Wat goed is
+
+- auditSummary wordt correct gekoppeld aan summary.
+
+- Alle gegevens die ReportingCoordinator doorgeeft, worden opgenomen.
+
+- synchronizationPlan en rollbackPlan krijgen standaard een lege array.
+
+- De structuur sluit aan op reportGenerator.js, dat metadata, summary, audit, synchronizationPlan en rollbackPlan verwacht.
+
+Aandachtspunt
+
+- Er wordt niet gecontroleerd of metadata, auditSummary en audit daadwerkelijk aanwezig zijn. Dat kan later problemen geven bij het genereren van rapporten.
+
+Conclusie
+
+Geen noodzakelijke aanpassingen. De koppeling tussen ReportingCoordinator en reportGenerator klopt.
+
+Controle services/reportGenerator.js
+
+Status: 🟢 GOED
+
+Wat goed is
+
+- JSON- en Markdown-rapporten worden afzonderlijk opgebouwd.
+
+- De structuur sluit aan op runContextFactory.js.
+
+- Synchronisatieplan, rollbackplan en audit worden meegenomen.
+
+- Rapporten worden automatisch opgeslagen in de map reports.
+
+- getFieldName() voorkomt dat een ontbrekende veldnaam direct problemen veroorzaakt.
+
+Aandachtspunten
+
+1. Bestandsnamen kunnen elkaar overschrijven
+
+- De timestamp bevat alleen seconden.
+
+- Twee rapporten binnen dezelfde seconde kunnen dezelfde bestandsnaam krijgen.
+
+2. Metadata kan ontbreken
+
+- Object.entries(report.metadata) geeft een fout als metadata ontbreekt.
+
+- Hetzelfde geldt voor summary en audit.
+
+3. Markdown kan crashen bij ontbre arrays
+
+- report.audit.length en report.synchronizationPlan.length verwachten arrays.
+
+- De standaardwaarden in buildReport() helpen, maar alleen wanneer de waarden niet expliciet undefined zijn.
+
+4. Auditveldnaam wordt niet via getFieldName() weergegeven
+
+- Bij auditregels wordt record.field rechtstreeks gebruikt.
+
+- Daardoor kan de rapportage minder duidelijk zijn als record.field een object is.
+
+5. Rapporten bevatten mogelijk veel gegevens
+
+- appendJsonBlock() schrijft volledige objecten naar Markdown.
+
+- Bij grote synchronisatie- of rollbackplannen kan het rapport erg lang worden.
+
+Conclusie
+
+Geen directe blokkade. De rapportgenerator werkt logisch en sluit aan op de eerder bekeken bestanden. De belangrijkste verbeterpunten zijn robuustheid bij ontbrekende gegevens en unieke bestandsnamen.
+
+Controle services/rollbackService.js
+
+(Status: 🟡 AANPASSEN)
+
+Dit bestand hebben we eerder bekeken. De belangrijkste punten:
+
+1. Veldnaam en type worden niet hersteld. Alleen description en options gaan terug naar Airtable.
+
+2. Rollback stopt bij de eerste fout. Andere velden worden dan niet teruggezet.
+
+3. De stack blijft gevuld na rollback. Daardoor kan dezelfde rollback opnieuw worden uitgevoerd.
+
+4. Lege oorspronkelijke options worden niet teruggezet. De oude opties kunnen daardoor blijven bestaan.
+
+5. getAll() geeft de interne stack terug, waardoor andere code deze kan aanpassen.
+
+Conclusie
+
+De rollback werkt gedeeltelijk, maar is nog niet betrouwbaar genoeg om alle wijzigingen volledig terug te draaien.
+
+Controle services/synchronizationService.js
+
+(Status: 🟡 AANPASSEN)
+
+Wat goed is
+
+- DryRun voorkomt de daadwerkelijke wijzigingen in deze service.
+
+- Auditregels worden bijgehouden.
+
+- Fouten per veld worden opgevangen, zodat de synchronisatie doorgaat.
+
+- De samenvatting wordt teruggegeven.
+
+Belangrijke aandachtspunten
+
+1. Rollback wordt niet geregistreerd
+
+- rollbackService.register() wordt nergens aangeroepen.
+
+- Daardoor bouwt de rollback-stack via deze service niet op.
+
+2. Rollback wordt niet uitgevoerd bij fouten
+
+- Fouten worden geregistreerd, maar er volgt geen rollback.
+
+- De service gaat verder met het volgende veld.
+
+3. Update wordt dubbel uitgevoerd
+
+- updateService.updateField() krijgt item.update.metadata.
+
+- Daarna wordt updateChoices() opnieuw aangeroepen voor choices.
+
+- Dit kan dubbele API-aanroepen veroorzaken.
+
+4. summary.updated telt ook mislukte updates
+
+- De teller wordt verhoogd voordat de update daadwerkelijk lukt.
+
+- De samenvatting toont dus geplande updates, niet alleen succesvolle.
+
+5. Geen standaardactie voor onbekende actie
+
+- Een onbekende item.action wordt stilletjes overgeslagen.
+
+- Er komt geen warning of error.
+
+6. Airtable-tabel wordt vooraf opgehaald
+
+- getTable() gebeurt ook bij een lege planlijst.
+
+- Een lege synchronisatie kan daardoor alsnog mislukken.
+
+Conclusie
+
+De synchronisatie werkt als uitvoerder, maar rollback is nog niet geïntegreerd. Dat is het belangrijkste aandachtspunt.
+
+Controle services/airtableAdapter.js
+
+(Status: 🟡 AANPASSEN)
+
+Wat goed is
+
+- Tabellen en velden worden opgehaald via Airtable.
+
+- Paginering bij listRecords() is aanwezig.
+
+- createField() gebruikt FieldOptionsFactory.
+
+- CRUD-functies controleren belangrijke verplichte parameters.
+
+- API-fouten bij het aanmaken van velden worden doorgegeven.
+
+Belangrijke aandachtspunten
+
+1. API-token wordt niet gecontroleerd
+
+- Ontbreekt AIRTABLE_TOKEN, dan wordt een ongeldige Authorization-header opgebouwd.
+
+2. Geen controle op baseId
+
+- Ontbreekt AIRTABLE_BASE_ID, dan volgen API-aanroepen met een ongeldige URL.
+
+3. createMissingFields() controleert alleen veldnamen
+
+- Bestaande velden worden overgeslagen, ook als hun type of opties afwijken.
+
+4. Geen dryRun in deze adapter
+
+- createField() en createTable() voeren daadwerkelijk wijzigingen uit.
+
+- De synchronisatieservice moet deze functies dus correct afschermen.
+
+5. createTable() controleert de velden niet
+
+- table.fields || [] accepteert ook een ontbrekende veldenlijst.
+
+6. Geen foutafhandeling bij ophalen
+
+- API-fouten bij getTables(), getFields() en andere GET-aanroepen worden rechtstreeks doorgegeven.
+
+Conclusie
+
+De adapter bevat de belangrijkste Airtable-functies, maar validatie en foutafhandeling kunnen beter.
+
+Belangrijk: dit bestand is niet de oorzaak van het ontbrekende rollback-mechanisme. Dat zit in de synchronisatie- en rollback-koppeling.
+
+Controle services/fieldOptionsFactory.js
+
+(Status: 🟢 GOED)
+
+Wat goed is
+
+- Bestaande field.options krijgen voorrang.
+
+- SingleSelect en MultiSelect controleren of choices aanwezig zijn.
+
+- Choices worden omgezet naar Airtable-formaat { name }.
+
+- Veelgebruikte veldtypen worden ondersteund.
+
+- Ontbrekende keuzes geven een duidelijke foutmelding.
+
+Aandachtspunt
+
+Bij keuzes wordt alleen name meegenomen. Eventuele kleuren uit field.choices gaan verloren.
+
+Conclusie
+
+Geen noodzakelijke aanpassingen op dit moment.
+
+Dit bestand is overzichtelijk en doet wat het moet doen.
+
+Controle: package.json
+
+Aanpassen nodig
+
+Wat staat er nu?
+
+- Het project gebruikt Node.js met CommonJS.
+
+- Airtable, Axios, Zod en andere dependencies zijn geïnstalleerd.
+
+- Er is momenteel geen werkende testopdracht.
+
+- npm test geeft bewust een foutmelding: Error: no test specified.
+
+- Er staat index.js als hoofdbestand, maar we moeten controleren of dat daadwerkelijk bestaat en gebruikt wordt.
+
+Wat moet ermee gebeuren?
+
+Onderdeel Actie
+
+scripts.test Onderzoeken welke testomgeving geschikt is en daarna een werkende testopdracht toevoegen
+
+Testframework Eerst controleren of Vitest, Jest of een andere testoplossing al aanwezig is
+
+main: index.js Controleren of dit bestand bestaat en overeenkomt met de projectstructuur
+
+Dependencies Controleren of alle packages daadwerkelijk gebruikt worden
+
+CommonJS Behouden zolang de bestaande code daarop gebaseerd is
+
+Belangrijk: we installeren nu nog niets en passen dit bestand nog niet aan. Eerst bekijken we de bestaande projectstructuur en tests.
+
+Ik heb het bestand package-lock.json ontvangen en gecontroleerd.
+
+Bevindingen
+
+- De lockfile hoort bij RZD Builder versie 1.0.0.
+
+- De geïnstalleerde dependencies komen overeen met de dependencies in package.json.
+
+- Er is geen testframework zichtbaar in deze lockfile.
+
+- De packages chalk, ora en enkele dependencies vereisen Node.js 18 of 20. De gebruikte Node-versie moeten we nog controleren.
+
+- Ik zie geen reden om dit bestand nu aan te passen.
+
+Werkplan bijgewerkt
+
+Bestand Actie Status
+
+package.json Testomgeving onderzoeken, testscript toevoegen zodra framework bekend is Onderzoeken
+
+package-lock.json Dependencies en Node-compatibiliteit controleren Voorlopig akkoord
+
+Volgende bestand: open in VS Code de hoofdmap van RZD Builder en stuur een screenshot van de volledige projectstructuur, inclusief mappen en bestanden.
+
+Dan kunnen we bepalen of er al tests bestaan en welk bestand we daarna gericht controleren.
+
+Review: core/kernel/BuilderKernel.js
+
+Voorlopige beoordeling: structuur is duidelijk, maar de lifecycle-afhandeling verdient aandacht. Ik heb alleen deze code beoordeeld; de aangeroepen services zijn nog niet gecontroleerd.
+
+Bevindingen
+
+Onderdeel Beoordeling
+
+Bootstrap BuilderBootstrap.create() wordt netjes als eerste aangeroepen.
+
+Workflow Plan, rollbackPlan en summary worden overzichtelijk opgehaald.
+
+Synchronisatie dryRun wordt correct als boolean doorgegeven.
+
+Rapportage ReportingCoordinator ontvangt de benodigde resultaten.
+
+Foutafhandeling Fouten worden gelogd en opnieuw gegooid. Dat gedrag behouden.
+
+Logger lifecycle Onderzoeken: logger.end() wordt alleen uitgevoerd wanneer lifecycleCompleted false is.
+
+Bootstrap null Bij !bootstrap volgt een return, waarna finally de logger probeert af te sluiten.
+
+Succes lifecycleCompleted = true wordt pas na rapportage gezet. Daarna wordt logger.end() overgeslagen.
+
+Belangrijkste aandachtspunt
+
+finally {
+
+if (!lifecycleCompleted) {
+
+logger.end(0, 0);
+
+}
+
+}
+
+De kernel sluit de logger dus alleen af bij een niet-voltooide lifecycle.
+
+Dat kan bewust zijn als ReportingCoordinator of een andere service de logger afsluit. Dat weten we nog niet. Als niemand dat doet, blijft de logger na een succesvolle build open.
+
+Ook deze regel verdient controle:
+
+logger.end(0, 0);
+
+De waarden zijn hardcoded. Eerst moeten we zien wat logger.end() verwacht en of deze aanroep bij fouten en een lege bootstrap de juiste betekenis heeft.
+
+Wat behouden
+
+- De kernel als centrale orchestrator.
+
+- De volgorde bootstrap → workflow → synchronisatie → rapportage.
+
+- Het doorgeven van dryRun.
+
+- Het opnieuw gooien van fouten.
+
+- De huidige samenvatting en rapportagegegevens.
+
+Copilot-opdracht
+
+Nog niet aanpassen. Eerst moeten we de lifecycle van de logger controleren in:
+
+1. services/logger.js
+
+2. core/bootstrap/BuilderBootstrap.js
+
+3. core/reporting/ReportingCoordinator.js
+
+4. core/synchronization/SynchronizationCoordinator.js
+
+Daarna kunnen we bepalen of de kernel daadwerkelijk een fout bevat en een gerichte Copilot-opdracht maken.
+
+Review: core/bootstrap/BuilderBootstrap.js
+
+Voorlopige beoordeling: bootstrap werkt logisch, maar er zijn twee belangrijke aandachtspunten.
+
+Bevindingen
+
+Onderdeel Beoordeling
+
+logger.start(moduleName) Start logging vóór modulevalidatie.
+
+auditService.clear() Audit wordt bij iedere bootstrap gewist. Controleer of dit bewust per build gebeurt.
+
+Module laden Fout wordt afgevangen en null teruggegeven.
+
+Schema-validatie Bij fouten stopt de bootstrap en geeft null terug.
+
+Airtable-velden airtable.getFields(tableName) wordt zonder lokale foutafhandeling aangeroepen.
+
+BuilderContext Module, tabel, Airtable-velden, logger en opties worden doorgegeven.
+
+Return Geeft modulegegevens en context terug.
+
+1. Logger lifecycle
+
+Bij deze returns:
+
+return null;
+
+wordt de logger niet afgesloten in deze klasse.
+
+In combinatie met de eerder bekeken BuilderKernel is dat belangrijk: de kernel probeert bij een niet-voltooide lifecycle logger.end(0, 0) uit te voeren.
+
+Conclusie: de bootstrap sluit de logger niet zelf af. Dat hoeft ook niet, zolang de kernel dit betrouwbaar doet.
+
+2. Fout bij Airtable ophalen
+
+Deze regel:
+
+const airtableFields =
+
+await airtable.getFields(tableName);
+
+staat buiten de try die het laden van de module afhandelt.
+
+Als Airtable niet bereikbaar is of getFields() faalt, wordt de fout doorgestuurd naar de kernel.
+
+Dat is op zichzelf logisch. Wel moeten we controleren of de fout voldoende informatie bevat en of de logger de fout correct afhandelt.
+
+3. auditService.clear()
+
+Deze wordt uitgevoerd voordat de module geladen en gevalideerd is.
+
+Daardoor wordt de audit ook gewist wanneer:
+
+- de module niet bestaat;
+
+- de schema-validatie mislukt;
+
+- Airtable niet bereikbaar is.
+
+Dit moet bewust worden beoordeeld. Als de audit bedoeld is voor één build, kan dit correct zijn. Als eerdere auditinformatie behouden moet blijven bij een mislukte bootstrap, is dit mogelijk ongewenst.
+
+4. Ongebruikte import
+
+const options = {}
+
+De parameter options wordt wel doorgegeven aan BuilderContext, maar in deze klasse zelf niet verder gebruikt.
+
+Dat is geen fout.
+
+Wat behouden
+
+- BuilderBootstrap.create() als centrale bootstrap.
+
+- Module laden en schema-validatie vóór Airtable.
+
+- De huidige foutmeldingen.
+
+- De opbouw van BuilderContext.
+
+- De returnstructuur.
+
+Copilot-opdracht
+
+Nog niet aanpassen. Eerst moeten we services/logger.js, services/auditService.js en services/airtableAdapter.js bekijken. Vooral auditService.clear() en de foutafhandeling van getFields() hangen af van hun implementatie.
+
+Review: services/logger.js
+
+Beoordeling: hier zit een concreet lifecycle-probleem.
+
+1. logger.end() sluit de logger niet af
+
+end(created, skipped) {
+
+this.write("");
+
+this.write("================================");
+
+this.write("Resultaat");
+
+this.write("================================");
+
+this.write(`Aangemaakt : ${created}`);
+
+this.write(`Overgeslagen : ${skipped}`);
+
+}
+
+Deze methode schrijft alleen een resultaatblok naar het logbestand. Er wordt geen bestand gesloten.
+
+Dat betekent:
+
+- BuilderKernel noemt logger.end() bij een mislukte build.
+
+- De logger schrijft dan alleen het resultaat.
+
+- Bij een succesvolle build wordt logger.end() in de kernel juist overgeslagen.
+
+Conclusie: end() is eigenlijk een resultaatfunctie, geen lifecycle-afsluiting. De naam is verwarrend.
+
+2. logger.write() kan crashen vóór start()
+
+fs.appendFileSync(
+
+this.file,
+
+text + "\n",
+
+"utf8"
+
+);
+
+Als this.file nog niet is ingesteld, bijvoorbeeld wanneer logger.start() zelf faalt, kan logging een tweede fout veroorzaken.
+
+Dit is vooral relevant voor de foutafhandeling in de kernel.
+
+3. Logbestandsnaam
+
+`${timestamp}-${moduleName}.log`
+
+De timestamp bevat seconden. Twee builds van dezelfde module binnen dezelfde seconde kunnen dus hetzelfde logbestand gebruiken.
+
+Daarnaast wordt moduleName rechtstreeks in het pad verwerkt. Controle op ongeldige padtekens ontbreekt.
+
+4. start() overschrijft de actieve bestandsreferentie
+
+this.file = this.getLogFile(moduleName);
+
+De logger is één gedeelde singleton. Als meerdere builds tegelijk starten, kunnen ze elkaars this.file overschrijven.
+
+Dat kan ervoor zorgen dat logregels in het verkeerde bestand terechtkomen.
+
+Dit is een aandachtspunt voor de architectuur, niet automatisch een fout zolang builds altijd sequentieel draaien.
+
+Review: services/auditService.js
+
+Beoordeling: de auditservice is overzichtelijk, maar er zijn 3 concrete aandachtspunten.
+
+1. clear() start een nieuwe auditrun
+
+clear() {
+
+this.startRun();
+
+}
+
+startRun() maakt een nieuwe Run ID, nieuwe starttijd en lege records.
+
+In BuilderBootstrap wordt auditService.clear() uitgevoerd vóór het laden en valideren van de module.
+
+Gevolg: bij iedere bootstrap wordt de vorige audit in het geheugen vervangen. Als een build mislukt, zijn de auditrecords van de vorige run niet meer beschikbaar via deze singleton.
+
+Dit is belangrijk om te controleren: moet de audit alleen de huidige build bevatten, of moeten eerdere runs behouden blijven?
+
+2. finishRun() wordt nergens automatisch aangeroepen
+
+finishRun() {
+
+this.finishedAt = new Date();
+
+}
+
+Deze methode bestaat, maar in de eerder bekeken kernel en bootstrap wordt deze niet aangeroepen.
+
+Daardoor blijft finishedAt normaal gesproken leeg en wordt de looptijd niet weergegeven in printSummary().
+
+We moeten controleren of SynchronizationCoordinator of ReportingCoordinator deze methode aanroept.
+
+3. add() laat record.runId overschrijven
+
+this.records.push({
+
+runId: this.runId,
+
+timestamp: new Date().toISOString(),
+
+...record
+
+});
+
+Omdat ...record als laatste staat, kan een meegegeven record zijn eigen runId of timestamp overschrijven.
+
+Dat kan de auditgegevens inconsistent maken.
+
+Mogelijke verbetering: de automatisch gegenereerde runId en timestamp als laatste toevoegen, zodat die leidend blijven. Eerst controleren we wel hoe de service wordt gebruikt.
+
+Overige aandachtspunten
+
+- getRecords() geeft de interne array rechtstreeks terug. Een andere service kan de auditrecords daardoor aanpassen.
+
+- getSummary() telt alleen de vijf bekende acties. Onbekende acties worden stil genegeerd.
+
+- startRun() reset de records en starttijd, maar wist finishedAt niet expliciet. Bij hergebruik kan een oude eindtijd blijven staan.
+
+- printSummary() toont de duur alleen als zowel startedAt als finishedAt aanwezig zijn.
+
+Wat behouden
+
+- Run ID via crypto.randomUUID().
+
+- Tijdstempels.
+
+- Auditacties en samenvatting.
+
+- De huidige auditstructuur, totdat we de gebruikers ervan hebben bekeken.
+
+Review: core/synchronization/SynchronizationCoordinator.js
+
+Beoordeling: de synchronisatiecoördinator is logisch opgebouwd. Eén belangrijk punt: de audit wordt hier niet afgerond.
+
+Bevindingen
+
+Onderdeel Beoordeling
+
+Audit Run ID Wordt vóór synchronisatie opgehaald en getoond.
+
+Metadata Wordt aangemaakt met module, tabel, Run ID en dryRun.
+
+Synchronisatie synchronizationService.execute() wordt aangeroepen.
+
+Metadata afronden builderMetadata.finish(metadata) wordt na synchronisatie aangeroepen.
+
+Audit samenvatting Wordt na synchronisatie opgehaald.
+
+Auditrecords Worden rechtstreeks uit auditService.getRecords() teruggegeven.
+
+1. Audit wordt niet afgerond
+
+De vorige auditService bevat:
+
+finishRun() {
+
+this.finishedAt = new Date();
+
+}
+
+Maar deze coördinator roept finishRun() niet aan.
+
+Daardoor kan auditService.printSummary() geen correcte eindtijd en duur tonen, tenzij een andere service dit doet.
+
+Dit is nog niet bewezen als fout: we moeten controleren of synchronizationService.execute() de audit afsluit.
+
+2. Fout in synchronisatie
+
+const syncSummary =
+
+await synchronizationService.execute(
+
+tableName,
+
+plan,
+
+{
+
+dryRun
+
+}
+
+);
+
+Als deze call een exception gooit, worden de volgende stappen overgeslagen:
+
+- builderMetadata.finish(metadata)
+
+- builderMetadata.print(metadata)
+
+- synchronisatiesamenvatting
+
+- return met auditgegevens
+
+De kernel vangt de fout vervolgens op.
+
+Dat is logisch voor een exception, maar de audit moet dan wel ergens worden afgerond of als onafgerond herkenbaar blijven.
+
+3. Audit wordt pas na synchronisatie uitgelezen
+
+auditSummary: auditService.getSummary(),
+
+audit: auditService.getRecords()
+
+Dat is op zichzelf correct.
+
+Wel is belangrijk dat synchronizationService.execute() niet tussentijds auditService.clear() aanroept. Anders kunnen de auditrecords van deze build verdwijnen.
+
+4. Metadata en audit gebruiken dezelfde Run ID
+
+runId: auditService.getRunId()
+
+Dit is goed: metadata en audit zijn hierdoor aan dezelfde run gekoppeld.
+
+Wat behouden
+
+- De huidige volgorde van synchronisatie.
+
+- Metadata aanmaken en afronden.
+
+- dryRun doorgeven.
+
+- Audit samenvatting en records teruggeven.
+
+- De huidige logging van synchronisatieresultaten.
+
+Review: services/synchronizationService.js
+
+Beoordeling: hier zitten meerdere concrete aandachtspunten. Vooral de foutafhandeling en de telling van updates zijn belangrijk.
+
+1. Updates worden geteld voordat ze werkelijk zijn uitgevoerd
+
+case "update":
+
+summary.updated++;
+
+Dit gebeurt ook wanneer:
+
+- item.update ontbreekt;
+
+- er geen metadatawijziging is;
+
+- de update uiteindelijk een fout oplevert.
+
+Daardoor kan summary.updated hoger zijn dan het aantal daadwerkelijk bijgewerkte velden.
+
+Aanpassen: de telling moet onderscheid maken tussen geplande updates en succesvol uitgevoerde updates.
+
+2. Fouten worden opgevangen, maar synchronisatie gaat door
+
+} catch (error) {
+
+summary.errors++;
+
+auditService.add({
+
+action: "error",
+
+field: fieldName,
+
+message: error.message
+
+});
+
+}
+
+Een fout bij één veld stopt de volledige synchronisatie niet. De volgende items worden nog verwerkt.
+
+Dat kan bewust zijn. Het betekent wel dat de build gedeeltelijk kan slagen.
+
+Behouden tenzij het gewenste gedrag is dat een fout de volledige synchronisatie stopt.
+
+3. dryRun voorkomt niet alle wijzigingen
+
+Bij create wordt Airtable alleen aangepast wanneer dryRun false is.
+
+Bij update worden metadata, keuzes en MCP afzonderlijk uitgevoerd.
+
+De metadata-update en MCP-update worden alleen bereikt wanneer dryRun false is. De keuzes-update eveneens.
+
+Dat lijkt correct, maar er is een belangrijk aandachtspunt: de verschillende updateonderdelen kunnen afzonderlijk slagen of falen. Daardoor kan een veld gedeeltelijk worden bijgewerkt.
+
+4. Update wordt geteld als één update, ook bij meerdere acties
+
+Een veld kan achtereenvolgens uitvoeren:
+
+- metadata aanpassen;
+
+- keuzes aanpassen;
+
+- MCP uitvoeren.
+
+Als bijvoorbeeld metadata succesvol is en de keuzes-update faalt, wordt het veld als fout geregistreerd, maar de metadata is al aangepast.
+
+Er is geen rollback in deze methode.
+
+Belangrijk: dit is geen volledige transactie. Een fout betekent niet dat eerdere wijzigingen automatisch worden teruggedraaid.
+
+5. auditService.finishRun() wordt wel aangeroepen
+
+auditService.finishRun();
+
+auditService.printSummary();
+
+Dit bevestigt dat de audit aan het einde van execute() wordt afgerond.
+
+Maar wanneer airtable.getTable() faalt, gebeurt dat vóór de loop en vóór deze regels.
+
+Dan blijft de audit onafgerond.
+
+Ook als een onverwachte fout buiten de individuele try/catch optreedt, kan finishRun() worden overgeslagen.
+
+6. Geen default in de switch
+
+switch (item.action) {
+
+case "create":
+
+case "skip":
+
+case "update":
+
+}
+
+Onbekende acties worden stil genegeerd.
+
+Er komt dan geen waarschuwing, foutmelding of auditrecord.
+
+Dat maakt fouten in een synchronisatieplan lastig zichtbaar.
+
+7. create wordt niet gecontroleerd op ontbrekende velden
+
+await airtable.createField(
+
+tableName,
+
+item.field
+
+);
+
+De service vertrouwt erop dat het plan en de schema-validatie correcte velden bevatten.
+
+Dat kan prima zijn, maar de validatie moet dan betrouwbaar zijn vóór deze service wordt aangeroepen.
+
+Wat behouden
+
+- dryRun als centrale optie.
+
+- De huidige acties create, skip en update.
+
+- Auditrecords per actie.
+
+- Fouten per veld registreren en doorgaan met volgende velden.
+
+- De huidige metadata-, keuzes- en MCP-updatevolgorde.
+
+Wat moet worden onderzocht
+
+Punt Prioriteit
+
+summary.updated correct tellen Hoog
+
+Audit afronden bij fouten vóór de loop Hoog
+
+Onbekende acties registreren Middel
+
+Gedeeltelijke updates herkennen Hoog
+
+dryRun verder controleren Hoog
+
+Conclusie voor de kernel, logger en audit
+
+We hebben nu de volledige synchronisatieketen bekeken:
+
+- BuilderKernel
+
+- BuilderBootstrap
+
+- logger
+
+- auditService
+
+- SynchronizationCoordinator
+
+- SynchronizationService
+
+De belangrijkste bevinding is dat de audit normaal wordt afgerond aan het einde van de synchronisatieservice, maar niet gegarandeerd bij fouten vóór of buiten de loop.
+
+De logger heeft daarnaast geen echte lifecycle-afsluiting; logger.end() schrijft alleen een resultaatblok.
+
+Review: core/reporting/ReportingCoordinator.js
+
+Beoordeling: de rapportagecoördinator sluit de logger af na succesvolle rapportage. Daarmee is een eerder aandachtspunt uit de kernel verklaard.
+
+Bevindingen
+
+Onderdeel Beoordeling
+
+RunContext Wordt opgebouwd met metadata, audit en beide plannen.
+
+JSON-rapport Wordt opgeslagen.
+
+Markdown-rapport Wordt opgeslagen.
+
+Logger Krijgt rapportnamen/paden en synchronisatieresultaten.
+
+logger.end() Wordt na rapportage aangeroepen met aangemaakt en overgeslagen.
+
+1. Logger lifecycle is nu duidelijk
+
+logger.end(
+
+syncSummary.created,
+
+syncSummary.skipped
+
+);
+
+Bij een normale build wordt logger.end() dus door ReportingCoordinator aangeroepen.
+
+De kernel roept dit alleen nog aan wanneer de lifecycle niet succesvol is afgerond.
+
+Conclusie: de huidige dubbele logger-afhandeling is bewust verdeeld:
+
+- succesvolle build: ReportingCoordinator;
+
+- mislukte build: BuilderKernel.
+
+Dat werkt, maar de logger zelf heeft geen echte afsluitmethode. end() schrijft alleen de resultaten.
+
+2. Rapportage kan gedeeltelijk slagen
+
+const jsonReport =
+
+reportGenerator.saveJson(runContext);
+
+const markdownReport =
+
+reportGenerator.saveMarkdown(runContext);
+
+Als JSON opslaan lukt, maar Markdown opslaan faalt, bestaat mogelijk al een JSON-rapport terwijl de rapportage als geheel mislukt.
+
+De kernel vangt die fout op en schrijft een foutmelding.
+
+Of dat een probleem is, hangt af van wat reportGenerator precies doet.
+
+3. Audit en rapportage
+
+De coördinator ontvangt de auditgegevens vanuit SynchronizationCoordinator.
+
+De audit is daar inmiddels afgerond door synchronizationService.execute().
+
+Bij een fout vóór het einde van de synchronisatieservice kan de audit echter onafgerond blijven. De rapportagecoördinator lost dat niet op.
+
+4. logger.write() krijgt rapportresultaten
+
+logger.write(jsonReport);
+
+logger.write(markdownReport);
+
+We moeten nog controleren wat saveJson() en saveMarkdown() teruggeven.
+
+Als dit bestandspaden zijn, worden de paden in de logger geschreven. Als dit rapportinhoud is, wordt de volledige inhoud in het logbestand opgenomen.
+
+Dat is een belangrijk verschil.
+
+Tussenstand van de lifecycle
+
+Bestand Bevinding
+
+BuilderKernel.js Lifecycle en foutafhandeling centraal.
+
+BuilderBootstrap.js Logger start; audit wordt opnieuw gestart.
+
+logger.js end() schrijft resultaten, sluit niets af.
+
+auditService.js Auditrun en records worden bijgehouden.
+
+SynchronizationCoordinator.js Synchronisatie en metadata worden aangestuurd.
+
+synchronizationService.js Audit wordt na de loop afgerond.
+
+ReportingCoordinator.js Rapporten worden opgeslagen; logger krijgt eindresultaat.
+
+Review: services/reportGenerator.js
+
+Beoordeling: de rapportgenerator werkt logisch, maar ik zie 3 concrete aandachtspunten.
+
+1. JSON en Markdown krijgen mogelijk verschillende bestandsnamen
+
+createFileName(extension) {
+
+return `RZD_Builder_${this.createTimestamp()}.${extension}`;
+
+}
+
+De timestamp bevat seconden.
+
+Omdat saveJson() en saveMarkdown() afzonderlijk createTimestamp() aanroepen, kunnen ze verschillende timestamps krijgen wanneer ze over een secondegrens heen lopen.
+
+Dan horen JSON en Markdown niet meer direct bij elkaar op basis van hun bestandsnaam.
+
+2. Rapportage mist de synchronisatiesamenvatting
+
+In ReportingCoordinator wordt syncSummary meegegeven, maar buildReport() verwacht:
+
+buildReport({
+
+metadata,
+
+summary,
+
+audit,
+
+synchronizationPlan = [],
+
+rollbackPlan = []
+
+})
+
+De synchronisatiesamenvatting wordt dus niet rechtstreeks in het rapport opgenomen.
+
+Of summary dezelfde gegevens bevat, moeten we controleren in runContextFactory.js.
+
+3. Metadata en audit kunnen ontbreken
+
+Object.entries(report.metadata)
+
+En:
+
+report.audit.length
+
+De generator verwacht dat metadata en audit bestaan.
+
+Als de RunContext onvolledig is, kan het genereren van het rapport daardoor crashen.
+
+Dit hoeft niet te worden opgelost met extra controles als runContextFactory deze gegevens gegarandeerd levert.
+
+Wat behouden
+
+- JSON- en Markdown-rapporten.
+
+- De huidige rapportstructuur.
+
+- Synchronisatieplan, rollbackplan en audit.
+
+- De huidige veldnaam-resolutie.
+
+- Rapporten opslaan in reports/.
+
+Belangrijk voor de lifecycle
+
+De saveJson() en saveMarkdown() methodes retourneren bestandspaden, geen rapportinhoud.
+
+Daarom schrijft ReportingCoordinator momenteel de paden naar het logbestand:
+
+logger.write(jsonReport);
+
+logger.write(markdownReport);
+
+Dat is niet fout, maar het log bevat dus niet de volledige rapportinhoud.
+
+Review: services/runContextFactory.js
+
+Dit bestand is correct. Het koppelt de gegevens aan het rapport:
+
+Invoer Uitvoer
+
+metadata metadata
+
+auditSummary summary
+
+synchronizationPlan synchronizationPlan
+
+rollbackPlan rollbackPlan
+
+audit audit
+
+Bevinding
+
+De koppeling klopt met reportGenerator.js, want die verwacht summary.
+
+Geen aanpassing nodig.
+
+Review: core/reporting/ReportingCoordinator.js
+
+De bestand werkt logisch samen met runContextFactory.js en reportGenerator.js.
+
+Bevindingen
+
+1. Rapportgegevens kloppen
+
+metadata, auditSummary, audit, synchronizationPlan en rollbackPlan worden correct doorgegeven.
+
+2. JSON en Markdown worden aangemaakt
+
+Beide rapporten worden opgeslagen en de bestandspaden worden weergegeven.
+
+3. Logger wordt afgesloten
+
+logger.end() wordt aangeroepen met created en skipped.
+
+4. Aandachtspunt:
+
+Als het opslaan van JSON lukt, maar Markdown mislukt, wordt logger.end() niet bereikt. De foutafhandeling gebeurt hoger in BuilderKernel.js.
+
+5. Geen dubbele afsluiting bij succes
+
+ReportingCoordinator sluit de logger af. De kernel doet dat alleen wanneer de lifecycle niet voltooid is.
+
+Conclusie
+
+Geen directe aanpassing nodig. De samenwerking tussen deze drie bestanden klopt:
+
+ReportingCoordinator.js — controle
+
+- JSON-rapport wordt aangemaakt.
+
+- Markdown-rapport wordt aangemaakt.
+
+- Beide rapportpaden worden in de console en logger weergegeven.
+
+- logger.end() wordt aangeroepen met created en skipped.
+
+- syncSummary wordt niet gecontroleerd op ontbrekende waarden.
+
+- Bij een fout tijdens het opslaan van Markdown wordt logger.end() niet bereikt.
+
+Conclusie: de normale werking klopt. Wel ontbreekt foutafhandeling in dit bestand zelf. Geen wijziging uitvoeren voordat we bepalen of die foutafhandeling gewenst is.
+
+Review: core/runtime/Runtime.js
+
+Dit bestand is eenvoudig en logisch opgebouwd.
+
+- constructor() initialiseert opties, starttijd, statistieken en metadata.
+
+- finish() registreert de eindtijd en berekent de totale looptijd.
+
+- De statistieken beginnen allemaal op 0.
+
+- metadata en audit beginnen op null.
+
+Aandachtspunt: finish() registreert alleen de tijd. Het vult de statistieken niet automatisch en wordt in dit bestand zelf nergens aangeroepen.
+
+Conclusie: geen directe fout gevonden. We passen niets aan.
+
+Review: core/workflow/BuilderWorkflow.js
+
+Dit bestand ziet er logisch uit.
+
+- Vergelijkt de module met Airtable via comparisonService.
+
+- Bouwt een synchronisatieplan.
+
+- Bouwt een rollbackplan.
+
+- Print de modulevergelijking.
+
+- Berekent aantallen bestaande, ontbrekende en gewijzigde velden.
+
+Aandachtspunt: summary wordt hier berekend en teruggegeven, maar in BuilderKernel.js niet gebruikt. Dat is geen directe fout.
+
+Conclusie: geen aanpassing nodig.
+
+Review: core/registry/Registry.js
+
+Dit bestand is correct en eenvoudig opgebouwd.
+
+- constructor() maakt een lege service-map.
+
+- register() registreert een service.
+
+- get() haalt een service op en geeft een duidelijke fout als die niet bestaat.
+
+- has() controleert of een service geregistreerd is.
+
+Conclusie: geen fout gevonden. Geen aanpassing nodig.
+
+Review: core/kernel/BuilderKernel.js
+
+Dit bestand hebben we eerder al gecontroleerd.
+
+Geen nieuwe bevindingen:
+
+- Bootstrap en workflow worden aangeroepen.
+
+- Synchronisatie en rapportage worden uitgevoerd.
+
+- Foutafhandeling en logger-afsluiting zijn aanwezig.
+
+Geen aanpassing nodig.
+
+10. Eindregistratie morgen
+
+☐ Repository branch/status en projectboom ontvangen
+
+☐ Copilot mapping alle dossier-ID’s bijgewerkt
+
+☐ Elke bevinding status + actuele codebewijs
+
+☐ Tests bestaand framework vastgesteld
+
+☐ P0/P1 volgorde afgesproken
+
+☐ Voor elke wijziging expliciet akkoord
+
+☐ Na wijziging diff + tests + open risico’s bijgewerkt
+
+
+RZD Builder Master Werkdossier | historische bronnen + controlebestand | niet gelijk aan actuele code-audit
+
+10. Aanvulling en reconciliatie — 06-11-2026
+
+Doel: bevindingen uit de recente project-/documentreview toetsen aan dit Master Werkdossier. Alleen aanvullingen die nog niet als expliciete bevinding of status in het dossier staan, worden hieronder toegevoegd. Dit is een dossierupdate; actuele repository/code en live integraties zijn niet opnieuw uitgevoerd.
+
+10.1 Reeds aanwezig — niet dubbel toegevoegd
+
+A002 / BuilderKernel: lifecycleCompleted, logger.end(0,0), bootstrap-contract, dryRun-doorvoer en rollbackplan versus daadwerkelijke rollback zijn al opgenomen in het bestaande dossier. Status blijft OPEN / actuele code en tests vereisen bewijs.
+
+A004 / CampingAggregate: read-only aggregate, lokale preview, aanvullende accessibility-velden en foto’s/schema-aandachtspunten staan al in de bestaande reviewsecties. Status blijft gedeeltelijk; geen live validatieclaim.
+
+A005 / WordPress: draft-create/reuse, bestaande Page niet automatisch updaten, status=any kan openbare Page matchen, en mock-tests zijn geen live-validatie staan al in het dossier. Status blijft gedeeltelijk; geen end-to-end live Airtable→WordPress-bewijs.
+
+A003 / cleanup: huidige worktree/commitstatus en verwijderde services/fieldDefinition.js versus historische builderkopie zijn al als aandachtspunt genoemd. Niet als afgerond markeren zonder actuele Git- en codecontrole.
+
+10.2 Aanvullende bevindingen uit documentreview
+
+DOC-RECON-01 — docs/CHECKPOINT.md: de checkpoint bevat volgens de documentreview verouderde overdrachtstekst (“wacht op toestemming voor volgende groep”), terwijl de review verder is. Actie: gecontroleerde checkpoint-update met huidige sessie, werkelijk bekeken bestanden, feitelijke checks, open punten en één volgende taak. Status: OPEN; bestand niet aangepast.
+
+DOC-RECON-02 — docs/README.md: documentindex moet overeenkomen met de actieve documentatiesuite. Actie: index tegen docs/DOCUMENTATION_ARCHITECTURE.md en aanwezige bestanden controleren. Status: OPEN; geen indexwijziging uitgevoerd.
+
+DOC-RECON-03 — documentlevenscyclus: Concept → Review → Actief → Gearchiveerd is beschreven, maar archiveringscriteria ontbreken. Actie: criteria expliciet besluiten/documenteren. Status: OPEN / ontwerpbesluit.
+
+DOC-RECON-04 — documentrollen: status, backlog, checkpoint, changelog, architectuur en roadmap moeten gescheiden blijven. Actie: bij consolidatie duplicatie en rolvermenging voorkomen. Status: aandachtspunt; geen inhoud herschreven.
+
+DOC-RECON-05 — docs/CHANGELOG.md: changelog is append-only. Actie: alleen nieuwe feitelijke entry toevoegen na formele review/update; historische regels niet herschrijven. Status: werkwijze bevestigd.
+
+DOC-RECON-06 — docs/FIELD_SPECIFICATION.md: aanvullend document, geen runtime-bron van waarheid. Runtime wordt bepaald door actuele code en Airtable-structuur. Status: rol vastgelegd; actuele runtime niet opnieuw onderzocht.
+
+DOC-RECON-07 — live testbewijs: mock-/lokale tests bewijzen geen live Airtable–WordPress-keten. Status: geen full live E2E bevestigd; dit blijft expliciet open.
+
+10.3 Werkpakketten — geconsolideerde status uit de recente review
+
+A002 — BuilderKernel: OPEN. Bestaande dossierbevindingen blijven staan; actuele code, logger/audit lifecycle, dryRun over alle writepaden en tests moeten bewijs leveren voordat afronding.
+
+A003 — cleanup: gedeeltelijk / status te verifiëren. Controleer actuele worktree, git-status/commit en verwijzingen naar services/fieldDefinition.js; historische builderkopie niet aannemen.
+
+A004 — CampingAggregate: GEDEELTELIJK. Lokale preview-flow bestaat volgens eerdere projectinformatie; coverage van accommodatie-/accessibility-data en schema-foto’s nog controleren. Geen live validatieclaim.
+
+A005 — WordPress-flow: GEDEELTELIJK. Draft create/reuse is beschreven; update van bestaande Page, publicatie en live end-to-end-keten niet bewezen.
+
+D001 / architectuurdocumentatie: reviewbevindingen verwerken in gecontroleerde update; geen code- of externe systeemactie.
+
+D002 / README: inhoud vergelijken met PROJECT_STATUS, BACKLOG, CHECKPOINT en actieve documentatiesuite; niet als afgerond markeren alleen omdat README is aangeleverd.
+
+10.4 Uitvoeringsgrenzen en volgende stap
+
+Deze aanvulling is gebaseerd op de teruggevonden masterdossierinhoud en de recente document-/projectreview. De actuele repository is in deze stap niet geopend; genoemde code- en projectstatussen zijn dus niet opnieuw bevestigd.
+
+Geen code gewijzigd, geen tests uitgevoerd, geen Git-mutaties gedaan en geen Airtable-/WordPress-calls uitgevoerd.
+
+Volgende stap: controleer de genoemde docs/CHECKPOINT.md en docs/README.md in de actuele repository, werk daarna alleen na akkoord de dossierstatus bij met bewijs en exacte volgende file.
+
+
+RZD Builder Master Werkdossier | historische bronnen + controlebestand | niet gelijk aan actuele code-audit
+
+11. Reconciliatie bestanden buiten docs — 06-11-2026
+
+Doel: controleren welke projectonderdelen buiten docs al in het Master Werkdossier zijn vertegenwoordigd en welke review-/inventarisatiepunten nog expliciet ontbreken. Basis: de aangeleverde projectbestandsinventaris (Geplakte tekst(20261106-004940).txt), eerdere reviewnotities en beschikbare projectcontext. De inventaris toont bestandspaden, geen volledige actuele inhoud van alle bestanden. Dit is daarom een scope- en reviewregister, geen actuele code-audit.
+
+11.1 Wat al gedekt is
+
+BuilderKernel / schema-sync: A002 en de historische kernel-, bootstrap-, workflow-, synchronisatie-, logger-, audit-, rollback- en rapportagebevindingen staan al in de eerdere dossierdelen. Actuele code-status blijft onbevestigd.
+
+CampingAggregate / preview / WordPress: A004/A005, read-aggregate, preview, draft-create/reuse en ontbreken van live E2E zijn al opgenomen.
+
+Airtable mapping/resolver: eerdere context bevat pointMappings, resolver/cache, review-write en mappingtests; parkeerwijzigingen van 2 november zijn in eerdere sessie-inventaris aanwezig, maar moeten tegen de actuele bestanden worden bevestigd.
+
+Documentatie: de docs-review en DOC-RECON-01 t/m DOC-RECON-07 staan in hoofdstuk 10.
+
+11.2 Buiten-docs onderdelen die nog expliciet in het reviewregister moeten
+
+NONDOC-01 — Mobile review workflow
+
+Inventaris bevat mobile-review UI en services: mobile-review.html/js, mobileReviewAdapter, Input/ViewModel, Selection/ViewModel, ListViewModel, Confirmation/Action, Create, Submit, Status, Storage, Sync, SyncQueue en UiViewModel. Eerdere inventaris bevat gerichte tests voor input/page/selection/storage/sync/queue/UI. Nog niet als één end-to-end lifecycle in het Master Werkdossier uitgewerkt: selectie → invoer → bevestiging → opslag/queue → sync → status/fout/herstel. Status: OPEN; bestandspaden zijn inventarisbewijs, geen codevalidatie.
+
+NONDOC-02 — Review-write en Airtable-mutaties
+
+Inventaris bevat reviewWriteService, airtable/airtableAdapter/airtableFields, mobileReviewSubmit/sync, syncPendingReviews, scripts writeVoorzieningReview.js, writeMappedRecords.js, testSingleRecordWrite.js, testUpsertRecord.js, testSyncPendingReviews.js en testSyncPendingReviewsPublic.js. Dossier moet per write-entrypoint vastleggen: tabel/record-resolutie, dedup/upsert, dry-run, mutatiegrens, fout-/partial-resultaat en cleanup. Status: OPEN; live write niet aangetoond.
+
+NONDOC-03 — Mapping- en contentlaag
+
+Inventaris bevat content/modules, content/mapping, modules, generated/accommodations.js, pointLookupCache en resolver/mapping tests. Voeg reviewmatrix toe voor canonical content → mapping → resolver/cache → Airtable record/field, inclusief EXACT/NO_MATCH, duplicaten, verouderde mappings en cache/paginatie. Status: OPEN; recente parkeerpunten en fixture-resultaten zijn historische context en moeten tegen actuele bestanden worden gerecheckt.
+
+NONDOC-04 — Camping read/preview/aggregate
+
+Inventaris bevat campingReadService, previewCamping.js, testPreviewCamping.js en testPreviewRunnerMock.js, plus generated preview HTML/payload. A004 dekt hoofdstatus al, maar het dossier mist een compacte dekkingstabel: reads per tabel, aanvullende accessibility-data, foto/schema-velden, fallback/placeholder filtering, lokale output en mock versus live bewijs. Eerdere runs vermelden tests met exitcode 1; oorzaak/actuele status niet bevestigd. Status: OPEN.
+
+NONDOC-05 — WordPress-publicatieketen
+
+Inventaris bevat wordpressClient/config/connection/Mapper/PayloadValidator/PostService/Publisher en scripts publishCamping.js, testPublishCamping.js, publication-readiness en WP mapper/reuse tests; daarnaast rzd-mcp-abilities.php. A005 noemt draft/reuse en live E2E-gat, maar nog geen volledige component-/testmatrix: payload mapping/validatie, bestaande pagina-status, create/update/publish, foutafhandeling, capability/auth en MCP plugin contract. Status: OPEN; geen live publicatiebewijs.
+
+NONDOC-06 — Schema-sync engines en MCP
+
+Inventaris bevat choices/metadata/automation engines, mcpService, mcpEngine, mcp/protocol.js en router.js, plus schema/field services. Historische A002-regels bestaan, maar de volledige engine-/protocolroute moet per actie worden gekoppeld aan actuele code en tests: request validation, handshake/readiness, timeout/disconnect, choices API, unknown actions en dryRun-mutatiebarrière. Status: OPEN / actuele mapping vereist.
+
+NONDOC-07 — Testlandschap en package scripts
+
+Inventaris bevat veel losse root- en scripts-tests, package.json/package-lock, test- en auditbestanden. Masterdossier bevat minimumtestmatrix, maar geen complete testcatalogus met testbestand → component → scenario → laatste resultaat → betrouwbaarheidsniveau. Niet aannemen dat bestand bestaat betekent dat test is geslaagd; sommige historische tests faalden met exitcode 1. Status: OPEN.
+
+NONDOC-08 — Configuratie, secrets en permissies
+
+Inventaris toont .env, .env.example, .gitignore, permission-test.js/services/permission-test.js, wordpressConfig/connection en Airtable/MCP-configuratie. Dossier bevat eerder security/logging aandachtspunt, maar geen volledige secrets-/permission reviewmatrix: secret sources, logging/headers, env validation, Git ignore, capability/authorization en veilige testconfig. .env-inhoud niet opnemen in dossier. Status: OPEN; secrets niet inspecteren of kopiëren naar dossier.
+
+NONDOC-09 — Root scripts, backups en legacy files
+
+Inventaris toont root inspect*.js, schema-test.js, test.js, fieldComparer_backup.js, project-bestanden.txt, metadata.txt, payload JSON en CHANGELOG/CHECKPOINT/PROJECT_STATUS naast docs-versies. Dossier mist expliciete classificatie: actief entrypoint, diagnostiek, legacy/backup, fixture/generated artifact of mogelijke duplicate. Vooral root CHECKPOINT/PROJECT_STATUS/CHANGELOG versus docs/varianten en backupbestand vragen rol/actualiteitcontrole. Status: OPEN; geen bestanden verwijderen.
+
+NONDOC-10 — Logs, reports en generated artifacts
+
+Inventaris toont historische logs, reports/RZD_Builder JSON/Markdown, camping preview HTML/payload en generated/accommodations.js. Dossier noemt rapportagecontract en preview, maar mist artifact-retentie-/bronstatus: welke outputs zijn historisch, gegenereerd, fixture/mock, actueel of veilig te delen; geen logs/secrets kopiëren. Status: OPEN; niet als actuele run evidence gebruiken zonder timestamp/command/context.
+
+NONDOC-11 — Canon/config/field specification
+
+Eerdere documentatie-engine context noemt canon/registry/project.yaml, canon metadata, docs/FIELD_SPECIFICATION.md en documentationMapping/Engine. In dossier staat FIELD_SPECIFICATION als aanvullende bron, maar niet de volledige canon → runtime module/config → mapping contract. Status: OPEN; verifieer welke canon/config files daadwerkelijk bestaan en welke runtime gebruikt.
+
+11.3 Controlebestand — ontbrekende dossierkolommen
+
+Voor ieder NONDOC-ID bij vervolgcontrole invullen: exact bestand/pad; actief/legacy/generated/test; functie en callers; relevante codeplaatsen; risico (bug / mogelijk risico / ontwerpkeuze / verbetering); bestaande test(s); laatste feitelijk testresultaat en command; live/mock/read-only/write status; bewijsdatum; status BEVESTIGD / NIET BEVESTIGD / VERVALLEN / OPGELOST; één volgende file. Geen status op basis van alleen de bestandsinventaris.
+
+11.4 Samenvatting en volgorde
+
+Prioriteit 1: NONDOC-02 en NONDOC-08 — mutatie-entrypoints, dryRun en secrets/permissies, uitsluitend read-only review vooraf.
+
+Prioriteit 2: NONDOC-01 en NONDOC-05 — mobile review lifecycle en WordPress publicatieketen.
+
+Prioriteit 3: NONDOC-03, NONDOC-04 en NONDOC-06 — mapping/content, aggregate/preview en engines/MCP.
+
+Prioriteit 4: NONDOC-07, NONDOC-09 t/m NONDOC-11 — testcatalogus, root/legacy-artifacts, outputs en canon/config.
+
+Geen codewijzigingen, tests, Git-mutaties of Airtable/WordPress-calls zijn uitgevoerd bij deze dossieraanvulling. De actuele repository is niet rechtstreeks geopend; inventarisitems zijn dus nog niet inhoudelijk bevestigd.
+
+
+RZD Builder Master Werkdossier | historische bronnen + controlebestand | niet gelijk aan actuele code-audit
+
+Aanvulling — voorziening review-write route
+
+Datum: 7 november 2026. Bron: code die in deze chat is aangeleverd. Dit is een statische review; geen tests of actuele repository-run uitgevoerd. Bevindingen zijn aandachtspunten, niet als opgelost markeren zonder Copilot-verificatie.
+
+Bestanden beoordeeld
+
+scripts/writeVoorzieningReview.js
+
+services/reviewWriteService.js
+
+services/airtableAdapter.js
+
+scripts/writeVoorzieningReview.test.js
+
+Samenvatting bevindingen
+
+P0 — mappingstatus vóór execute
+
+writeVoorzieningReview.js laat iedere mapping toe behalve NO_MATCH. Daardoor kunnen ook POSSIBLE mappings worden geschreven. Laat Copilot de statuswaarden in de actuele mapping implementatie vaststellen en bepaal expliciet of execute uitsluitend EXACT mag verwerken.
+
+P0 — record- en veldvalidatie
+
+Controleer vóór upsert dat point.recordId, point.name, entity-link veld en point-link veld aanwezig zijn en dat fields de vereiste koppelingen bevat. De service controleert momenteel vooral pointId en entity-ID, niet de volledige payload.
+
+P1 — matchstrategie en duplicaten
+
+reviewWriteService haalt alle records uit Accommodatie beoordelingen op en matcht entiteit + Beoordelingspunt. Meerdere matches worden geblokkeerd. Verifieer dat listRecords alle pagina’s haalt en onderzoek gerichte Airtable filtering als tabelgroei dit nodig maakt.
+
+P1 — CREATE/UPDATE bescherming
+
+CREATE stuurt fields rechtstreeks door; UPDATE overschrijft inkomende niet-lege velden. Controleer vereiste velden en leg vast welke bestaande beoordelingsdata bewust mogen worden overschreven.
+
+P1 — execute batchrisico
+
+--execute verwerkt alle geselecteerde mapbare punten. Voeg vooraf een plan/overzicht toe en laat onzekere mappings, ontbrekende record-ID’s en onverwachte aantallen blokkeren of expliciet bevestigen.
+
+P1 — fout- en resultaatrapportage
+
+Een fout in één punt stopt de loop. Resultaten worden gelogd, maar niet inhoudelijk gevalideerd. Maak een eindrapport per punt met CREATE/UPDATE/BLOCKED/ERROR en onderscheid dry-run van werkelijk uitgevoerde writes.
+
+P2 — adapterconfiguratie/payload
+
+airtableAdapter valideert AIRTABLE_BASE_ID en AIRTABLE_TOKEN niet expliciet. createRecord/updateRecord accepteren lege fields-objecten. Voeg duidelijke preflight-validatie toe.
+
+P2 — testdekking
+
+writeVoorzieningReview.test.js test de hoofdroute en dry-run, maar uitbreiden met POSSIBLE/NO_MATCH/missing recordId, geselecteerd punt met write-safety asserts, onbekend punt zonder writes, bestaande match en meerdere matches, en volledige veldenasserties.
+
+Werkvolgorde met Copilot
+
+Stap 1 — alleen inspecteren
+
+Geen code wijzigen. Open de vier bestanden hierboven en bevestig elke bevinding aan de actuele repository. Geef per punt bestand/functie, codebewijs, risico en ontbrekende informatie. Markeer als bevestigd, niet bevestigd of niet van toepassing.
+
+Stap 2 — mappingbeleid
+
+Inspecteer de mogelijke mappingstatussen en adviseer een minimale validatie voor dry-run en execute. Geen implementatie voordat het beleid voor EXACT/POSSIBLE/NO_MATCH expliciet is.
+
+Stap 3 — preflight-validatie
+
+Ontwerp tests voor ontbrekende recordId, name, linkvelden, entity-ID en ongeldige fields. Implementeer alleen na akkoord en wijzig geen andere bestanden.
+
+Stap 4 — dry-run en resultaatplan
+
+Laat script voor execute een compact plan tonen met aantal punten, mappingstatussen en verwachte CREATE/UPDATE/BLOCKED. Dry-run moet aantoonbaar geen createRecord/updateRecord uitvoeren.
+
+Stap 5 — tests
+
+Voeg gerichte tests toe voor edge cases en writesafety. Voer uitsluitend de relevante tests uit, toon command, resultaat en eventuele bestaande failures.
+
+Stap 6 — gecontroleerde execute
+
+Pas pas toe na review van diff, testresultaten en dry-run-plan. Begin met één expliciet --point; controleer Airtable-resultaat vóór batchverwerking.
+
+Copilot startprompt
+
+Werk in de bestaande RZD Builder repository. Gebruik dit Master Werkdossier als context, maar controleer alles tegen de actuele code en git-status. Begin uitsluitend met inspectie; wijzig niets en voer geen Airtable-write uit. Bekijk scripts/writeVoorzieningReview.js, services/reviewWriteService.js, services/airtableAdapter.js en de bijbehorende tests. Rapporteer bevindingen per bestand met exact codebewijs, risico, test die dit bewijst en minimale vervolgstap. Onderscheid bevestigd van niet bevestigd. Geen aannames, geen brede refactor, geen secrets in output. Wacht op mijn akkoord voordat je code aanpast.
+
+Vervolgprompt per stap
+
+Voer alleen Stap [nummer] uit zoals beschreven in dit dossier. Inspecteer eerst de actuele code en git-diff. Beperk wijzigingen tot [bestand/functie]. Voeg passende tests toe. Voer geen Airtable-write uit en gebruik geen --execute. Toon vóór wijziging het voorgestelde plan; na wijziging toon diff, tests en resterende risico’s. Stop als de actuele code afwijkt van de dossierbeschrijving en vraag om beslissing.
+
+Status
+
+OPEN — niet veilig verklaren voor echte batchwrites totdat mappingbeleid, preflight-validatie, dry-run write assertions en testresultaten zijn bevestigd. Deze aanvulling bevat geen codewijzigingen.
+
+RZD Builder Master Werkdossier |

@@ -1,3 +1,4 @@
+
 <!-- ========================================================================== -->
 <!-- RZD Builder                                                                -->
 <!-- ARCHITECTURE                                                               -->
@@ -11,412 +12,413 @@
 | Project | RZD Builder |
 | Versie | 2.0 |
 | Status | Actief |
-| Laatste wijziging | 29-07-2026 |
+| Laatste wijziging | 06-11-2026 |
 | Eigenaar | Pascalle Vroegop |
-| **Rol** | **Leidend architectuurdocument** |
-
-
-## Gerelateerde documentatie
-
-Voor een volledig begrip van RZD Builder wordt aanbevolen de volgende documenten te raadplegen:
-
-- README.md – Centrale ingang van de documentatiesuite.
-- PROJECT_STATUS.md – Actuele projectstatus en prioriteiten.
-- AI_RULES.md – Ontwikkelrichtlijnen voor AI-assistenten en ontwikkelaars.
-- BACKLOG.md – Openstaande werkzaamheden en geplande ontwikkelingen.
-- CHANGELOG.md – Overzicht van alle functionele en technische wijzigingen.
 
 ---
 
-# Inhoud
+# Doel
 
-1. Architectuuroverzicht
-2. Ontwerpprincipes
-3. Systeemarchitectuur
-4. RZD Datamodel
-5. Projectstructuur
-6. BuilderKernel
-7. Compiler
-8. Pipeline
-9. Services
-10. Adapters
-11. Modules
-12. Metadata
-13. Synchronisatie
-14. Logging
-15. Foutafhandeling
-16. Testing
-17. Uitbreidbaarheid
-18. Toekomstvisie
-19. Referenties
+Dit document beschrijft de architectuur van RZD Builder.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 1                                                                -->
-<!-- ARCHITECTUUROVERZICHT                                                      -->
-<!-- ========================================================================== -->
+Het beschrijft de verantwoordelijkheden van de belangrijkste componenten en hun onderlinge samenhang.
+
+De architectuur wordt beschreven op basis van de huidige uitvoeringspaden. Aanwezige componenten en toekomstige uitbreidingen worden niet automatisch beschouwd als onderdeel van de actuele workflow.
+
+---
+
+# Architectuurprincipes
+
+RZD Builder is opgebouwd uit zelfstandige componenten.
+
+Iedere component heeft een duidelijk afgebakende verantwoordelijkheid.
+
+Belangrijke uitgangspunten:
+
+- Single Responsibility Principle;
+- modulaire opbouw;
+- minimale afhankelijkheden;
+- geen dubbele logica;
+- hergebruik bestaande services;
+- kleine, testbare functies;
+- veilig uitvoeren van wijzigingen;
+- duidelijke scheiding tussen read-, preview- en write-functionaliteit.
+
+---
 
 # Hoofdstuk 1 – Architectuuroverzicht
 
 ## Doel
 
-RZD Builder is een modulair softwareplatform dat is ontwikkeld voor het beheren, valideren, verwerken en synchroniseren van gegevens binnen het Reizen zonder Drempels (RZD)-project.
+RZD Builder ondersteunt het beheren, valideren, verwerken en synchroniseren van gegevens binnen het Reizen zonder Drempels-project.
 
-Het platform vormt de centrale bouwomgeving voor het samenstellen, controleren en publiceren van gegevens naar externe systemen zoals Airtable en WordPress. Door de modulaire opzet kunnen nieuwe functionaliteiten en integraties worden toegevoegd zonder ingrijpende wijzigingen aan de bestaande architectuur.
+De bestaande architectuur bevat meerdere uitvoeringspaden:
 
----
+1. Schema- en configuratiesynchronisatie.
+2. CampingAggregate ophalen en presenteren.
+3. WordPress-conceptpublicatie.
+4. Mobiele reviewopslag en synchronisatie.
 
-## Architectuurvisie
-
-Bij het ontwerp van RZD Builder staan onderhoudbaarheid, uitbreidbaarheid en betrouwbaarheid centraal.
-
-De software is opgebouwd uit zelfstandige componenten die elk een duidelijk afgebakende verantwoordelijkheid hebben. Hierdoor blijven wijzigingen lokaal, neemt de testbaarheid toe en kan het platform gecontroleerd doorgroeien.
-
-Belangrijke ontwerpprincipes zijn:
-
-- modulaire architectuur;
-- scheiding van verantwoordelijkheden;
-- metadata-gestuurde verwerking;
-- herbruikbare componenten;
-- uitbreidbaarheid zonder grote refactoring.
-
----
-
-## Kerncomponenten
-
-De belangrijkste onderdelen van de architectuur zijn:
-
-- BuilderKernel
-- Compiler
-- Pipeline
-- Services
-- Adapters
-- Modules
-- Metadata
-- Synchronisatie
-- Logging
-- Rapportage
-
-Iedere component heeft een eigen verantwoordelijkheid en communiceert via duidelijke interfaces met de overige onderdelen van het systeem.
-
----
-
-## Architectuuroverzicht
-
-De globale gegevensstroom binnen RZD Builder ziet er als volgt uit:
-
-```mermaid
-graph TD
-    A[index.js] --> B[BuilderKernel]
-    B --> C[Compiler]
-    C --> D[Pipeline]
-    D --> E[Services]
-    E --> F[Adapters]
-    F --> G[Externe systemen]
-    E --> H[Logging]
-    E --> I[Rapportage]
-```
-
-In de volgende hoofdstukken worden alle componenten afzonderlijk beschreven.
-
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 2                                                                -->
-<!-- ONTWERPPRINCIPES                                                           -->
-<!-- ========================================================================== -->
-
-# Hoofdstuk 2 – Ontwerpprincipes
-
-## Inleiding
-
-RZD Builder is ontworpen volgens een aantal vaste architectuurprincipes. Deze principes vormen de basis voor alle bestaande en toekomstige onderdelen van het systeem.
-
-Door deze uitgangspunten consequent toe te passen blijft de software overzichtelijk, onderhoudbaar en eenvoudig uit te breiden.
-
----
-
-## 2.1 Modulaire architectuur
-
-Het systeem bestaat uit zelfstandige modules met een duidelijk afgebakende verantwoordelijkheid.
-
-Elke module kan afzonderlijk worden ontwikkeld, getest en onderhouden zonder ongewenste afhankelijkheden naar andere onderdelen van het systeem.
-
----
-
-## 2.2 Single Responsibility Principle
-
-Iedere component heeft precies één primaire verantwoordelijkheid.
-
-Voorbeelden:
-
-- BuilderKernel verzorgt de centrale aansturing.
-- Compiler verwerkt de invoer.
-- Pipeline voert de verwerkingsstappen uit.
-- Services bevatten de bedrijfslogica.
-- Adapters verzorgen communicatie met externe systemen.
-
----
-
-## 2.3 Metadata boven hardcoded logica
-
-Waar mogelijk wordt gedrag bepaald door configuratie en metadata in plaats van hardcoded waarden.
-
-Voordelen:
-
-- minder programmeerwerk;
-- eenvoudiger onderhoud;
-- grotere flexibiliteit;
-- minder kans op fouten.
-
----
-
-## 2.4 Losse koppeling
-
-Componenten communiceren uitsluitend via duidelijke interfaces.
-
-Hierdoor kunnen onderdelen onafhankelijk worden aangepast of vervangen zonder grote gevolgen voor de rest van het systeem.
-
----
-
-## 2.5 Herbruikbaarheid
-
-Functionaliteit wordt zoveel mogelijk centraal ontwikkeld zodat code op meerdere plaatsen kan worden gebruikt.
-
-Duplicatie van code wordt zoveel mogelijk voorkomen.
-
----
-
-## 2.6 Testbaarheid
-
-Nieuwe onderdelen moeten zelfstandig getest kunnen worden.
-
-Waar mogelijk worden afhankelijkheden geïnjecteerd zodat componenten eenvoudig kunnen worden getest.
-
----
-
-## 2.7 Uitbreidbaarheid
-
-Nieuwe functionaliteit moet kunnen worden toegevoegd zonder bestaande componenten ingrijpend aan te passen.
-
-Nieuwe connectors, builders en pipelines moeten volgens dezelfde architectuur kunnen worden geïntegreerd.
-
----
-
-## 2.8 Consistentie
-
-Alle onderdelen volgen dezelfde afspraken voor:
-
-- naamgeving;
-- logging;
-- foutafhandeling;
-- documentatie;
-- projectstructuur.
-
----
-
-## 2.9 Documentation First
-
-Documentatie vormt een integraal onderdeel van de architectuur van RZD Builder.
-
-Architectuur, broncode en documentatie worden als één samenhangend geheel ontwikkeld en onderhouden. Een ontwikkelingstaak wordt pas als afgerond beschouwd wanneer de bijbehorende documentatie is bijgewerkt.
-
-Daarom gelden de volgende uitgangspunten:
-
-- architectuurwijzigingen worden gelijktijdig gedocumenteerd;
-- documentatie heeft dezelfde prioriteit als broncode;
-- architectuurdocumentatie is de primaire bron voor ontwerpbeslissingen;
-- wijzigingen worden geregistreerd in CHANGELOG.md;
-- de actuele projectstatus wordt bijgewerkt in PROJECT_STATUS.md;
-- ontwikkelsessies worden afgesloten met een bijgewerkt CHECKPOINT.md.
-
----
-
-## Samenvatting
-
-Deze ontwerpprincipes vormen de technische basis van RZD Builder.
-
-Alle toekomstige uitbreidingen worden aan deze uitgangspunten getoetst om de kwaliteit, onderhoudbaarheid en schaalbaarheid van het platform te waarborgen.
-
-
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 3                                                                -->
-<!-- SYSTEEMARCHITECTUUR                                                        -->
-<!-- ========================================================================== -->
-
-# Hoofdstuk 3 – Systeemarchitectuur
-
-## Inleiding
-
-RZD Builder is opgebouwd volgens een gelaagde architectuur. Iedere laag heeft een duidelijk afgebakende verantwoordelijkheid en communiceert uitsluitend met aangrenzende componenten.
-
-Hierdoor blijft de software overzichtelijk, eenvoudig uitbreidbaar en goed testbaar.
-
----
+Deze paden gebruiken waar nodig gedeelde services, maar vormen niet één doorlopende BuilderKernel-pipeline.
 
 ## Architectuuroverzicht
 
 ```mermaid
 graph TD
 
-    A[index.js]
+    A["index.js build <module>"]
+    A --> B["BuilderKernel.buildModule()"]
+    B --> C["BuilderBootstrap"]
+    C --> D["BuilderWorkflow"]
+    D --> E["SynchronizationCoordinator"]
+    E --> F["Airtable schema"]
+    E --> G["ReportingCoordinator"]
+    B --> H["Logger"]
 
-    A --> B[BuilderKernel]
+    I["scripts/previewCamping.js"]
+    I --> J["CampingReadService"]
+    J --> K["Airtable records; read-only"]
+    J --> L["WordPressMapper"]
+    L --> M["WordPressPublisher"]
+    M --> N["Lokale HTML- en JSON-preview"]
 
-    B --> C[Compiler]
+    O["scripts/publishCamping.js"]
+    O --> J
+    O --> P["WordPressPostService"]
+    P --> Q["WordPress REST API; expliciete modus"]
 
-    B --> D[Doctor Framework]
-
-    B --> E[Synchronization]
-
-    C --> F[Pipeline]
-
-    F --> G[Services]
-
-    G --> H[Adapters]
-
-    H --> I[Airtable]
-
-    H --> J[WordPress]
-
-    G --> K[Reports]
-
-    G --> L[Logs]
+    R["Mobile review"]
+    R --> S["Lokale reviewopslag"]
+    S --> T["Handmatige synchronisatie"]
+    T --> U["ReviewWriteService"]
+    U --> V["Airtable"]
 ```
-
----
 
 ## Architectuurlagen
 
 ### Applicatielaag
 
-Bestaat uit de startpunten van de applicatie.
+Bevat de startpunten van de applicatie.
 
 Voorbeelden:
 
-- index.js
-- CLI
-- toekomstige API
-
----
+- `index.js`
+- `scripts/previewCamping.js`
+- `scripts/publishCamping.js`
+- mobiele reviewroutes
 
 ### Orchestratielaag
 
-De BuilderKernel vormt het centrale hart van het systeem.
+De BuilderKernel coördineert de schema-sync-workflow die via:
 
-Taken:
+`node index.js build <module>`
 
-- workflow starten;
-- configuratie laden;
-- compiler aanroepen;
-- pipeline starten;
-- logging initiëren;
-- synchronisatie aansturen.
+wordt gestart.
 
----
+De kernel is niet de ingang voor alle scripts en services van RZD Builder.
 
 ### Verwerkingslaag
 
-De Compiler verwerkt alle invoer en bouwt interne modellen op.
+Compiler en Pipeline zijn aanwezige componenten.
 
-Daarna neemt de Pipeline de verwerking over.
+De huidige `index.js build`-workflow roept deze componenten niet aan als de eerder beschreven generieke Compiler → Pipeline-keten.
 
----
+De schema-sync verloopt via `BuilderWorkflow` en `SynchronizationCoordinator`.
 
 ### Servicelaag
 
-Services bevatten alle bedrijfslogica.
+Services bevatten de functionele verwerking.
 
 Voorbeelden:
 
-- MetadataService
-- UpdateService
-- ComparisonService
-- ValidationService
-
----
+- `BuilderBootstrap`
+- `BuilderWorkflow`
+- `SynchronizationCoordinator`
+- `ReportingCoordinator`
+- `CampingReadService`
+- `ReviewWriteService`
 
 ### Adapterlaag
 
 Adapters verzorgen de communicatie met externe systemen.
 
-Momenteel:
+Voorbeelden:
 
 - Airtable
 - WordPress
 
-Toekomstig:
-
-- REST API's
-- Databases
-- CSV
-- JSON
-- XML
-
----
+De concrete communicatie verschilt per uitvoeringspad.
 
 ### Rapportagelaag
 
-Na iedere uitvoering worden rapportages samengesteld.
+De schema-sync gebruikt `ReportingCoordinator` en logging.
+
+De preview- en publicatiescripts hebben hun eigen uitvoer en resultaten.
+
+---
+
+# Hoofdstuk 2 – Ontwerpprincipes
+
+## 2.1 Modulaire architectuur
+
+Het systeem bestaat uit zelfstandige componenten met een duidelijk afgebakende verantwoordelijkheid.
+
+## 2.2 Single Responsibility Principle
+
+Iedere component heeft één primaire verantwoordelijkheid.
 
 Voorbeelden:
 
-- validatie
-- synchronisatie
-- fouten
-- logging
-- statistieken
+- BuilderKernel coördineert de schema-sync.
+- BuilderWorkflow bouwt de workflow op.
+- SynchronizationCoordinator voert schema-synchronisatie uit.
+- CampingReadService stelt CampingAggregate samen.
+- ReviewWriteService verzorgt de upsert-logica voor beoordelingen.
+
+## 2.3 Metadata boven hardcoded logica
+
+Waar mogelijk wordt gedrag bepaald door configuratie en metadata.
+
+## 2.4 Losse koppeling
+
+Componenten communiceren via duidelijke interfaces.
+
+De CampingReadService staat los van BuilderKernel, BuilderWorkflow en SynchronizationCoordinator.
+
+## 2.5 Herbruikbaarheid
+
+Bestaande services worden hergebruikt wanneer zij dezelfde verantwoordelijkheid hebben.
+
+## 2.6 Testbaarheid
+
+Afhankelijkheden worden waar mogelijk geïnjecteerd.
+
+Lokale tests en mocktests moeten duidelijk onderscheiden blijven van echte externe integratietests.
+
+## 2.7 Veiligheid
+
+Productieacties worden niet uitgevoerd zonder expliciete controle.
+
+Bij twijfel wordt niet geschreven.
 
 ---
 
-## Gegevensstroom
+# Hoofdstuk 3 – Systeemarchitectuur
 
-De verwerking verloopt in onderstaande volgorde.
+## Inleiding
 
-1. index.js start de Builder.
-2. BuilderKernel initialiseert het systeem.
-3. Compiler bouwt de interne representatie.
-4. Pipeline voert de verwerking uit.
-5. Services verwerken de bedrijfslogica.
-6. Adapters communiceren met externe systemen.
-7. Rapportages worden gegenereerd.
-8. Logging wordt opgeslagen.
+RZD Builder bevat een schema-sync-workflow en afzonderlijke services voor campingdata, WordPress en mobiele reviews.
+
+De architectuur moet daarom per uitvoeringspad worden gelezen.
+
+## 3.1 Schema-sync-workflow
+
+```text
+index.js build <module>
+        │
+        ▼
+BuilderKernel.buildModule()
+        │
+        ▼
+BuilderBootstrap
+        │
+        ▼
+BuilderWorkflow
+        │
+        ▼
+SynchronizationCoordinator
+        │
+        ├── Airtable schema
+        ├── Synchronisatie
+        └── ReportingCoordinator
+
+BuilderKernel
+        │
+        └── Logger
+```
+
+### Workflow
+
+1. De module laden en valideren.
+2. De Airtable-veldlijst ophalen.
+3. De BuilderContext opbouwen.
+4. De module vergelijken.
+5. Een synchronisatie- en rollbackplan maken.
+6. De synchronisatie uitvoeren of als dry-run verwerken.
+7. Rapportages en logging afronden.
+
+De exacte uitvoeringsmodus bepaalt of wijzigingen daadwerkelijk worden uitgevoerd.
+
+## 3.2 CampingAggregate-preview
+
+```text
+scripts/previewCamping.js
+        │
+        ▼
+CampingReadService
+        │
+        ▼
+Airtable read-only
+        │
+        ▼
+CampingAggregate
+        │
+        ▼
+WordPressMapper
+        │
+        ▼
+WordPressPublisher
+        │
+        ▼
+Lokale HTML- en JSON-bestanden
+```
+
+De previewflow haalt campinggegevens op en stelt een aggregate samen.
+
+De preview schrijft lokale bestanden.
+
+De previewflow is geen schema-sync en gebruikt de BuilderKernel niet als orchestrator.
+
+## 3.3 WordPress-conceptpublicatie
+
+```text
+scripts/publishCamping.js
+        │
+        ▼
+CampingReadService
+        │
+        ▼
+CampingAggregate
+        │
+        ▼
+WordPressPostService
+        │
+        ▼
+WordPress REST API
+```
+
+De publicatieflow gebruikt de CampingAggregate als invoer.
+
+De WordPress-laag ondersteunt het voorbereiden en aanmaken/hergebruiken van Pages als concept.
+
+Een bestaande Page wordt niet automatisch bijgewerkt door alleen opnieuw publiceren.
+
+De afzonderlijke updateflow vereist een expliciete gecontroleerde actie.
+
+Er is geen bewijs dat de huidige flow een publieke productiepublicatie uitvoert.
+
+## 3.4 Mobiele reviewflow
+
+```text
+Browser
+   │
+   ▼
+Mobile review routes
+   │
+   ▼
+Lokale reviewopslag
+   │
+   ▼
+Pending reviews
+   │
+   ▼
+Handmatige synchronisatie
+   │
+   ▼
+ReviewWriteService
+   │
+   ▼
+Airtable
+```
+
+De mobiele reviewflow ondersteunt lokale opslag en handmatige synchronisatie.
+
+De write-grens gebruikt de bestaande review-write-service.
+
+Een volledige gecombineerde live browser-naar-Airtable-test is niet aangetoond.
 
 ---
-
-## Voordelen
-
-Deze architectuur biedt:
-
-- duidelijke verantwoordelijkheden;
-- hoge onderhoudbaarheid;
-- eenvoudige uitbreidbaarheid;
-- goede testbaarheid;
-- minimale afhankelijkheden;
-- consistente gegevensverwerking.
-
-
-
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 4                                                                -->
-<!-- RZD DATAMODEL                                                              -->
-<!-- ========================================================================== -->
 
 # Hoofdstuk 4 – RZD Datamodel
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 5                                                                -->
-<!-- PROJECTSTRUCTUUR                                                           -->
-<!-- ========================================================================== -->
+## Doel
+
+Het RZD-datamodel beschrijft de gegevensstructuur die door de Builder en de campingservices wordt gebruikt.
+
+De bestaande RZD 5.1 Airtable-structuur blijft leidend.
+
+## Hoofdobjecten
+
+### Accommodaties
+
+De bestaande tabel `Accommodaties` bevat camping-/parkgegevens en accommodatiegegevens.
+
+Camping/park is voor de huidige RZD-focus het primaire object.
+
+### Voorzieningen
+
+Voorzieningen zijn afzonderlijke records die aan een camping/park gekoppeld zijn.
+
+Voorbeelden:
+
+- sanitairgebouw;
+- zwembad;
+- supermarkt;
+- restaurant;
+- strand;
+- EHBO;
+- arts;
+- wasserette.
+
+Verschillende voorzieningen van hetzelfde type blijven afzonderlijke records.
+
+### Beoordelingspunten
+
+De bestaande tabel `Beoordelingspunten` blijft leidend voor de beoordelingspunten.
+
+### Accommodatie beoordelingen
+
+De bestaande tabel `Accommodatie beoordelingen` bevat beoordelingen.
+
+De tabel ondersteunt zowel een accommodatie- als een voorzieningkoppeling.
+
+Precies één van beide wordt per beoordeling gebruikt.
+
+### Verbeterpunten
+
+`Verbeterpunten` vormt een afzonderlijke rapportage-/actielaag.
+
+De relatie omvat:
+
+- Accommodatie;
+- Module;
+- Beoordelingspunt.
+
+### Bronnen
+
+`Bronnen` vormt een afzonderlijke relationele evidence-/provenance-laag.
+
+Meerdere bronnen kunnen bij een accommodatie en/of beoordeling horen.
+
+## Datamodelregels
+
+- Geen nieuwe Airtable-base.
+- Geen nieuwe Content Modules-tabel.
+- Geen nieuwe Accommodatie Beoordelingen-tabel.
+- Geen aparte Campings-tabel.
+- Geen aparte Voorzieningen beoordelingen-tabel.
+- Bestaande RZD-data wordt niet verwijderd.
+- De bestaande tabellen blijven leidend.
+
+---
 
 # Hoofdstuk 5 – Projectstructuur
 
 ## Inleiding
 
-De broncode van RZD Builder is georganiseerd volgens een modulaire projectstructuur. Iedere map heeft een eigen verantwoordelijkheid en bevat componenten die logisch bij elkaar horen.
+De broncode is georganiseerd volgens een modulaire projectstructuur.
 
-Deze structuur maakt het eenvoudiger om functionaliteit terug te vinden, wijzigingen door te voeren en nieuwe onderdelen toe te voegen zonder de bestaande architectuur te verstoren.
-
----
-
-## Structuuroverzicht
+De exacte inhoud kan per release verschillen.
 
 ```text
 RZD Builder
@@ -440,1540 +442,654 @@ RZD Builder
 └── package.json
 ```
 
-> De exacte inhoud kan per release verschillen. Nieuwe componenten worden toegevoegd volgens dezelfde architectuurprincipes.
-
----
-
 ## compiler/
 
-Bevat de compiler die invoer verwerkt en omzet naar een interne representatie die door de Pipeline kan worden verwerkt.
+Bevat de Compiler-component.
 
-Verantwoordelijkheden:
-
-- parserlogica;
-- validatie van invoer;
-- opbouw van interne modellen.
-
----
+De Compiler is aanwezig, maar wordt niet aangeroepen door de huidige `index.js build`-schema-sync-workflow.
 
 ## core/
 
-Bevat de kern van het platform.
-
-Hier bevinden zich onder andere:
-
-- BuilderKernel;
-- gedeelde basisfunctionaliteit;
-- centrale configuratie en orkestratie.
-
----
-
-## builders/
-
-Bevat gespecialiseerde builders die verantwoordelijk zijn voor het opbouwen van specifieke onderdelen van het systeem.
-
-Nieuwe builders kunnen worden toegevoegd zonder bestaande builders te wijzigen.
-
----
-
-## services/
-
-Bevat de bedrijfslogica van het platform.
+Bevat de kerncomponenten.
 
 Voorbeelden:
 
-- UpdateService;
-- ValidationService;
-- MetadataService;
-- ComparisonService.
+- BuilderKernel;
+- gedeelde basisfunctionaliteit;
+- centrale orkestratie.
 
-Services communiceren met elkaar via duidelijke interfaces.
+## builders/
 
----
+Bevat gespecialiseerde builders.
+
+## services/
+
+Bevat functionele verwerking.
+
+Voorbeelden:
+
+- `campingReadService.js`;
+- `reviewWriteService.js`;
+- metadata-, validatie- en vergelijkingsservices.
 
 ## adapters/
 
-Adapters verzorgen de communicatie met externe systemen.
+Bevat communicatie met externe systemen.
 
 Voorbeelden:
 
 - Airtable;
-- WordPress;
-- toekomstige REST API's.
-
-Adapters bevatten geen bedrijfslogica, maar vertalen gegevens van en naar externe systemen.
-
----
+- WordPress.
 
 ## modules/
 
-Zelfstandige uitbreidingen die aanvullende functionaliteit leveren.
-
-Modules kunnen onafhankelijk worden ontwikkeld en onderhouden.
-
----
+Bevat zelfstandige functionaliteit.
 
 ## config/
 
-Bevat configuratiebestanden die het gedrag van de applicatie bepalen.
-
-Configuratie staat los van de broncode zodat instellingen per omgeving kunnen verschillen.
-
----
+Bevat configuratiebestanden.
 
 ## tools/
 
-Ondersteunende hulpmiddelen voor ontwikkeling, onderhoud en beheer.
-
-Bijvoorbeeld:
-
-- hulpprogramma's;
-- migratiescripts;
-- analyse- en onderhoudstools.
-
----
+Bevat ondersteunende ontwikkel- en onderhoudstools.
 
 ## reports/
 
-Automatisch gegenereerde rapportages.
-
-Voorbeelden:
-
-- validatierapporten;
-- synchronisatierapporten;
-- foutoverzichten.
-
----
+Bevat rapportagefunctionaliteit.
 
 ## generated/
 
-Bestanden die tijdens het build- of synchronisatieproces automatisch worden aangemaakt.
-
-Deze bestanden worden niet handmatig aangepast.
-
----
+Bevat automatisch gegenereerde bestanden.
 
 ## docs/
 
-Projectdocumentatie, architectuur, roadmap en overige technische documentatie.
-
----
+Bevat projectdocumentatie.
 
 ## tests/
 
-Bevat alle geautomatiseerde tests.
-
-Denk aan:
-
-- unit tests;
-- integratietests;
-- regressietests.
-
----
+Bevat geautomatiseerde tests.
 
 ## scripts/
 
-Scripts voor ontwikkel- en releaseprocessen.
-
-Bijvoorbeeld:
-
-- build;
-- release;
-- onderhoud;
-- migraties.
+Bevat uitvoerings-, test-, preview- en publicatiescripts.
 
 ---
-
-## Samenvatting
-
-Door de duidelijke scheiding van verantwoordelijkheden blijft de projectstructuur overzichtelijk en schaalbaar. Nieuwe functionaliteit kan worden toegevoegd zonder bestaande componenten ingrijpend te wijzigen.
-
-
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 6                                                                -->
-<!-- BUILDERKERNEL                                                              -->
-<!-- ========================================================================== -->
 
 # Hoofdstuk 6 – BuilderKernel
 
 ## Doel
 
-De BuilderKernel vormt het centrale coördinatiepunt van RZD Builder. Alle belangrijke processen worden vanuit de BuilderKernel gestart, bewaakt en gecontroleerd.
+De BuilderKernel coördineert de bestaande schema-sync-workflow.
 
-De BuilderKernel bevat zelf zo min mogelijk bedrijfslogica. In plaats daarvan stuurt hij de verschillende componenten aan en bewaakt hij de volledige workflow.
-
----
+De kernel bevat zo min mogelijk bedrijfslogica.
 
 ## Verantwoordelijkheden
 
-De BuilderKernel is verantwoordelijk voor:
-
-- initialiseren van het systeem;
-- laden van configuratie;
-- starten van de Compiler;
-- starten van de Pipeline;
-- aansturen van Services;
-- initiëren van synchronisaties;
-- verzamelen van rapportages;
-- centrale foutafhandeling;
-- logging van de workflow.
-
----
+- aanroepen van `BuilderBootstrap.create()` om een module en context voor te bereiden;
+- aanroepen van `BuilderWorkflow.run()` om verschillen en synchronisatieplannen op te bouwen;
+- aanroepen van `SynchronizationCoordinator.run()` voor schema-synchronisatie;
+- aanroepen van `ReportingCoordinator.run()` voor rapportage;
+- afhandelen en loggen van fouten in het build-pad.
 
 ## Positie binnen de architectuur
 
 ```text
-index.js
-     │
-     ▼
-BuilderKernel
-     │
-     ├── Compiler
-     ├── Pipeline
-     ├── Services
-     ├── Synchronisatie
-     └── Rapportages
+index.js build <module>
+        │
+        ▼
+BuilderKernel.buildModule()
+        │
+        ├── BuilderBootstrap
+        ├── BuilderWorkflow
+        ├── SynchronizationCoordinator
+        ├── ReportingCoordinator
+        └── logger
 ```
-
----
 
 ## Workflow
 
-Tijdens een normale uitvoering verloopt de verwerking als volgt:
+Tijdens een schema-sync-uitvoering:
 
-1. Initialisatie.
-2. Configuratie laden.
-3. Compiler starten.
-4. Pipeline uitvoeren.
-5. Services aanroepen.
-6. Synchronisatie uitvoeren.
-7. Rapportages genereren.
-8. Afronden.
-
----
+1. De module laden en valideren.
+2. De Airtable-veldlijst ophalen.
+3. De BuilderContext opbouwen.
+4. De module vergelijken.
+5. Een synchronisatie- en rollbackplan maken.
+6. Synchronisatie uitvoeren of dry-run verwerken.
+7. Rapportage en logging afronden.
 
 ## Afhankelijkheden
 
-De BuilderKernel is afhankelijk van:
+De BuilderKernel is direct afhankelijk van:
 
-- configuratie;
-- Compiler;
-- Pipeline;
-- Services;
-- Logging;
-- Rapportages.
+- `BuilderBootstrap`;
+- `BuilderWorkflow`;
+- `SynchronizationCoordinator`;
+- `ReportingCoordinator`;
+- logging en rollbackplanning.
 
-De BuilderKernel is niet afhankelijk van specifieke adapters zoals Airtable of WordPress. Hierdoor blijft de kernel onafhankelijk van externe systemen.
+De kernel roept geen WordPress-integratie aan.
 
----
+Airtable-interactie voor het build-pad wordt door de bootstrap- en synchronisatiecomponenten uitgevoerd.
 
-## Ontwerpprincipes
-
-De BuilderKernel volgt de volgende ontwerpregels:
-
-- geen bedrijfslogica;
-- geen hardcoded gegevens;
-- minimale afhankelijkheden;
-- centrale orkestratie;
-- uitbreidbaar via modules.
-
----
-
-## Toekomstige uitbreidingen
-
-De BuilderKernel is voorbereid op toekomstige functionaliteit zoals:
-
-- parallelle verwerking;
-- meerdere pipelines;
-- plugin-ondersteuning;
-- taakplanning;
-- event-driven verwerking;
-- monitoring.
-
----
+De CampingReadService staat los van deze workflow.
 
 ## Samenvatting
 
-De BuilderKernel vormt het hart van RZD Builder. Door uitsluitend verantwoordelijk te zijn voor de coördinatie van processen blijft de architectuur overzichtelijk, schaalbaar en eenvoudig te onderhouden.
+De BuilderKernel coördineert de bestaande `index.js build`-schema-sync-workflow.
 
+De CampingAggregate-preview en WordPress-conceptflow starten via afzonderlijke scripts en blijven buiten deze kernelworkflow.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 7                                                                -->
-<!-- COMPILER                                                                   -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 7 – Compiler
 
 ## Doel
 
-De Compiler is verantwoordelijk voor het verwerken van invoergegevens en het omzetten daarvan naar een gestandaardiseerde interne representatie die door de Pipeline kan worden verwerkt.
+De Compiler is een aanwezige component voor het verwerken van invoergegevens en het omzetten daarvan naar een interne representatie.
 
-De Compiler fungeert als de vertaallaag tussen externe invoer en de interne architectuur van RZD Builder.
+De huidige `index.js build`-workflow roept deze Compiler niet aan.
 
----
+Dit hoofdstuk beschrijft daarom de component en niet de actuele uitvoeringsvolgorde van de schema-sync.
 
 ## Verantwoordelijkheden
 
-De Compiler is verantwoordelijk voor:
-
-- inlezen van brongegevens;
-- controleren van de invoerstructuur;
-- uitvoeren van basisvalidaties;
-- normaliseren van gegevens;
-- opbouwen van interne objecten;
-- voorbereiden van gegevens voor de Pipeline.
-
----
+- invoer verwerken;
+- structuur controleren;
+- basisvalidaties uitvoeren;
+- gegevens normaliseren;
+- interne objecten opbouwen;
+- resultaten voorbereiden.
 
 ## Positie binnen de architectuur
 
 ```text
-BuilderKernel
-      │
-      ▼
-   Compiler
-      │
-      ▼
-   Pipeline
+Compiler
+   │
+   ▼
+Interne representatie
 ```
 
----
-
-## Verwerkingsproces
-
-Tijdens een compilatie worden de volgende stappen uitgevoerd:
-
-1. Invoer laden.
-2. Structuur controleren.
-3. Basisvalidaties uitvoeren.
-4. Gegevens normaliseren.
-5. Interne objecten opbouwen.
-6. Resultaat doorgeven aan de Pipeline.
-
----
+De bovenstaande relatie beschrijft de componentfunctie en is geen actuele schema-sync-callflow.
 
 ## Input
 
-De Compiler kan gegevens verwerken uit verschillende bronnen, zoals:
+Mogelijke invoer:
 
-- configuratiebestanden;
+- configuratie;
 - metadata;
 - JSON;
 - CSV;
-- API-responses;
-- toekomstige databronnen.
-
-Nieuwe invoerformaten kunnen worden toegevoegd zonder de kern van de Compiler aan te passen.
-
----
+- API-responses.
 
 ## Output
 
-De output van de Compiler bestaat uit een consistente interne gegevensstructuur die door de Pipeline verder kan worden verwerkt. Zie hoofdstuk 12 (Metadata) voor de beschrijving van de metadata waarop de Compiler zich baseert.
-
-Hierdoor hoeft de Pipeline geen kennis te hebben van de oorspronkelijke bron of het formaat van de invoer.
-
----
+Een interne gegevensstructuur die door een volgende verwerkingscomponent kan worden gebruikt.
 
 ## Foutafhandeling
 
-Tijdens de compilatie worden fouten en waarschuwingen verzameld.
-
-Voorbeelden:
+Mogelijke fouten:
 
 - ontbrekende verplichte velden;
 - ongeldige waarden;
 - onbekende configuraties;
 - onvolledige metadata.
 
-Afhankelijk van de ernst kan de verwerking worden voortgezet of gecontroleerd worden afgebroken.
-
----
-
-## Ontwerpprincipes
-
-De Compiler volgt de volgende uitgangspunten:
-
-- brononafhankelijk;
-- geen bedrijfslogica;
-- reproduceerbare verwerking;
-- consistente output;
-- duidelijke foutmeldingen.
-
----
-
-## Toekomstige uitbreidingen
-
-De architectuur biedt ruimte voor onder andere:
-
-- ondersteuning van extra bestandsformaten;
-- incrementele compilatie;
-- parallelle verwerking;
-- caching van compilatieresultaten;
-- uitbreidbare parsermodules.
-
----
-
 ## Samenvatting
 
-De Compiler vormt de vertaallaag tussen externe gegevensbronnen en de interne verwerking. Door invoer te normaliseren en te standaardiseren levert de Compiler een betrouwbare basis voor de verdere verwerking binnen de Pipeline.
+De Compiler is een aanwezige verwerkingscomponent.
 
+De actuele schema-sync-workflow gebruikt `BuilderWorkflow` en `SynchronizationCoordinator` en roept de Compiler niet aan.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 8                                                                -->
-<!-- PIPELINE                                                                   -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 8 – Pipeline
 
 ## Doel
 
-De Pipeline is verantwoordelijk voor het gecontroleerd uitvoeren van alle verwerkingsstappen binnen RZD Builder. Nadat de Compiler de gegevens heeft voorbereid, zorgt de Pipeline ervoor dat iedere stap in de juiste volgorde wordt uitgevoerd.
+De Pipeline is een aanwezige component voor het uitvoeren van verwerkingsstappen.
 
-Door de verwerking op te delen in afzonderlijke fasen blijft de workflow overzichtelijk, uitbreidbaar en eenvoudig te testen.
+De huidige `index.js build`-workflow roept deze Pipeline niet aan.
 
----
+De schema-sync verloopt via `BuilderWorkflow` en `SynchronizationCoordinator`.
 
-## Verantwoordelijkheden
+## Componentfunctie
 
-De Pipeline is verantwoordelijk voor:
+Een Pipeline kan verwerkingsstappen organiseren zoals:
 
-- uitvoeren van verwerkingsstappen;
-- bewaken van de uitvoervolgorde;
-- doorgeven van gegevens tussen stappen;
-- afhandelen van fouten;
-- registreren van de voortgang;
-- voorbereiden van synchronisatie en rapportage.
+- initialisatie;
+- validatie;
+- normalisatie;
+- verrijking;
+- bedrijfslogica;
+- synchronisatievoorbereiding;
+- rapportage.
 
----
-
-## Positie binnen de architectuur
-
-```text
-BuilderKernel
-      │
-      ▼
-   Compiler
-      │
-      ▼
-   Pipeline
-      │
-      ▼
-   Services
-      │
-      ▼
-   Adapters
-```
-
----
-
-## Verwerkingsfasen
-
-Een standaard Pipeline bestaat uit de volgende fasen:
-
-1. Initialisatie
-2. Validatie
-3. Normalisatie
-4. Verrijking van gegevens
-5. Bedrijfslogica uitvoeren
-6. Synchronisatie voorbereiden
-7. Rapportages genereren
-8. Afronding
-
-De verwerking maakt gebruik van metadata zoals beschreven in hoofdstuk 12.
-
-Afhankelijk van de configuratie kunnen stappen worden toegevoegd, verwijderd of vervangen.
-
----
-
-## Pipeline-stappen
-
-Iedere stap in de Pipeline heeft een vaste structuur:
-
-- ontvangt invoer;
-- verwerkt de gegevens;
-- retourneert uitvoer;
-- registreert eventuele fouten;
-- geeft de verwerking door aan de volgende stap.
-
-Hierdoor zijn stappen onafhankelijk van elkaar en eenvoudig herbruikbaar.
-
----
-
-## Foutafhandeling
-
-Wanneer een stap een fout detecteert, bepaalt de Pipeline op basis van de configuratie hoe hiermee wordt omgegaan.
-
-Mogelijke acties:
-
-- waarschuwing registreren;
-- stap overslaan;
-- verwerking voortzetten;
-- verwerking gecontroleerd beëindigen.
-
-Alle fouten worden centraal vastgelegd in de rapportage.
-
----
+Deze beschrijving is geen bewijs dat deze fasen als één actuele schema-sync-pipeline worden uitgevoerd.
 
 ## Ontwerpprincipes
 
-De Pipeline is gebaseerd op de volgende uitgangspunten:
-
-- vaste uitvoervolgorde;
 - onafhankelijke verwerkingsstappen;
-- uitbreidbare architectuur;
+- duidelijke input en output;
 - minimale onderlinge afhankelijkheden;
-- reproduceerbare verwerking.
-
----
-
-## Toekomstige uitbreidingen
-
-De architectuur maakt onder andere de volgende uitbreidingen mogelijk:
-
-- dynamische pipelines;
-- parallelle verwerking;
-- conditionele stappen;
-- plugins voor extra verwerkingsfasen;
-- herstarten vanaf een tussenstap;
-- monitoring van prestaties.
-
----
+- reproduceerbare verwerking;
+- gecontroleerde foutafhandeling.
 
 ## Samenvatting
 
-De Pipeline vormt de gecontroleerde verwerkingslaag van RZD Builder. Door gegevens stap voor stap te verwerken volgens een vaste workflow ontstaat een robuuste, schaalbare en onderhoudbare architectuur die eenvoudig kan worden uitgebreid met nieuwe functionaliteit.
+De Pipeline is een aanwezige component.
 
+De huidige schema-sync-workflow loopt via `BuilderWorkflow` en `SynchronizationCoordinator`.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 9                                                                -->
-<!-- SERVICES                                                                   -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 9 – Services
 
 ## Doel
 
-Services bevatten de bedrijfslogica van RZD Builder. Zij voeren de functionele verwerking van gegevens uit en zorgen ervoor dat alle bedrijfsregels op een consistente manier worden toegepast.
+Services bevatten de functionele verwerking van RZD Builder.
 
-Services vormen de schakel tussen de Pipeline en de Adapters. Zij verwerken gegevens, voeren controles uit en bereiden informatie voor op synchronisatie of rapportage.
+Services voeren controles uit, verwerken gegevens en bereiden resultaten voor.
 
----
+De concrete serviceketen verschilt per uitvoeringspad.
 
-## Verantwoordelijkheden
+## Builder-services
 
-Services zijn verantwoordelijk voor:
+Voor de schema-sync zijn onder andere aanwezig:
 
-- uitvoeren van bedrijfsregels;
-- verwerken van metadata;
-- uitvoeren van validaties;
-- vergelijken van gegevens;
-- voorbereiden van synchronisaties;
-- genereren van tussenresultaten.
+- `BuilderBootstrap`;
+- `BuilderWorkflow`;
+- `SynchronizationCoordinator`;
+- `ReportingCoordinator`.
 
----
+## ReviewWriteService
 
-## Positie binnen de architectuur
+Centrale upsert-service voor de tabel `Accommodatie beoordelingen`.
 
-```text
-Pipeline
-     │
-     ▼
- Services
-     │
-     ▼
- Adapters
-```
+Ondersteunt:
 
----
+- accommodatiebeoordelingen;
+- voorzieningbeoordelingen.
 
-## Opbouw van een Service
+Precies één van beide koppelingen is verplicht.
 
-Iedere Service heeft één duidelijke verantwoordelijkheid.
+Duplicate-safety:
 
-Een Service:
+- 0 matches → CREATE;
+- 1 match → UPDATE;
+- meer dan 1 match → BLOCKED_MULTIPLE_MATCHES.
 
-- ontvangt gegevens;
-- verwerkt de gegevens;
-- retourneert een resultaat;
-- kent geen gebruikersinterface;
-- communiceert uitsluitend via goed gedefinieerde interfaces.
+## CampingReadService
 
-Hierdoor blijven Services onafhankelijk en goed testbaar.
+Read-only service die een `CampingAggregate` samenstelt uit:
 
----
+- Accommodaties;
+- Voorzieningen;
+- Accommodatie beoordelingen;
+- waar van toepassing Keuzeopties;
+- Reizigerservaringen;
+- Opmerkingen.
 
-## Voorbeelden van Services
-
-### MetadataService
-
-Verwerkt metadata en zorgt voor een uniforme interpretatie van configuratie en definities.
-
----
-
-### ValidationService
-
-Controleert gegevens op volledigheid, juistheid en consistentie.
-
-Voorbeelden:
-
-- verplichte velden;
-- datatypecontroles;
-- referentiële controles;
-- business rules.
-
----
-
-### UpdateService
-
-Bepaalt welke gegevens gewijzigd moeten worden en bereidt updates voor.
-
----
-
-### ComparisonService
-
-Vergelijkt bestaande gegevens met nieuwe gegevens om verschillen vast te stellen.
-
-Deze informatie wordt gebruikt voor synchronisatie en rapportages.
-
----
-
-### Toekomstige Services
-
-De architectuur biedt ruimte voor aanvullende Services, zoals:
-
-- CacheService;
-- NotificationService;
-- StatisticsService;
-- ExportService;
-- ImportService;
-- AuditService.
-
-Nieuwe Services kunnen worden toegevoegd zonder bestaande Services aan te passen.
-
----
+De readservice staat los van BuilderKernel, BuilderWorkflow en SynchronizationCoordinator.
 
 ## Ontwerpprincipes
 
-Iedere Service voldoet aan de volgende uitgangspunten:
+Services:
 
-- één verantwoordelijkheid;
-- geen directe afhankelijkheid van externe systemen;
-- herbruikbaar;
-- goed testbaar;
-- duidelijke input en output;
-- geen verborgen neveneffecten.
-
----
-
-## Samenwerking
-
-Services communiceren niet rechtstreeks met externe systemen. De communicatie met externe systemen verloopt uitsluitend via de Adapterlaag (zie hoofdstuk 10).
-
-Alle communicatie verloopt via de daarvoor bestemde Adapters.
-
-Hierdoor blijft de bedrijfslogica volledig gescheiden van technische implementaties.
-
----
-
-## Foutafhandeling
-
-Services registreren fouten en waarschuwingen, maar bepalen niet zelfstandig hoe deze worden afgehandeld.
-
-De uiteindelijke afhandeling ligt bij de Pipeline en de BuilderKernel.
-
----
+- hebben één verantwoordelijkheid;
+- zijn herbruikbaar;
+- zijn testbaar;
+- hebben duidelijke input en output;
+- bevatten geen gebruikersinterface.
 
 ## Samenvatting
 
-Services vormen het functionele hart van RZD Builder. Door bedrijfslogica te centraliseren in zelfstandige Services blijft de software overzichtelijk, onderhoudbaar en eenvoudig uit te breiden.
+Services vormen de functionele laag van RZD Builder.
 
+De CampingReadService en ReviewWriteService ondersteunen afzonderlijke camping- en reviewflows en vormen geen onderdeel van de schema-sync-kernelworkflow.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 10                                                               -->
-<!-- ADAPTERS                                                                   -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 10 – Adapters
 
 ## Doel
 
-Adapters vormen de communicatielaag tussen RZD Builder en externe systemen. Zij vertalen interne gegevensstructuren naar het formaat dat een extern systeem verwacht en omgekeerd. De synchronisatieprocessen waarin Adapters worden gebruikt, zijn beschreven in hoofdstuk 13.
+Adapters verzorgen de technische communicatie met externe systemen.
 
-Door deze scheiding blijft de kern van RZD Builder onafhankelijk van specifieke API's, databases of andere externe diensten.
-
----
+Zij vertalen interne gegevens naar het formaat dat een extern systeem verwacht en verwerken ontvangen gegevens.
 
 ## Verantwoordelijkheden
 
-Adapters zijn verantwoordelijk voor:
-
-- verzenden van gegevens;
-- ontvangen van gegevens;
-- vertalen van interne modellen naar externe formaten;
-- afhandelen van API-communicatie;
+- verzenden en ontvangen van gegevens;
+- technische API-communicatie;
+- vertalen van gegevensformaten;
 - verwerken van technische fouten;
-- beheren van authenticatie en verbindingen.
+- beheren van verbindingen.
 
-Adapters bevatten **geen bedrijfslogica**. Zij richten zich uitsluitend op de technische communicatie.
+Adapters bevatten geen bedrijfslogica.
 
----
-
-## Positie binnen de architectuur
-
-```text
-Pipeline
-     │
-     ▼
- Services
-     │
-     ▼
- Adapters
-     │
-     ▼
- Externe systemen
-```
-
----
-
-## Ondersteunde systemen
-
-De architectuur ondersteunt onder andere:
+## Externe systemen
 
 - Airtable;
-- WordPress;
-- REST API's;
-- JSON-services;
-- CSV-import en -export.
+- WordPress.
 
-Nieuwe systemen kunnen worden toegevoegd door een nieuwe Adapter te implementeren.
+## Airtable
 
----
+Airtable wordt gebruikt voor de bestaande RZD 5.1-gegevensstructuur.
 
-## Werkwijze
+De schema-sync en campingreadflow gebruiken Airtable op verschillende manieren.
 
-Een Adapter voert doorgaans de volgende stappen uit:
+## WordPress
 
-1. Ontvangt een intern gegevensmodel.
-2. Zet de gegevens om naar het vereiste formaat.
-3. Verzendt of ontvangt gegevens.
-4. Verwerkt technische fouten.
-5. Retourneert een gestandaardiseerd resultaat.
+WordPress wordt gebruikt voor de accommodatiepresentatie en conceptpublicatie.
 
-Hierdoor blijft de rest van het systeem onafhankelijk van technische details zoals HTTP-verzoeken of API-specifieke velden.
-
----
-
-## Ontwerpprincipes
-
-Iedere Adapter voldoet aan de volgende uitgangspunten:
-
-- één verantwoordelijkheid;
-- geen bedrijfslogica;
-- duidelijke input en output;
-- herbruikbare implementatie;
-- consistente foutafhandeling;
-- eenvoudig vervangbaar.
-
----
-
-## Foutafhandeling
-
-Technische fouten worden door de Adapter geregistreerd en doorgegeven aan de Pipeline of BuilderKernel.
-
-Voorbeelden:
-
-- netwerkfouten;
-- time-outs;
-- authenticatiefouten;
-- API-limieten;
-- ongeldige responses.
-
-De Adapter bepaalt niet hoe de fout functioneel wordt afgehandeld.
-
----
-
-## Toekomstige uitbreidingen
-
-De Adapterlaag is ontworpen om eenvoudig uit te breiden met nieuwe koppelingen, zoals:
-
-- SQL-databases;
-- NoSQL-opslag;
-- cloudopslag;
-- GraphQL API's;
-- message queues;
-- externe validatiediensten.
-
----
+De WordPress-integratie wordt niet door de BuilderKernel aangeroepen.
 
 ## Samenvatting
 
-Adapters zorgen voor een duidelijke scheiding tussen de interne architectuur van RZD Builder en externe systemen. Hierdoor blijft de kern van het platform stabiel, terwijl nieuwe integraties eenvoudig kunnen worden toegevoegd of vervangen.
+Adapters vormen de technische communicatiegrens.
 
+De gebruikte adapter en uitvoeringsmodus zijn afhankelijk van het specifieke uitvoeringspad.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 11                                                               -->
-<!-- MODULES                                                                    -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 11 – Modules
 
 ## Doel
 
-Modules vormen de uitbreidbare onderdelen van RZD Builder. Iedere module voegt een afgebakende functionaliteit toe zonder wijzigingen aan de kern van het platform.
+Modules vormen zelfstandige onderdelen van RZD Builder.
 
-Dankzij deze modulaire opzet kan RZD Builder meegroeien met nieuwe wensen en integraties, terwijl de bestaande architectuur stabiel blijft.
+Iedere module heeft een afgebakende verantwoordelijkheid.
 
----
-
-## Verantwoordelijkheden
-
-Een module is verantwoordelijk voor:
-
-- uitvoeren van één specifieke functionaliteit;
-- samenwerken met bestaande Services;
-- communiceren via de beschikbare interfaces;
-- leveren van een duidelijk resultaat;
-- zelfstandig kunnen worden ontwikkeld en onderhouden.
-
----
-
-## Positie binnen de architectuur
-
-```text
-BuilderKernel
-      │
-      ▼
-   Pipeline
-      │
-      ▼
-   Services
-      │
-      ▼
-   Modules
-      │
-      ▼
-   Adapters
-```
-
----
-
-## Eigenschappen van een Module
+## Eigenschappen
 
 Een module:
 
 - heeft één duidelijk doel;
-- bevat geen centrale orkestratie;
-- gebruikt bestaande Services waar mogelijk;
+- gebruikt waar mogelijk bestaande Services;
+- heeft duidelijke input en output;
 - kan onafhankelijk worden getest;
-- heeft een duidelijke input en output;
-- is eenvoudig uit te schakelen of te vervangen.
+- bevat geen centrale orkestratie.
 
----
+## Schema-sync
 
-## Levenscyclus
+Modules worden via de bestaande schema-sync-workflow geladen en verwerkt.
 
-Een module doorloopt de volgende fasen:
-
-1. Registratie.
-2. Initialisatie.
-3. Uitvoering.
-4. Resultaat retourneren.
-5. Opruimen van tijdelijke resources.
-
-De BuilderKernel bepaalt wanneer een module wordt uitgevoerd.
-
----
-
-## Afhankelijkheden
-
-Modules mogen afhankelijk zijn van:
-
-- Services;
-- configuratie;
-- metadata;
-- gedeelde hulpfuncties.
-
-Modules mogen **niet** rechtstreeks afhankelijk zijn van andere modules, tenzij dit expliciet is ontworpen en gedocumenteerd.
-
----
-
-## Voorbeelden
-
-Mogelijke modules zijn:
-
-- AccessibilityModule;
-- SEOBuilderModule;
-- MediaModule;
-- ReviewModule;
-- StatisticsModule;
-- ReportModule;
-- ExportModule.
-
-Deze lijst is niet uitputtend en kan per release worden uitgebreid.
-
----
+De BuilderKernel coördineert deze workflow.
 
 ## Ontwerpprincipes
-
-Iedere module voldoet aan de volgende uitgangspunten:
 
 - één verantwoordelijkheid;
 - minimale afhankelijkheden;
 - herbruikbaarheid;
 - uitbreidbaarheid;
-- consistente foutafhandeling;
-- duidelijke documentatie.
-
----
-
-## Registratie
-
-Nieuwe modules worden geregistreerd via de configuratie of een centraal registratiemechanisme.
-
-Hierdoor hoeft de BuilderKernel niet te worden aangepast wanneer een nieuwe module wordt toegevoegd.
-
----
-
-## Toekomstige uitbreidingen
-
-De modulearchitectuur biedt ruimte voor:
-
-- plugin-ondersteuning;
-- dynamisch laden van modules;
-- versiebeheer per module;
-- optionele modules;
-- community-uitbreidingen;
-- externe extensies.
-
----
+- consistente foutafhandeling.
 
 ## Samenvatting
 
-Modules maken RZD Builder flexibel en toekomstbestendig. Door nieuwe functionaliteit als zelfstandige module toe te voegen blijft de kern van het platform compact, stabiel en onderhoudbaar.
+Modules leveren afgebakende functionaliteit.
 
+De huidige module-uitvoering behoort tot het schema-sync-pad wanneer deze via `index.js build <module>` wordt gestart.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 12                                                               -->
-<!-- METADATA                                                                   -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 12 – Metadata
 
 ## Doel
 
-Metadata vormt de centrale beschrijvende laag van RZD Builder. In plaats van gedrag vast te leggen in hardcoded programmatuur, worden eigenschappen, configuraties en verwerkingsregels zoveel mogelijk vastgelegd als metadata.
+Metadata beschrijft eigenschappen, configuraties en verwerkingsregels.
 
-Hierdoor blijft de software flexibel, onderhoudbaar en eenvoudig uit te breiden zonder wijzigingen aan de kernarchitectuur.
-
----
-
-## Rol binnen de architectuur
-
-Metadata bepaalt hoe gegevens worden geïnterpreteerd en verwerkt.
-
-Vrijwel alle onderdelen van RZD Builder maken gebruik van metadata, waaronder:
-
-- Compiler
-- Pipeline
-- Services
-- Modules
-- Adapters
-- Synchronisatie
-- Rapportages
-
-Hierdoor ontstaat één centrale bron van waarheid voor de verwerking van gegevens.
-
----
+Metadata wordt gebruikt om gegevens consistent te interpreteren.
 
 ## Verantwoordelijkheden
 
-Metadata beschrijft onder andere:
+Metadata kan beschrijven:
 
 - velddefinities;
 - gegevenstypen;
 - validatieregels;
 - standaardwaarden;
-- afhankelijkheden;
+- relaties;
 - synchronisatieregels;
-- relaties tussen objecten;
-- configuratie-instellingen.
+- configuratie.
 
----
+## Canon en Airtable
 
-## Metadataflow
+Canonical metadata en de bestaande RZD 5.1 Airtable-inhoud hebben verschillende rollen.
 
-```text
-Configuratie
-      │
-      ▼
- Metadata
-      │
-      ▼
- Compiler
-      │
-      ▼
- Pipeline
-      │
-      ▼
- Services
-      │
-      ▼
- Adapters
-```
-
----
-
-## Eigenschappen
-
-Metadata is:
-
-- centraal beheerd;
-- herbruikbaar;
-- uitbreidbaar;
-- versieerbaar;
-- onafhankelijk van bedrijfslogica.
-
-Wijzigingen in metadata mogen geen wijzigingen aan de kernarchitectuur vereisen.
-
----
-
-## Toepassingen
-
-Metadata wordt gebruikt voor:
-
-- validatie;
-- mapping;
-- synchronisatie;
-- veldtransformaties;
-- rapportages;
-- configuratie;
-- documentatie;
-- toekomstige automatisering.
-
----
+- Canon beschrijft de Builder-definities.
+- Bestaande RZD 5.1 Airtable-inhoud blijft leidend voor bestaande beoordelingspunten en antwoorden.
+- `Waarde / Resultaat` blijft het authoritative answer field.
+- Builder IDs en labels zijn aanvullende metadata.
+- Verbeterpunten vormen een afzonderlijke rapportage-/actielaag.
+- Bronnen vormen een afzonderlijke evidence-/provenance-laag.
 
 ## Ontwerpprincipes
 
-Metadata voldoet aan de volgende uitgangspunten:
-
-- één centrale definitie;
-- geen duplicatie;
+- centrale definities;
 - consistente naamgeving;
-- uitbreidbaar zonder codewijzigingen;
-- onafhankelijk van specifieke externe systemen.
-
----
-
-## Versiebeheer
-
-Metadata kan onafhankelijk van de software worden aangepast.
-
-Hierdoor kunnen wijzigingen aan configuraties worden doorgevoerd zonder een nieuwe softwareversie uit te brengen, mits de wijzigingen compatibel zijn met de bestaande architectuur.
-
----
-
-## Toekomstige uitbreidingen
-
-De metadata-architectuur biedt ruimte voor:
-
-- dynamische velddefinities;
-- automatische validatie;
-- configuratie per omgeving;
-- meertalige definities;
-- plugin-specifieke metadata;
-- automatische documentatiegeneratie.
-
----
+- geen onnodige duplicatie;
+- uitbreidbaarheid;
+- duidelijke scheiding tussen metadata en bestaande Airtable-inhoud.
 
 ## Samenvatting
 
-Metadata vormt de centrale kennislaag van RZD Builder. Door gedrag zoveel mogelijk te beschrijven met metadata in plaats van hardcoded logica ontstaat een flexibel, schaalbaar en onderhoudbaar platform dat eenvoudig kan meegroeien met nieuwe functionaliteit.
+Metadata ondersteunt de verwerking en documentatie.
 
+Ontbrekende Airtable-inhoud wordt niet afgeleid uit Canon.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 13                                                               -->
-<!-- SYNCHRONISATIE                                                             -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 13 – Synchronisatie
 
 ## Doel
 
-De synchronisatielaag is verantwoordelijk voor het uitwisselen van gegevens tussen RZD Builder en externe systemen. Hierbij wordt ervoor gezorgd dat gegevens consistent, betrouwbaar en controleerbaar worden bijgewerkt.
+De synchronisatielaag voert schema- en gegevenswijzigingen uit binnen de daarvoor bestemde workflows.
 
-Synchronisatie vindt plaats via de Adapterlaag, zodat de kern van RZD Builder onafhankelijk blijft van de implementatie van externe systemen.
+## Schema-sync
 
----
+De bestaande schema-sync-workflow wordt gestart via:
 
-## Verantwoordelijkheden
+`node index.js build <module>`
 
-De synchronisatielaag is verantwoordelijk voor:
+De workflow gebruikt:
 
-- ophalen van gegevens;
-- vergelijken van gegevens;
-- bepalen van wijzigingen;
-- uitvoeren van updates;
-- registreren van resultaten;
-- herstellen van tijdelijke synchronisatiefouten.
+- BuilderBootstrap;
+- BuilderWorkflow;
+- SynchronizationCoordinator;
+- ReportingCoordinator.
 
----
+## Review-synchronisatie
 
-## Positie binnen de architectuur
+De mobiele reviewflow gebruikt de bestaande lokale opslag en synchronisatiequeue.
 
-```text
-BuilderKernel
-      │
-      ▼
-   Pipeline
-      │
-      ▼
-   Services
-      │
-      ▼
-   Synchronisatie
-      │
-      ▼
-   Adapters
-      │
-      ▼
- Externe systemen
-```
+De handmatige syncflow verwerkt pending reviews via de bestaande review-write-service.
 
----
+## Veiligheidsregels
 
-## Synchronisatieproces
+Voor productie-writes:
 
-Een standaard synchronisatie verloopt in de volgende stappen:
+1. schema analyseren;
+2. mapping controleren;
+3. volledige dry-run uitvoeren;
+4. output controleren;
+5. pas daarna expliciet uitvoeren.
 
-1. Verbinding maken met het externe systeem.
-2. Huidige gegevens ophalen.
-3. Vergelijken met de interne gegevens.
-4. Wijzigingen bepalen.
-5. Alleen noodzakelijke updates uitvoeren.
-6. Resultaten registreren. Alle synchronisatieactiviteiten worden geregistreerd via de loggingvoorziening (zie hoofdstuk 14).
-7. Rapportage genereren.
-
-Hierdoor worden onnodige updates voorkomen en blijft de verwerking efficiënt.
-
----
-
-## Synchronisatiestrategieën
-
-Afhankelijk van de toepassing kunnen verschillende strategieën worden gebruikt:
-
-- volledige synchronisatie;
-- incrementele synchronisatie;
-- eenrichtingssynchronisatie;
-- tweerichtingssynchronisatie;
-- handmatige synchronisatie;
-- geplande synchronisatie.
-
-De gekozen strategie wordt bepaald door configuratie en metadata.
-
----
-
-## Consistentie
-
-Tijdens synchronisatie gelden de volgende uitgangspunten:
-
-- gegevensintegriteit staat voorop;
-- dubbele updates worden voorkomen;
-- conflicten worden geregistreerd;
-- wijzigingen zijn reproduceerbaar;
-- iedere synchronisatie is controleerbaar.
-
----
-
-## Foutafhandeling
-
-Bij technische of functionele fouten:
-
-- wordt de fout geregistreerd;
-- wordt de oorzaak gelogd;
-- kan een herhaalpoging worden uitgevoerd;
-- blijft de status van de synchronisatie inzichtelijk.
-
-De synchronisatielaag beslist niet zelfstandig over bedrijfsregels; deze blijven onderdeel van de Services.
-
----
-
-## Ontwerpprincipes
-
-De synchronisatielaag voldoet aan de volgende uitgangspunten:
-
-- brononafhankelijk;
-- reproduceerbaar;
-- uitbreidbaar;
-- veilig;
-- volledig gelogd;
-- los gekoppeld van externe systemen.
-
----
-
-## Toekomstige uitbreidingen
-
-De architectuur ondersteunt toekomstige uitbreidingen zoals:
-
-- real-time synchronisatie;
-- webhook-ondersteuning;
-- event-driven synchronisatie;
-- batchverwerking;
-- automatische conflictresolutie;
-- synchronisatie met meerdere systemen tegelijk.
-
----
+Bij twijfel niet schrijven.
 
 ## Samenvatting
 
-De synchronisatielaag zorgt voor een betrouwbare en gecontroleerde uitwisseling van gegevens tussen RZD Builder en externe systemen. Door gebruik te maken van duidelijke processen, metadata en adapters blijft de synchronisatie schaalbaar, controleerbaar en eenvoudig uit te breiden.
+Schema-sync en review-synchronisatie zijn afzonderlijke uitvoeringspaden.
 
+De mobiele reviewflow is lokaal en mockmatig getest; een gecombineerde live browser-naar-Airtable-E2E-test blijft open.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 14                                                               -->
-<!-- LOGGING                                                                    -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 14 – Logging
 
 ## Doel
 
-Logging zorgt voor het vastleggen van gebeurtenissen tijdens de uitvoering van RZD Builder. Hierdoor kunnen processen worden gecontroleerd, fouten worden geanalyseerd en prestaties worden gemonitord.
+Logging maakt gebeurtenissen tijdens de uitvoering inzichtelijk.
 
-Logging ondersteunt zowel de ontwikkeling als het beheer van het platform.
-
----
+Logging ondersteunt foutanalyse, controle en onderhoud.
 
 ## Verantwoordelijkheden
 
-De logginglaag is verantwoordelijk voor:
+- gebeurtenissen registreren;
+- fouten vastleggen;
+- waarschuwingen registreren;
+- voortgang inzichtelijk maken;
+- informatie leveren voor rapportages.
 
-- registreren van gebeurtenissen;
-- vastleggen van fouten;
-- opslaan van waarschuwingen;
-- meten van prestaties;
-- ondersteunen van probleemanalyse;
-- leveren van informatie voor rapportages.
+## Schema-sync
 
----
+De BuilderKernel gebruikt de logger en ReportingCoordinator voor de schema-sync-uitvoering.
 
-## Logniveaus
-
-RZD Builder gebruikt de volgende logniveaus:
-
-- DEBUG
-- INFO
-- WARNING
-- ERROR
-- CRITICAL
-
-Hierdoor kan de hoeveelheid loginformatie per omgeving worden afgestemd.
-
----
-
-## Loggingproces
-
-Tijdens de verwerking worden onder andere de volgende gebeurtenissen geregistreerd:
-
-1. Start van de Builder.
-2. Laden van configuratie.
-3. Start en einde van Pipeline-stappen.
-4. Synchronisaties.
-5. Waarschuwingen.
-6. Fouten.
-7. Afronding van de uitvoering.
-
----
-
-## Ontwerpprincipes
-
-Logging voldoet aan de volgende uitgangspunten:
-
-- consistent formaat;
-- duidelijke tijdstempels;
-- reproduceerbare informatie;
-- minimale prestatie-impact;
-- centraal beheer.
-
----
-
-## Toekomstige uitbreidingen
-
-De architectuur biedt ruimte voor:
-
-- centrale logservers;
-- realtime monitoring;
-- dashboards;
-- prestatieanalyses;
-- automatische foutdetectie.
-
----
+Andere scripts kunnen hun eigen uitvoer en logging gebruiken.
 
 ## Samenvatting
 
-Logging maakt de werking van RZD Builder inzichtelijk en ondersteunt zowel foutanalyse als toekomstig beheer.
+Logging ondersteunt controle en analyse.
 
+De precieze loggingflow is afhankelijk van het uitvoeringspad.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 15                                                               -->
-<!-- FOUTAFHANDELING                                                            -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 15 – Foutafhandeling
 
 ## Doel
 
-Foutafhandeling zorgt ervoor dat onverwachte situaties gecontroleerd worden verwerkt zonder de stabiliteit van het platform onnodig in gevaar te brengen.
+Foutafhandeling zorgt ervoor dat onverwachte situaties gecontroleerd worden verwerkt.
 
-Het doel is om fouten zo vroeg mogelijk te detecteren, duidelijk te registreren en waar mogelijk gecontroleerd te herstellen.
-
----
-
-## Verantwoordelijkheden
-
-De foutafhandeling is verantwoordelijk voor:
-
-- detecteren van fouten;
-- classificeren van fouten;
-- registreren van fouten;
-- informeren van de BuilderKernel;
-- veilig beëindigen of voortzetten van processen.
-
----
-
-## Soorten fouten
-
-Binnen RZD Builder worden verschillende categorieën onderscheiden:
+## Foutcategorieën
 
 - configuratiefouten;
 - validatiefouten;
 - synchronisatiefouten;
 - netwerkfouten;
-- interne programmeerfouten;
+- programmeerfouten;
 - onverwachte uitzonderingen.
 
----
-
-## Afhandelingsproces
-
-Bij een fout wordt de volgende werkwijze toegepast:
-
-1. Fout detecteren.
-2. Logregistratie uitvoeren.
-3. Ernst bepalen.
-4. Herstelpoging indien mogelijk.
-5. Verwerking voortzetten of beëindigen.
-6. Rapportage bijwerken.
-
----
-
-## Ontwerpprincipes
-
-De foutafhandeling voldoet aan de volgende uitgangspunten:
+## Uitgangspunten
 
 - duidelijke foutmeldingen;
-- reproduceerbare situaties;
+- fouten registreren;
+- gecontroleerd stoppen waar nodig;
 - geen verborgen fouten;
-- gecontroleerd herstel;
-- volledige registratie.
-
----
-
-## Relatie met Logging
-
-Iedere fout wordt automatisch geregistreerd via de centrale loggingvoorziening.
-
-Hierdoor zijn fouten altijd terug te vinden tijdens analyse en onderhoud.
-
----
-
-## Toekomstige uitbreidingen
-
-De architectuur ondersteunt onder andere:
-
-- automatische herstelstrategieën;
-- foutclassificatie op ernst;
-- notificaties;
-- integratie met monitoringtools;
-- foutstatistieken.
-
----
+- geen onbedoelde externe wijzigingen.
 
 ## Samenvatting
 
-Een consistente foutafhandeling verhoogt de betrouwbaarheid van RZD Builder en maakt onderhoud, analyse en toekomstige uitbreidingen eenvoudiger.
+Foutafhandeling ondersteunt de betrouwbaarheid van RZD Builder.
 
+De concrete afhandeling wordt bepaald door de betreffende workflow en service.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 16                                                               -->
-<!-- TESTING                                                                    -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 16 – Testing
 
 ## Doel
 
-Testing waarborgt de kwaliteit, betrouwbaarheid en stabiliteit van RZD Builder. Door geautomatiseerde tests uit te voeren kunnen wijzigingen veilig worden doorgevoerd zonder bestaande functionaliteit te verstoren.
+Testing ondersteunt de kwaliteit, betrouwbaarheid en stabiliteit van RZD Builder.
 
----
+## Testniveaus
 
-## Teststrategie
-
-RZD Builder maakt gebruik van meerdere testniveaus:
-
-- Unit Tests
-- Integratietests
-- Regressietests
-- Validatietests
-- End-to-End Tests (toekomstig)
-
----
+- unit tests;
+- mocktests;
+- integratietests;
+- regressietests;
+- validatietests;
+- end-to-end-tests.
 
 ## Testprincipes
 
-Alle tests voldoen aan de volgende uitgangspunten:
+Tests moeten:
 
-- reproduceerbaar;
-- geautomatiseerd waar mogelijk;
-- onafhankelijk van elkaar;
-- snel uitvoerbaar;
-- duidelijke foutmeldingen.
+- reproduceerbaar zijn;
+- duidelijk aangeven wat wordt getest;
+- externe acties expliciet maken;
+- mocks onderscheiden van live-integratie;
+- betrouwbare resultaten opleveren.
 
----
+## Huidige aandachtspunten
 
-## Testdekking
-
-Tests richten zich onder andere op:
-
-- BuilderKernel;
-- Compiler;
-- Pipeline;
-- Services;
-- Adapters;
-- Synchronisatie;
-- Metadata.
-
----
-
-## Continue kwaliteitsbewaking
-
-Voor iedere release worden tests uitgevoerd om:
-
-- regressies te voorkomen;
-- prestaties te controleren;
-- stabiliteit te waarborgen.
-
----
+- De lokale publication-readiness-test is historisch succesvol uitgevoerd.
+- De CampingAggregate- en WordPress-flows zijn over afzonderlijke mocktests onderzocht.
+- De mobiele reviewflow is lokaal en mockmatig afgedekt.
+- Een gecombineerde live Airtable-naar-WordPress-test is niet aangetoond.
+- Een gecombineerde echte browser-naar-Airtable-reviewtest blijft open.
+- Tijdens de documentatie-update van 06-11-2026 zijn geen tests uitgevoerd.
 
 ## Samenvatting
 
-Testing vormt een essentieel onderdeel van het ontwikkelproces en draagt bij aan de betrouwbaarheid van RZD Builder.
+Testing is essentieel voor veilige ontwikkeling.
 
+Historische testresultaten worden niet beschouwd als opnieuw uitgevoerd bewijs.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 17                                                               -->
-<!-- UITBREIDBAARHEID                                                           -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 17 – Uitbreidbaarheid
 
 ## Doel
 
-De architectuur van RZD Builder is ontworpen om nieuwe functionaliteit eenvoudig toe te voegen zonder bestaande onderdelen ingrijpend te wijzigen.
-
----
+Nieuwe functionaliteit kan worden toegevoegd zonder bestaande componenten onnodig te wijzigen.
 
 ## Uitbreidingsmogelijkheden
 
-Nieuwe onderdelen kunnen worden toegevoegd in de vorm van:
-
-- Modules;
-- Services;
-- Adapters;
-- Pipelines;
-- Metadata;
-- Configuraties.
-
----
+- modules;
+- services;
+- adapters;
+- metadata;
+- configuraties;
+- afzonderlijke scripts.
 
 ## Ontwerpprincipes
-
-Uitbreidingen moeten voldoen aan de volgende regels:
 
 - minimale afhankelijkheden;
 - één verantwoordelijkheid;
 - consistente documentatie;
 - herbruikbare componenten;
-- volledige testbaarheid.
-
----
-
-## Toekomstige uitbreidingen
-
-Voorbeelden van toekomstige uitbreidingen zijn:
-
-- plugin-systeem;
-- AI-ondersteuning;
-- meerdere synchronisatiedoelen;
-- cloudintegraties;
-- geavanceerde rapportages.
-
----
+- testbaarheid;
+- expliciete uitvoeringsgrenzen.
 
 ## Samenvatting
 
-Door de modulaire architectuur kan RZD Builder gecontroleerd doorgroeien zonder dat de kernarchitectuur hoeft te worden aangepast.
+De architectuur ondersteunt gecontroleerde uitbreiding.
 
+Nieuwe functionaliteit moet aansluiten op het bestaande uitvoeringspad of als afzonderlijk pad worden beschreven.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 18                                                               -->
-<!-- TOEKOMSTVISIE                                                              -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 18 – Toekomstvisie
 
 ## Visie
 
-RZD Builder ontwikkelt zich tot een flexibel platform voor het beheren, verwerken en publiceren van gegevens binnen het Reizen zonder Drempels-project.
+RZD Builder ontwikkelt zich tot een flexibel platform voor het beheren, verwerken en presenteren van gegevens binnen het Reizen zonder Drempels-project.
 
-De architectuur is ontworpen om nieuwe functionaliteit geleidelijk toe te voegen zonder afbreuk te doen aan de bestaande stabiliteit.
+De ontwikkeling blijft gericht op:
 
----
-
-## Lange termijn
-
-De ontwikkeling richt zich onder andere op:
-
-- verdere modularisering;
-- plugin-architectuur;
-- uitgebreide API-integraties;
-- AI-ondersteunde validatie;
-- geavanceerde monitoring;
-- schaalbare cloudimplementaties.
-
----
-
-## Kernwaarden
-
-De toekomstige ontwikkeling blijft gebaseerd op:
-
-- kwaliteit;
 - onderhoudbaarheid;
-- uitbreidbaarheid;
 - betrouwbaarheid;
-- transparantie.
+- gecontroleerde integraties;
+- duidelijke datarelaties;
+- veilige publicatie;
+- toegankelijke presentatie.
 
----
+## Openstaande architectuurvragen
+
+- verdere aansluiting van CampingAggregate op de bestaande presentatie;
+- verdere productievalidatie van de WordPress-conceptflow;
+- veilige geïsoleerde testscope voor live-integratietests;
+- eventuele uitbreiding van voorzieningstype-specifieke beoordelingspunten;
+- verdere ontwikkeling van mobiele reviewfunctionaliteit.
 
 ## Samenvatting
 
-De architectuur biedt een stabiele basis voor toekomstige groei en ondersteunt de verdere professionalisering van RZD Builder.
+De architectuur biedt een basis voor verdere groei.
 
+Nieuwe functionaliteit wordt additief ontwikkeld en mag bestaande schema-sync-componenten niet onnodig wijzigen.
 
-<!-- ========================================================================== -->
-<!-- HOOFDSTUK 19                                                               -->
-<!-- REFERENTIES                                                                -->
-<!-- ========================================================================== -->
+---
 
 # Hoofdstuk 19 – Referenties
 
@@ -1982,26 +1098,23 @@ De architectuur biedt een stabiele basis voor toekomstige groei en ondersteunt d
 - README.md
 - CHANGELOG.md
 - PROJECT_STATUS.md
-- ROADMAP.md
 - BACKLOG.md
 - CHECKPOINT.md
 - AI_RULES.md
-- CONTRIBUTING.md
-- RELEASE_NOTES.md
+- DOCUMENTATION_ARCHITECTURE.md
 
 ## Broncode
 
-- /core
-- /compiler
-- /builders
-- /services
-- /adapters
-- /modules
-- /config
+- `/core`
+- `/compiler`
+- `/builders`
+- `/services`
+- `/adapters`
+- `/modules`
+- `/config`
+- `/scripts`
 
----
-
-## Architectuur
+## Architectuurprincipes
 
 - Modulaire softwarearchitectuur
 - Single Responsibility Principle
@@ -2009,8 +1122,6 @@ De architectuur biedt een stabiele basis voor toekomstige groei en ondersteunt d
 - Metadata Driven Design
 - Adapter Pattern
 - Pipeline Pattern
-
----
 
 ## Externe systemen
 
@@ -2022,11 +1133,18 @@ De architectuur biedt een stabiele basis voor toekomstige groei en ondersteunt d
 
 ---
 
-## Versiebeheer
+# Architectuurstatus
 
-Documentversie: 2.0
+De schema-sync-workflow, CampingAggregate-preview, WordPress-conceptflow en mobiele reviewflow zijn afzonderlijke uitvoeringspaden.
 
-Architectuurstatus: Actief
+De BuilderKernel blijft verantwoordelijk voor de bestaande schema-sync-workflow.
 
+CampingAggregate en WordPress-publicatie worden via afzonderlijke scripts en services uitgevoerd.
 
+De mobiele reviewflow gebruikt lokale opslag en een afzonderlijke synchronisatiegrens.
 
+De actuele implementatiestatus en openstaande taken staan in:
+
+- `PROJECT_STATUS.md`
+- `BACKLOG.md`
+- `CHECKPOINT.md`
