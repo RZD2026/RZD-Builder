@@ -1,4 +1,4 @@
-const ContentDefinition = require("./contentDefinition");
+const ContentDefinition = require("./ContentDefinition");
 
 class ContentEngine {
 
