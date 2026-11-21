@@ -1,0 +1,110 @@
+# RZD Builder – Development Workflow
+
+**Doel:** wijzigingen efficiënt, gecontroleerd en met zo min mogelijk onnodig Copilot-gebruik uitvoeren.
+
+## 1. Voorbereiding
+
+Voordat een wijziging begint:
+
+- Bepaal het concrete doel en gewenste resultaat.
+- Bekijk de relevante bestaande architectuur en code.
+- Controleer de Git-status en bestaande lokale wijzigingen.
+- Bepaal welke bestanden gewijzigd mogen worden.
+- Leg vast welke bestanden en functionaliteiten buiten de scope vallen.
+- Gebruik `HEAD` als uitgangspunt voor bestaande gecommitte code.
+
+Voorkom dat bestaande lokale wijzigingen onbedoeld worden overschreven.
+
+## 2. Eén complete opdracht
+
+Geef Copilot één duidelijke, complete opdracht met:
+
+- Het gewenste resultaat.
+- De toegestane bestanden en wijzigingsscope.
+- De technische en architecturale randvoorwaarden.
+- De onderdelen die ongemoeid moeten blijven.
+- De benodigde tests.
+- De gewenste opleverrapportage.
+
+Vermijd een reeks kleine opdrachten die hetzelfde werk telkens opnieuw analyseren.
+
+## 3. Implementatie
+
+- Voer de wijziging in één samenhangende implementatieronde uit.
+- Behoud bestaande functionaliteit en publieke interfaces, tenzij een wijziging expliciet is goedgekeurd.
+- Hergebruik bestaande architectuur en helpers waar dat passend is.
+- Voeg geen onnodige abstracties, documentatie of extra bestanden toe.
+- Neem geen grote lokale wijzigingen over zonder afzonderlijke toestemming.
+- Raak bestanden buiten de afgesproken scope niet aan.
+
+## 4. Tests
+
+Voer direct na de implementatie de afgesproken, gerichte tests uit.
+
+- Test de gewijzigde functionaliteit.
+- Test relevante bestaande functionaliteit die door de wijziging geraakt kan worden.
+- Voeg regressietests toe voor concrete risico's.
+- Gebruik mocks voor tests die geen echte externe systemen nodig hebben.
+- Voer geen onnodige volledige testsuites uit.
+- Herhaal geslaagde tests niet zonder concrete aanleiding.
+
+## 5. Oplevering
+
+Copilot levert één overzicht met:
+
+1. Gewijzigde en nieuwe bestanden.
+2. Korte beschrijving van de wijzigingen.
+3. Uitgevoerde tests en resultaten.
+4. Eventuele resterende risico's of beperkingen.
+5. Eventuele afwijkingen van de oorspronkelijke opdracht.
+
+Geen algemene controleverslagen zonder concrete bevindingen.
+
+## 6. Beoordeling en commit
+
+Na een geslaagde implementatie en tests:
+
+- Beoordeel de daadwerkelijke wijzigingen.
+- Controleer of alleen afgesproken bestanden zijn gewijzigd.
+- Controleer de staged wijzigingen voordat ze worden gecommit.
+- Stage uitsluitend de bedoelde bestanden.
+- Commit zodra de afgesproken criteria zijn gehaald.
+
+Voer geen opeenvolgende algemene reviewrondes uit. Een nieuwe controle is alleen nodig wanneer een concrete fout, afwijking of nieuw risico is vastgesteld.
+
+## 7. Herstel bij fouten
+
+Bij een concrete fout:
+
+- Benoem de exacte fout en oorzaak.
+- Herstel uitsluitend het betreffende onderdeel.
+- Voer de relevante regressietest opnieuw uit.
+- Herhaal niet de volledige eerdere controle.
+
+## 8. Productie- en beveiligingsregels
+
+De bestaande beveiligingsafspraken blijven altijd gelden:
+
+- Airtable blijft de autoritatieve gegevensbron.
+- Geen productiemutatie zonder vooraf gegenereerde Plan-ID.
+- Voor iedere productiemutatie is expliciete bevestiging vereist.
+- Preview- en planningsfunctionaliteit mag niet ongemerkt productiemutaties uitvoeren.
+- Testfunctionaliteit mag geen productiegegevens wijzigen.
+- Productie- en testopslag blijven gescheiden.
+
+Deze regels mogen niet worden afgezwakt om implementatie of tests eenvoudiger te maken.
+
+## 9. Efficiëntie als uitgangspunt
+
+De ontwikkeling moet resultaat opleveren, niet verzanden in controlewerk.
+
+**Vaste volgorde:**
+
+1. Voorbereiden en scope bepalen.
+2. Eén complete Copilot-opdracht.
+3. Implementeren.
+4. Gerichte tests uitvoeren.
+5. Eén opleverrapportage.
+6. Wijzigingen beoordelen en committen.
+
+**Uitgangspunt:** zo weinig mogelijk stappen, maar geen concessies aan gegevensintegriteit, beveiliging of bestaande functionaliteit.

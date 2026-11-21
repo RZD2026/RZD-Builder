@@ -13,8 +13,8 @@ const pointMappings =
 const airtableMapping =
     require("../../content/mapping/airtableMapping");
 
-const reviewWriteService =
-    require("../reviewWriteService");
+const reviewPlanBuilderSupport =
+    require("../reviewPlanBuilderSupport");
 
 
 const TABLE_NAMES = Object.freeze({
@@ -610,7 +610,7 @@ function createAirtableReviewPlanBuilder({
             };
 
             const validation =
-                reviewWriteService.validateMappedReviewInput({
+                reviewPlanBuilderSupport.validateMappedReviewInput({
                     mapping,
                     voorzieningId: provisionRecord.id,
                     pointId: pointRecord.id,
@@ -632,13 +632,13 @@ function createAirtableReviewPlanBuilder({
 
             if (
                 fieldsOnUpdate.Status ===
-                reviewWriteService.DEFAULT_REVIEW_STATUS
+                reviewPlanBuilderSupport.DEFAULT_REVIEW_STATUS
             ) {
                 delete fieldsOnUpdate.Status;
             }
 
             const result =
-                reviewWriteService.planReviewUpsertFromRecords({
+                reviewPlanBuilderSupport.planReviewUpsertFromRecords({
                     records: context.reviewRecords,
                     voorzieningId: provisionRecord.id,
                     pointId: pointRecord.id,
@@ -876,7 +876,7 @@ function createAirtableReviewPlanBuilder({
             );
 
             const result =
-                reviewWriteService.planReviewUpsertFromRecords({
+                reviewPlanBuilderSupport.planReviewUpsertFromRecords({
                     records: context.reviewRecords,
                     accommodationId: accommodationRecord.id,
                     pointId: pointRecord.id,
