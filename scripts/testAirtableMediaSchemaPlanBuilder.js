@@ -24,7 +24,6 @@ const {
     require("../services/productionMutationPlanCanonicalizer");
 
 const {
-    EXPECTED_SCHEMA,
     INTENT_TYPE,
     TARGET_TABLE_NAMES,
     createAirtableMediaSchemaPlanBuilder
@@ -56,6 +55,253 @@ const tableIds = {
     "WordPress-koppelingen": "tblWordPressLinks"
 };
 
+const EXPECTED_RIGHTS_FIELDS = [
+    { name: "Rechtenstatus", type: "singleSelect" },
+    { name: "Rechtenhouder", type: "singleLineText" },
+    { name: "Rechtenvervaldatum", type: "date" }
+];
+
+const EXPECTED_RIGHTS_STATUS_CHOICES = [
+    { name: "Onbekend", color: "grayLight2" },
+    { name: "Controleren", color: "grayLight2" },
+    { name: "Toegestaan", color: "grayLight2" },
+    { name: "Beperkt", color: "grayLight2" },
+    { name: "Verlopen", color: "grayLight2" }
+];
+
+const EXPECTED_LINK_FIELDS = [
+    {
+        table: "Media",
+        field: "Media-versies",
+        linkedTable: "Media-versies",
+        inverseField: "Media",
+        prefersSingleRecordLink: false
+    },
+    {
+        table: "Media",
+        field: "WordPress-koppelingen",
+        linkedTable: "WordPress-koppelingen",
+        inverseField: "Media",
+        prefersSingleRecordLink: false
+    },
+    {
+        table: "Media",
+        field: "Originele versie",
+        linkedTable: "Media-versies",
+        inverseField: "Media als originele versie",
+        prefersSingleRecordLink: true
+    },
+    {
+        table: "Media",
+        field: "Actieve versie",
+        linkedTable: "Media-versies",
+        inverseField: "Media als actieve versie",
+        prefersSingleRecordLink: true
+    },
+    {
+        table: "Media-versies",
+        field: "Media",
+        linkedTable: "Media",
+        inverseField: "Media-versies",
+        prefersSingleRecordLink: true
+    },
+    {
+        table: "Media-versies",
+        field: "WordPress-koppelingen",
+        linkedTable: "WordPress-koppelingen",
+        inverseField: "Media-versie",
+        prefersSingleRecordLink: false
+    },
+    {
+        table: "Media-versies",
+        field: "Media als originele versie",
+        linkedTable: "Media",
+        inverseField: "Originele versie",
+        prefersSingleRecordLink: true
+    },
+    {
+        table: "Media-versies",
+        field: "Media als actieve versie",
+        linkedTable: "Media",
+        inverseField: "Actieve versie",
+        prefersSingleRecordLink: true
+    },
+    {
+        table: "WordPress-koppelingen",
+        field: "Media",
+        linkedTable: "Media",
+        inverseField: "WordPress-koppelingen",
+        prefersSingleRecordLink: true
+    },
+    {
+        table: "WordPress-koppelingen",
+        field: "Media-versie",
+        linkedTable: "Media-versies",
+        inverseField: "WordPress-koppelingen",
+        prefersSingleRecordLink: true
+    }
+];
+
+const CURRENT_SCHEMA_FIXTURE = [
+    {
+        name: "Media",
+        fields: [
+            { name: "Media-ID", type: "singleLineText" },
+            { name: "Bestandsnaam", type: "singleLineText" },
+            { name: "Bestandstype", type: "singleLineText" },
+            { name: "Titel", type: "singleLineText" },
+            { name: "Omschrijving", type: "multilineText" },
+            { name: "Alt-tekst", type: "multilineText" },
+            { name: "Trefwoorden", type: "multipleSelects", options: { choices: [] } },
+            { name: "RZD-categorie", type: "singleSelect", options: { choices: [] } },
+            { name: "Fotograaf", type: "singleLineText" },
+            { name: "Bron", type: "url" },
+            { name: "Bronnotitie", type: "multilineText" },
+            {
+                name: "Rechtenstatus",
+                type: "singleSelect",
+                options: {
+                    choices: [
+                        { id: "selRightsUnknown", name: "Onbekend", color: "grayLight2" },
+                        { id: "selRightsReview", name: "Controleren", color: "grayLight2" },
+                        { id: "selRightsAllowed", name: "Toegestaan", color: "grayLight2" },
+                        { id: "selRightsLimited", name: "Beperkt", color: "grayLight2" },
+                        { id: "selRightsExpired", name: "Verlopen", color: "grayLight2" }
+                    ]
+                }
+            },
+            { name: "Gebruiksrechten", type: "multilineText" },
+            { name: "Licentie", type: "singleLineText" },
+            { name: "Rechtenhouder", type: "singleLineText" },
+            { name: "Creditvermelding", type: "multilineText" },
+            { name: "Beperkingen", type: "multilineText" },
+            {
+                name: "Rechtenvervaldatum",
+                type: "date",
+                options: {
+                    dateFormat: { name: "european", format: "D/M/YYYY" }
+                }
+            },
+            { name: "Media-status", type: "singleSelect", options: { choices: [] } },
+            {
+                name: "Media-versies",
+                type: "multipleRecordLinks",
+                linkedTable: "Media-versies",
+                inverseField: "Media"
+            },
+            {
+                name: "WordPress-koppelingen",
+                type: "multipleRecordLinks",
+                linkedTable: "WordPress-koppelingen",
+                inverseField: "Media"
+            },
+            {
+                name: "Originele versie",
+                type: "multipleRecordLinks",
+                linkedTable: "Media-versies",
+                inverseField: "Media als originele versie"
+            },
+            {
+                name: "Actieve versie",
+                type: "multipleRecordLinks",
+                linkedTable: "Media-versies",
+                inverseField: "Media als actieve versie"
+            }
+        ]
+    },
+    {
+        name: "Media-versies",
+        fields: [
+            { name: "Versie-ID", type: "singleLineText" },
+            {
+                name: "Media",
+                type: "multipleRecordLinks",
+                linkedTable: "Media",
+                inverseField: "Media-versies"
+            },
+            { name: "Versietype", type: "singleSelect", options: { choices: [] } },
+            { name: "Versienummer", type: "number", options: { precision: 0 } },
+            { name: "Versienaam", type: "singleLineText" },
+            { name: "Bestandsnaam", type: "singleLineText" },
+            { name: "Bestandstype", type: "singleLineText" },
+            { name: "Notitie", type: "multilineText" },
+            { name: "Goedkeuringsstatus", type: "singleSelect", options: { choices: [] } },
+            { name: "Goedgekeurd door", type: "singleCollaborator" },
+            {
+                name: "Datum goedkeuring",
+                type: "date",
+                options: {
+                    dateFormat: { name: "european", format: "D/M/YYYY" }
+                }
+            },
+            {
+                name: "Aangemaakt op",
+                type: "createdTime",
+                options: {
+                    result: {
+                        type: "dateTime",
+                        options: {
+                            dateFormat: { name: "local", format: "l" },
+                            timeFormat: { name: "12hour", format: "h:mma" },
+                            timeZone: "client"
+                        }
+                    }
+                }
+            },
+            {
+                name: "WordPress-koppelingen",
+                type: "multipleRecordLinks",
+                linkedTable: "WordPress-koppelingen",
+                inverseField: "Media-versie"
+            },
+            {
+                name: "Media als originele versie",
+                type: "multipleRecordLinks",
+                linkedTable: "Media",
+                inverseField: "Originele versie"
+            },
+            {
+                name: "Media als actieve versie",
+                type: "multipleRecordLinks",
+                linkedTable: "Media",
+                inverseField: "Actieve versie"
+            }
+        ]
+    },
+    {
+        name: "WordPress-koppelingen",
+        fields: [
+            { name: "Koppeling-ID", type: "singleLineText" },
+            {
+                name: "Media",
+                type: "multipleRecordLinks",
+                linkedTable: "Media",
+                inverseField: "WordPress-koppelingen"
+            },
+            {
+                name: "Media-versie",
+                type: "multipleRecordLinks",
+                linkedTable: "Media-versies",
+                inverseField: "WordPress-koppelingen"
+            },
+            { name: "WordPress-site-ID", type: "singleLineText" },
+            { name: "WordPress-bijlage-ID", type: "number", options: { precision: 0 } },
+            { name: "WordPress-URL", type: "url" },
+            { name: "Synchronisatiestatus", type: "singleSelect", options: { choices: [] } },
+            {
+                name: "Laatste synchronisatie",
+                type: "dateTime",
+                options: {
+                    dateFormat: { name: "european", format: "D/M/YYYY" },
+                    timeFormat: { name: "24hour", format: "HH:mm" },
+                    timeZone: "Europe/Amsterdam"
+                }
+            },
+            { name: "Foutmelding", type: "multilineText" }
+        ]
+    }
+];
+
 const fieldIds = new Map();
 
 
@@ -75,109 +321,39 @@ function fieldId(tableName, fieldName) {
 
 function makeTables() {
 
-    const byName =
-        new Map();
-
     const tables =
-        EXPECTED_SCHEMA.map(table => {
-
-            const result = {
-                id: tableIds[table.name],
-                name: table.name,
-                fields: []
-            };
-
-            byName.set(table.name, result);
-            return result;
-
-        });
-
-    for (const tableSchema of EXPECTED_SCHEMA) {
-
-        const table =
-            byName.get(tableSchema.name);
-
-        table.fields =
-            tableSchema.fields.map(expected => {
+        CURRENT_SCHEMA_FIXTURE.map(table => ({
+            id: tableIds[table.name],
+            name: table.name,
+            fields: table.fields.map(field => {
 
                 const current = {
-                    id: fieldId(tableSchema.name, expected.name),
-                    name: expected.name,
-                    type: expected.type
+                    id: fieldId(table.name, field.name),
+                    name: field.name,
+                    type: field.type
                 };
 
-                if (expected.linkedTable) {
-
+                if (field.linkedTable) {
                     current.options = {
-                        linkedTableId: tableIds[expected.linkedTable],
+                        linkedTableId: tableIds[field.linkedTable],
                         isReversed: false,
                         prefersSingleRecordLink: false,
                         inverseLinkFieldId: fieldId(
-                            expected.linkedTable,
-                            expected.inverseField
+                            field.linkedTable,
+                            field.inverseField
                         )
                     };
-
-                } else if (
-                    expected.name === "Trefwoorden" ||
-                    expected.name === "RZD-categorie"
-                ) {
-
-                    current.options = { choices: [] };
-
-                } else if (expected.type === "number") {
-
-                    current.options = { precision: 0 };
-
-                } else if (expected.type === "date") {
-
-                    current.options = {
-                        dateFormat: {
-                            name: "european",
-                            format: "D/M/YYYY"
-                        }
-                    };
-
-                } else if (expected.type === "createdTime") {
-
-                    current.options = {
-                        result: {
-                            type: "dateTime",
-                            options: {
-                                dateFormat: { name: "local", format: "l" },
-                                timeFormat: { name: "12hour", format: "h:mma" },
-                                timeZone: "client"
-                            }
-                        }
-                    };
-
-                } else if (expected.type === "dateTime") {
-
-                    current.options = {
-                        dateFormat: {
-                            name: "european",
-                            format: "D/M/YYYY"
-                        },
-                        timeFormat: {
-                            name: "24hour",
-                            format: "HH:mm"
-                        },
-                        timeZone: "Europe/Amsterdam"
-                    };
-
-                } else if (expected.type === "singleSelect") {
-
-                    current.options = { choices: [] };
-
+                } else if (field.options) {
+                    current.options =
+                        JSON.parse(JSON.stringify(field.options));
                 }
 
                 return current;
 
-            });
+            })
+        }));
 
-    }
-
-    byName.get("Media").fields.push({
+    tables.find(table => table.name === "Media").fields.push({
         id: fieldId("Media", "Accommodaties"),
         name: "Accommodaties",
         type: "multipleRecordLinks",
@@ -699,17 +875,149 @@ async function runTests() {
     const initial =
         await builder.build(intent);
 
+    const currentMedia =
+        initial.summary.currentSchema.find(table => table.name === "Media");
+    const desiredMedia =
+        initial.summary.desiredSchema.find(table => table.name === "Media");
+    const currentRightsFields =
+        EXPECTED_RIGHTS_FIELDS.map(expected => {
+            const field =
+                currentMedia.fields.find(candidate => candidate.name === expected.name);
+
+            return {
+                name: field?.name,
+                type: field?.type
+            };
+        });
+    const desiredRightsFields =
+        EXPECTED_RIGHTS_FIELDS.map(expected => {
+            const field =
+                desiredMedia.fields.find(candidate => candidate.name === expected.name);
+
+            return {
+                name: field?.name,
+                type: field?.type
+            };
+        });
+
+    assert.deepEqual(currentRightsFields, EXPECTED_RIGHTS_FIELDS);
+    assert.deepEqual(desiredRightsFields, EXPECTED_RIGHTS_FIELDS);
+
+    const currentLinkConfigurations =
+        EXPECTED_LINK_FIELDS.map(expected => {
+            const table =
+                initial.summary.currentSchema.find(candidate =>
+                    candidate.name === expected.table
+                );
+            const field =
+                table.fields.find(candidate => candidate.name === expected.field);
+
+            return {
+                table: expected.table,
+                field: expected.field,
+                linkedTableId: field.options.linkedTableId,
+                inverseLinkFieldId: field.options.inverseLinkFieldId,
+                prefersSingleRecordLink: field.options.prefersSingleRecordLink
+            };
+        });
+    const desiredLinkConfigurations =
+        EXPECTED_LINK_FIELDS.map(expected => {
+            const table =
+                initial.summary.desiredSchema.find(candidate =>
+                    candidate.name === expected.table
+                );
+            const field =
+                table.fields.find(candidate => candidate.name === expected.field);
+
+            return {
+                table: expected.table,
+                field: expected.field,
+                linkedTable: field.options.linkedTableName,
+                inverseField: field.options.inverseFieldName,
+                prefersSingleRecordLink: field.options.prefersSingleRecordLink
+            };
+        });
+
+    assert.deepEqual(
+        currentLinkConfigurations,
+        EXPECTED_LINK_FIELDS.map(expected => ({
+            table: expected.table,
+            field: expected.field,
+            linkedTableId: tableIds[expected.linkedTable],
+            inverseLinkFieldId: fieldId(
+                expected.linkedTable,
+                expected.inverseField
+            ),
+            prefersSingleRecordLink: false
+        })),
+        "de fixture legt alle actuele linkdoelen, inverse velden en cardinaliteit onafhankelijk vast"
+    );
+    assert.deepEqual(
+        desiredLinkConfigurations,
+        EXPECTED_LINK_FIELDS,
+        "de verwachte linkdoelen, inverse velden en cardinaliteit zijn expliciet"
+    );
+
+    const currentRightsStatus =
+        currentMedia.fields.find(field => field.name === "Rechtenstatus");
+    const currentRightsExpiry =
+        currentMedia.fields.find(field => field.name === "Rechtenvervaldatum");
+
+    assert.deepEqual(
+        currentRightsStatus.options.choices.map(({ name, color }) => ({ name, color })),
+        EXPECTED_RIGHTS_STATUS_CHOICES,
+        "de bestaande rechtenstatus-keuzes worden onafhankelijk vastgelegd"
+    );
+    assert.deepEqual(
+        currentRightsExpiry.options.dateFormat,
+        { name: "european", format: "D/M/YYYY" },
+        "de bestaande datumweergave wordt behouden"
+    );
+    assert.ok(
+        EXPECTED_RIGHTS_FIELDS.every(expected =>
+            desiredMedia.fields.find(field => field.name === expected.name)
+                .preserveUnspecifiedOptions === true
+        ),
+        "niet-gespecificeerde rechtenveldopties blijven behouden"
+    );
+    assert.ok(
+        !initial.summary.differences.some(difference =>
+            EXPECTED_RIGHTS_FIELDS.some(expected => difference.field === expected.name)
+        ),
+        "rechtenvelden die overeenkomen met de geverifieerde structuur leveren geen verschil op"
+    );
+
     assert.deepEqual(initial.summary.targetTables, TARGET_TABLE_NAMES);
     assert.deepEqual(
         initial.summary.currentSchema.map(table => table.name),
         TARGET_TABLE_NAMES,
         "de analyse beperkt de schema-output tot de drie opgegeven tabellen"
     );
-    assert.equal(initial.operations.length, 2);
+    assert.equal(initial.operations.length, 7);
     assert.deepEqual(
-        initial.operations.map(operation => operation.target.fieldName),
-        ["Originele versie", "Actieve versie"],
-        "alleen de twee aangetroffen enkelvoudige-versielinks wijken af"
+        initial.operations.map(operation =>
+            `${operation.target.tableName}.${operation.target.fieldName}`
+        ),
+        EXPECTED_LINK_FIELDS
+            .filter(field => field.prefersSingleRecordLink)
+            .map(field => `${field.table}.${field.field}`),
+        "alle zeven verwachte single-links worden als multiple-linkafwijking gemeld"
+    );
+    assert.ok(
+        initial.summary.differences
+            .filter(difference =>
+                difference.differences.some(item =>
+                    item.property === "options.prefersSingleRecordLink"
+                )
+            )
+            .every(difference =>
+                difference.differences.some(item =>
+                    item.property === "options.prefersSingleRecordLink" &&
+                    item.current === false &&
+                    item.desired === true
+                )
+            ),
+        "een onverwachte multiple-link wordt als cardinaliteitsafwijking gemeld"
     );
     assert.ok(
         initial.operations.every(operation =>
@@ -756,7 +1064,7 @@ async function runTests() {
         "niet-doelvelden en hun huidige configuratie blijven zichtbaar"
     );
     assert.equal(initial.summary.desiredSchema.length, 3);
-    assert.equal(initial.summary.operationalOrder.length, 2);
+    assert.equal(initial.summary.operationalOrder.length, 7);
     assert.equal(initial.summary.previewOnly, true);
 
     assert.throws(
@@ -808,6 +1116,27 @@ async function runTests() {
         "ontbrekende velden worden herkend met huidige en gewenste configuratie"
     );
 
+    const missingLinkTables =
+        makeTables();
+    const versionsTable =
+        missingLinkTables.find(table => table.name === "Media-versies");
+    versionsTable.fields =
+        versionsTable.fields.filter(field => field.name !== "Media");
+
+    const missingLinkResult =
+        await createAirtableMediaSchemaPlanBuilder({
+            sources: { getTables: () => missingLinkTables }
+        }).build(intent);
+
+    assert.ok(
+        missingLinkResult.summary.differences.some(difference =>
+            difference.table === "Media-versies" &&
+            difference.field === "Media" &&
+            difference.current === null
+        ),
+        "een ontbrekend verwacht linkveld wordt als schema-afwijking gemeld"
+    );
+
     const wrongTypeTables =
         makeTables();
     wrongTypeTables
@@ -845,12 +1174,87 @@ async function runTests() {
 
     assert.ok(
         wrongLinkResult.summary.differences.some(difference =>
+            difference.table === "Media" &&
             difference.field === "Media-versies" &&
             difference.differences.some(item =>
                 item.property === "options.linkedTableId"
             )
         ),
-        "afwijkende doel- en inverse-relatieconfiguraties worden vergeleken"
+        "een verkeerde doeltabel wordt als schema-afwijking gemeld"
+    );
+
+    const wrongInverseTables =
+        makeTables();
+    wrongInverseTables
+        .find(table => table.name === "Media")
+        .fields.find(field => field.name === "Media-versies")
+        .options.inverseLinkFieldId =
+            fieldId("Media-versies", "Media als originele versie");
+
+    const wrongInverseResult =
+        await createAirtableMediaSchemaPlanBuilder({
+            sources: { getTables: () => wrongInverseTables }
+        }).build(intent);
+
+    assert.ok(
+        wrongInverseResult.summary.differences.some(difference =>
+            difference.table === "Media" &&
+            difference.field === "Media-versies" &&
+            difference.differences.some(item =>
+                item.property === "options.inverseLinkFieldId"
+            )
+        ),
+        "een verkeerde inverse relatie wordt als schema-afwijking gemeld"
+    );
+
+    const unexpectedSingleTables =
+        makeTables();
+    unexpectedSingleTables
+        .find(table => table.name === "Media")
+        .fields.find(field => field.name === "Media-versies")
+        .options.prefersSingleRecordLink = true;
+
+    const unexpectedSingleResult =
+        await createAirtableMediaSchemaPlanBuilder({
+            sources: { getTables: () => unexpectedSingleTables }
+        }).build(intent);
+
+    assert.ok(
+        unexpectedSingleResult.summary.differences.some(difference =>
+            difference.table === "Media" &&
+            difference.field === "Media-versies" &&
+            difference.differences.some(item =>
+                item.property === "options.prefersSingleRecordLink" &&
+                item.current === true &&
+                item.desired === false
+            )
+        ),
+        "een onverwachte single-link wordt vergeleken met de multiple-linkverwachting"
+    );
+
+    const unexpectedMultipleTables =
+        makeTables();
+    unexpectedMultipleTables
+        .find(table => table.name === "Media")
+        .fields.find(field => field.name === "Originele versie")
+        .options.prefersSingleRecordLink = false;
+
+    const unexpectedMultipleResult =
+        await createAirtableMediaSchemaPlanBuilder({
+            sources: { getTables: () => unexpectedMultipleTables }
+        }).build(intent);
+
+    assert.ok(
+        unexpectedMultipleResult.summary.differences.some(difference =>
+            difference.table === "Media" &&
+            difference.field === "Originele versie" &&
+            difference.differences.some(item =>
+                item.property === "options.prefersSingleRecordLink" &&
+                item.current === false &&
+                item.desired === true
+            )
+        ),
+        "een onverwachte multiple-link wordt vergeleken met de single-linkverwachting"
     );
 
     const missingTableResult =

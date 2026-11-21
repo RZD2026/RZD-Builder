@@ -41,13 +41,15 @@ const EXPECTED_SCHEMA = Object.freeze([
                 name: "Media-versies",
                 type: "multipleRecordLinks",
                 linkedTable: "Media-versies",
-                inverseField: "Media"
+                inverseField: "Media",
+                prefersSingleRecordLink: false
             },
             {
                 name: "WordPress-koppelingen",
                 type: "multipleRecordLinks",
                 linkedTable: "WordPress-koppelingen",
-                inverseField: "Media"
+                inverseField: "Media",
+                prefersSingleRecordLink: false
             },
             {
                 name: "Originele versie",
@@ -73,7 +75,8 @@ const EXPECTED_SCHEMA = Object.freeze([
                 name: "Media",
                 type: "multipleRecordLinks",
                 linkedTable: "Media",
-                inverseField: "Media-versies"
+                inverseField: "Media-versies",
+                prefersSingleRecordLink: true
             },
             { name: "Versietype", type: "singleSelect" },
             { name: "Versienummer", type: "number" },
@@ -89,19 +92,22 @@ const EXPECTED_SCHEMA = Object.freeze([
                 name: "WordPress-koppelingen",
                 type: "multipleRecordLinks",
                 linkedTable: "WordPress-koppelingen",
-                inverseField: "Media-versie"
+                inverseField: "Media-versie",
+                prefersSingleRecordLink: false
             },
             {
                 name: "Media als originele versie",
                 type: "multipleRecordLinks",
                 linkedTable: "Media",
-                inverseField: "Originele versie"
+                inverseField: "Originele versie",
+                prefersSingleRecordLink: true
             },
             {
                 name: "Media als actieve versie",
                 type: "multipleRecordLinks",
                 linkedTable: "Media",
-                inverseField: "Actieve versie"
+                inverseField: "Actieve versie",
+                prefersSingleRecordLink: true
             }
         ]
     },
@@ -113,13 +119,15 @@ const EXPECTED_SCHEMA = Object.freeze([
                 name: "Media",
                 type: "multipleRecordLinks",
                 linkedTable: "Media",
-                inverseField: "WordPress-koppelingen"
+                inverseField: "WordPress-koppelingen",
+                prefersSingleRecordLink: true
             },
             {
                 name: "Media-versie",
                 type: "multipleRecordLinks",
                 linkedTable: "Media-versies",
-                inverseField: "WordPress-koppelingen"
+                inverseField: "WordPress-koppelingen",
+                prefersSingleRecordLink: true
             },
             { name: "WordPress-site-ID", type: "singleLineText" },
             { name: "WordPress-bijlage-ID", type: "number" },
@@ -324,8 +332,9 @@ function desiredConfiguration(field) {
         };
     }
 
-    if (field.prefersSingleRecordLink === true) {
-        desired.options.prefersSingleRecordLink = true;
+    if (field.prefersSingleRecordLink !== undefined) {
+        desired.options.prefersSingleRecordLink =
+            field.prefersSingleRecordLink;
     }
 
     if (field.unresolved) {
@@ -406,14 +415,12 @@ function compareLinkConfiguration({
         ]
     ];
 
-    if (field.prefersSingleRecordLink !== undefined) {
-        checks.push([
-            "prefersSingleRecordLink",
-            actual.options.prefersSingleRecordLink,
-            field.prefersSingleRecordLink,
-            field.prefersSingleRecordLink
-        ]);
-    }
+    checks.push([
+        "prefersSingleRecordLink",
+        actual.options.prefersSingleRecordLink,
+        field.prefersSingleRecordLink,
+        field.prefersSingleRecordLink
+    ]);
 
     for (const [property, current, expected, desired] of checks) {
 
