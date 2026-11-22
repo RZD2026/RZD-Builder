@@ -1474,4 +1474,3 @@ runTests().catch(error => {
     });
 });
 
-// CI trigger: execute the media schema validation suite on the updated workflow.
