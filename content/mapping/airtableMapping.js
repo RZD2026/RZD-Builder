@@ -16,7 +16,7 @@ const resolver =
 
 class AirtableMapping {
 
-    static async create(contentPoint, pointMapping) {
+    static async create(contentPoint, pointMapping, lookup) {
 
         if (!contentPoint || typeof contentPoint !== "object") {
             throw new Error(
@@ -31,7 +31,7 @@ class AirtableMapping {
         }
 
         const resolved =
-            await resolver.resolve(pointMapping);
+            await resolver.resolve(pointMapping, lookup);
 
         if (resolved.status === "NO_MATCH") {
 
@@ -120,7 +120,7 @@ class AirtableMapping {
     }
 
 
-    static async createMany(contentPoints, pointMappings) {
+    static async createMany(contentPoints, pointMappings, lookup) {
 
         if (!Array.isArray(contentPoints)) {
             throw new Error(
@@ -142,7 +142,8 @@ class AirtableMapping {
 
                 return this.create(
                     point,
-                    mapping
+                    mapping,
+                    lookup
                 );
 
             })

@@ -2,19 +2,21 @@
 
 > **Professional Builder Framework for Reizen zonder Drempels (RZD)**
 
-RZD Builder is een modulair ontwikkelplatform voor het beheren, valideren, synchroniseren en publiceren van gegevens voor het project **Reizen zonder Drempels (RZD)**.
+RZD Builder heeft afzonderlijke workflows voor schema-/configuratiesynchronisatie, het read-only samenstellen van een CampingAggregate, lokale previews en een gecontroleerde WordPress Page-flow.
 
-De Builder is ontworpen met de nadruk op betrouwbaarheid, onderhoudbaarheid, uitbreidbaarheid en een duidelijke scheiding van verantwoordelijkheden. Dankzij de modulaire architectuur kunnen nieuwe functionaliteiten, connectors en publicatieplatformen eenvoudig worden toegevoegd.
+Nieuwe Pages worden als `draft` aangemaakt; een bestaande Page kan worden hergebruikt zonder automatisch te worden bijgewerkt. Openbare publicatie en een volledige live-keten zijn niet aangetoond.
 
 ---
 
 # Kernfunctionaliteiten
 
 - BuilderKernel
-- Compiler Framework
-- Pipeline-architectuur
+- Compiler- en Pipeline-componenten zijn aanwezig, maar maken geen deel uit van de huidige `index.js build`-uitvoeringsvolgorde
 - Metadata-gestuurde verwerking
-- Synchronisatie met externe systemen
+- Schema-/configuratiesynchronisatie
+- Read-only CampingAggregate
+- Lokale campingpreview
+- Gecontroleerde WordPress Page-flow met draft-aanmaak en hergebruik
 - Doctor Framework
 - Validatie
 - Logging
@@ -41,7 +43,9 @@ RZD Builder
 ├── canon/
 ├── compiler/
 ├── config/
+├── content/
 ├── core/
+├── developer/
 ├── docs/
 ├── engines/
 ├── generated/
@@ -49,7 +53,10 @@ RZD Builder
 ├── mcp/
 ├── modules/
 ├── node_modules/
+├── reports/
+├── scripts/
 ├── services/
+├── tests/
 ├── tools/
 │
 ├── index.js
@@ -58,13 +65,13 @@ RZD Builder
 
 > **Opmerking**
 >
-> Mappen zoals `node_modules/`, `logs/` en gegenereerde bestanden worden niet opgenomen in Git en maken geen onderdeel uit van de broncode.
+> Deze projectstructuur is een schematische, niet-volledige weergave. Onder meer `content/`, `developer/`, `reports/`, `scripts/` en `tests/` zijn aanwezig; niet iedere map bevat broncode.
 
 ---
 
 # Documentatie
 
-Alle projectdocumentatie bevindt zich in de map **docs/**.
+De canonieke projectdocumentatiesuite staat in **docs/**. Aanvullende ontwikkelaarshandleidingen en historische of dubbele bestanden kunnen elders in de repository staan.
 
 | Document | Omschrijving |
 |----------|--------------|
@@ -80,7 +87,7 @@ Alle projectdocumentatie bevindt zich in de map **docs/**.
 | DOCUMENTATION_ARCHITECTURE.md | Opbouw van de documentatiesuite |
 | ROADMAP.md | Lange termijn planning |
 | RELEASE_NOTES.md | Releasehistorie |
-| WORDPRESS_ARCHITECTURE.md | WordPress-publicatiearchitectuur |
+| WORDPRESS_ARCHITECTURE.md | Gecontroleerde WordPress-concept- en Page-flow |
 
 ---
 
@@ -103,14 +110,9 @@ RZD Builder is gebaseerd op de volgende uitgangspunten:
 
 **Actieve ontwikkeling**
 
-De huidige focus ligt op:
+Builder 2.0 is de stabiele basis; Builder 3.0 is in ontwikkeling. De huidige focus ligt op de Content Engine en de koppeling van het Canon Model aan de bestaande RZD 5.1 Airtable-structuur.
 
-- verdere ontwikkeling van de BuilderKernel;
-- verdere modularisering van de compiler;
-- uitbreiding van de pipeline;
-- verdere Airtable-integratie;
-- ontwikkeling van de WordPress-publicatiepipeline;
-- voorbereiding van de eerste stabiele release.
+De CampingAggregate-preview en WordPress-draftflow zijn gedeeltelijk gerealiseerd. De volledigheid van preview-inhoud en een gecombineerde live-keten zijn niet aangetoond. Raadpleeg `docs/PROJECT_STATUS.md` en `docs/BACKLOG.md` voor de actuele status en openstaande werkzaamheden.
 
 ---
 
@@ -145,7 +147,6 @@ Zie:
 
 # Meer informatie
 
-De volledige technische documentatie bevindt zich in de map **docs/**.
+De officiële projectdocumentatiesuite bevindt zich in **docs/**.
 
-De documentatiesuite vormt samen met de BuilderKernel de centrale basis van het RZD Builder-project.
-
+De BuilderKernel coördineert de schema-/configuratiesynchronisatie; andere workflows starten via hun eigen scripts en services.

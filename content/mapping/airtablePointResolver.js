@@ -44,7 +44,40 @@ class AirtablePointResolver {
 
     }
 
-    async resolve(mapping) {
+    matchesConfiguredPoint(mapping, point) {
+
+        const configuredPoint =
+            mapping?.airtable;
+
+        if (!configuredPoint || !point) {
+            return false;
+        }
+
+        const hasConfiguredRecordId =
+            typeof configuredPoint.recordId === "string" &&
+            configuredPoint.recordId !== "";
+        const recordIdMatches =
+            !hasConfiguredRecordId ||
+            configuredPoint.recordId === point.recordId;
+        const pointNameIsMissing =
+            point.name === undefined ||
+            point.name === null ||
+            point.name === "";
+
+        return (
+            recordIdMatches &&
+            configuredPoint.module === point.moduleName &&
+            (
+                pointNameIsMissing
+                    ? hasConfiguredRecordId && recordIdMatches
+                    : point.name === configuredPoint.name
+            )
+        );
+
+    }
+
+    // lookup ({ modules, points }) is optioneel; zonder lookup worden beide opgehaald.
+    async resolve(mapping, lookup) {
 
         if (!mapping || mapping.status === "NO_MATCH") {
             return {
@@ -54,10 +87,10 @@ class AirtablePointResolver {
         }
 
         const modules =
-            await this.getModules();
+            lookup?.modules ?? await this.getModules();
 
         const points =
-            await this.getPoints();
+            lookup?.points ?? await this.getPoints();
          
         const moduleRecord =
           modules.find(
@@ -74,21 +107,35 @@ class AirtablePointResolver {
             };
         }
 
-        const point =
-            points.find(record => {
-
+        const point = mapping.airtable.recordId
+            ? points.find(record =>
+                record.id === mapping.airtable.recordId
+            )
+            : points.find(record => {
                 const pointModule =
-                    record.fields["Module"] || [];
+                    record.fields?.["Module"] || [];
 
                 return (
-                    record.fields["Beoordelingspunt"] ===
+                    record.fields?.["Beoordelingspunt"] ===
                         mapping.airtable.name &&
                     pointModule.includes(moduleRecord.id)
                 );
-
             });
 
-        if (!point) {
+        const pointFields = point?.fields || {};
+        const pointModule = pointFields["Module"] || [];
+        const pointName = pointFields["Beoordelingspunt"];
+        const moduleName = moduleRecord.fields?.["Module naam"];
+
+        if (
+            !point ||
+            !pointModule.includes(moduleRecord.id) ||
+            !this.matchesConfiguredPoint(mapping, {
+                recordId: point.id,
+                moduleName,
+                name: pointName
+            })
+        ) {
             return {
                 status: "NO_MATCH",
                 recordId: null
@@ -98,8 +145,7 @@ class AirtablePointResolver {
         return {
             status: mapping.status,
             recordId: point.id,
-            name:
-                point.fields["Beoordelingspunt"],
+            name: pointName || mapping.airtable.name,
             moduleRecordId: moduleRecord.id
         };
 

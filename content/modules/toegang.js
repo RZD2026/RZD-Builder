@@ -47,49 +47,16 @@ module.exports = {
         },
 
         {
-            id: "parking_distance",
+            id: "parking_notes",
             order: 30,
 
             labels: {
-                app: "Afstand parkeerplaats",
-                website: "Afstand parkeerplaats tot ingang"
+                app: "Parkeren opmerkingen",
+                website: "Parkeren opmerkingen"
             },
 
             description:
-                "Afstand van de parkeerplaats tot de ingang.",
-
-            type: "number",
-            unit: "meter",
-            required: false
-        },
-
-        {
-            id: "parking_surface",
-            order: 40,
-
-            labels: {
-                app: "Ondergrond",
-                website: "Ondergrond parkeerplaats"
-            },
-
-            description:
-                "Type ondergrond van de parkeerplaats.",
-
-            type: "text",
-            required: false
-        },
-
-        {
-            id: "entrance_route",
-            order: 50,
-
-            labels: {
-                app: "Route ingang",
-                website: "Route naar ingang"
-            },
-
-            description:
-                "Beschrijving van de route naar de ingang.",
+                "Vastlegging van aanvullende parkeerinformatie, zoals afstand en ligging van de parkeerplaats, ondergrond, helling, reservering, hoogtebeperkingen en de route vanaf de parkeerplaats naar de ingang.",
 
             type: "text",
             required: false
@@ -97,7 +64,7 @@ module.exports = {
 
         {
             id: "route_slope",
-            order: 60,
+            order: 40,
 
             labels: {
                 app: "Hellingspercentage",
@@ -114,7 +81,7 @@ module.exports = {
 
         {
             id: "entrance_threshold",
-            order: 70,
+            order: 50,
 
             labels: {
                 app: "Drempel ingang",
@@ -131,7 +98,7 @@ module.exports = {
 
         {
             id: "main_entrance_accessible",
-            order: 80,
+            order: 60,
 
             labels: {
                 app: "Hoofdingang",
@@ -147,7 +114,7 @@ module.exports = {
 
         {
             id: "automatic_door",
-            order: 90,
+            order: 70,
 
             labels: {
                 app: "Automatische deur",
@@ -163,7 +130,7 @@ module.exports = {
 
         {
             id: "entrance_turning_circle",
-            order: 100,
+            order: 80,
 
             labels: {
                 app: "Draaicirkel",
