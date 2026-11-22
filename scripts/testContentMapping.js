@@ -51,11 +51,17 @@ async function run() {
         console.log(`Eenheid:        ${point.unit || "-"}`);
         console.log(`Status:         ${pointMapping.status}`);
 
-        if (pointMapping.status === "NO_MATCH") {
+        if (mapping.status === "NO_MATCH") {
 
             console.log("Airtable:       GEEN MATCH");
             continue;
 
+        }
+
+        if (mapping.point.type !== point.type) {
+            throw new Error(
+                `Type mismatch voor '${point.id}': mapping.point.type='${mapping.point.type}', contentPoint.type='${point.type}'`
+            );
         }
 
         console.log(

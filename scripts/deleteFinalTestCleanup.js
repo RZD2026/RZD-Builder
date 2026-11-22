@@ -74,12 +74,11 @@ function linkedIds(value) {
 
 async function deleteRecord(tableName, recordId) {
 
-    await axios.delete(
-        `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}/${recordId}`,
-        {
-            headers
-        }
+    const error = new Error(
+        "Directe Airtable-DELETE vanuit dit script is uitgeschakeld."
     );
+    error.code = "DIRECT_DELETE_DISABLED";
+    throw error;
 }
 
 

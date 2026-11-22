@@ -36,7 +36,6 @@ async function run() {
 
             return (
                 mapping &&
-                mapping.status !== "NO_MATCH" &&
                 point.id !== "entrance_turning_circle"
             );
 
@@ -65,10 +64,10 @@ async function run() {
             "Beoordeling naam":
                 `${accommodationName} - ${mapping.point.name}`,
 
-            "Accommodatie":
+            [mapping.review.links.accommodation]:
                 [accommodationId],
 
-            "Beoordelingspunt":
+            [mapping.review.links.point]:
                 [mapping.point.recordId],
 
             "Status":
@@ -82,16 +81,21 @@ async function run() {
             point.id
         );
         console.log(
+            "Mappingstatus:",
+            mapping.status ?? "(ontbreekt)"
+        );
+        console.log(
             "Beoordelingspunt:",
             mapping.point.name
         );
 
         console.log("Schrijf record (via reviewWriteService)...");
 
-        const upsert = await reviewWriteService.upsertReview({
+        const upsert = await reviewWriteService.upsertMappedReview({
             accommodationId: accommodationId,
             pointId: mapping.point.recordId,
             fields: fields,
+            mapping: mapping,
             dryRun: !process.argv.includes("--execute")
         });
 
@@ -100,6 +104,10 @@ async function run() {
             upsert.action,
             upsert.recordId ? `(${upsert.recordId})` : ""
         );
+
+        if (upsert.fieldErrors?.length > 0) {
+            console.error("Preflight-fouten:", upsert.fieldErrors.join("; "));
+        }
 
     }
 

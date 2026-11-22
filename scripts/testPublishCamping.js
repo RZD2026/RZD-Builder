@@ -103,6 +103,24 @@ async function runTests() {
 
         resetCalls();
         resetOutput();
+        const validGetCampingAggregate =
+            campingReadService.getCampingAggregate;
+        campingReadService.getCampingAggregate = async campingId => ({
+            ...buildAggregate(campingId),
+            naam: ""
+        });
+
+        await assert.rejects(
+            () => publishCamping.run(["recInvalidPayload"]),
+            /WordPress-payload is niet gereed voor verwerking: title: Titel ontbreekt of is leeg\./
+        );
+        assert.strictEqual(postCalls, 0);
+        console.log("PASS ongeldige payload stopt vóór de postservice");
+
+        campingReadService.getCampingAggregate =
+            validGetCampingAggregate;
+        resetCalls();
+        resetOutput();
 
         const published =
             await publishCamping.run(["recPublish", "--publish"]);
@@ -237,6 +255,22 @@ async function runTests() {
 
 
 runTests().catch(error => {
+    console.error("error.name:", error?.name);
+    console.error("error.message:", error?.message);
+    console.error("error.stack:", error?.stack);
+
+    if (error?.actual !== undefined) {
+        console.error("error.actual:", error.actual);
+    }
+
+    if (error?.expected !== undefined) {
+        console.error("error.expected:", error.expected);
+    }
+
+    if (error?.operator !== undefined) {
+        console.error("error.operator:", error.operator);
+    }
+
     console.error(error);
     process.exit(1);
 });

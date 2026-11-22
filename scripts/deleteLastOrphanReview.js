@@ -1,7 +1,5 @@
 require("dotenv").config();
 
-const axios = require("axios");
-
 const baseId = process.env.AIRTABLE_BASE_ID;
 const token = process.env.AIRTABLE_TOKEN;
 
@@ -22,14 +20,11 @@ async function run() {
     console.log("Actie: DELETE");
     console.log("");
 
-    await axios.delete(
-        `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE)}/${RECORD_ID}`,
-        { headers }
+    const error = new Error(
+        "Directe Airtable-DELETE vanuit dit script is uitgeschakeld."
     );
-
-    console.log("===== DELETE GESLAAGD =====");
-    console.log("Verwijderd:", RECORD_ID);
-    console.log("");
+    error.code = "DIRECT_DELETE_DISABLED";
+    throw error;
 }
 
 run().catch(error => {
