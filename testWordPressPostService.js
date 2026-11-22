@@ -103,6 +103,51 @@ const publisher =
         assert.strictEqual(Object.prototype.hasOwnProperty.call(payload, "featured_media"), false);
         assert.strictEqual(result.status, 201);
 
+        fetchCalls = 0;
+
+        await assert.rejects(
+            () => postService.create({
+                title: "Ongeldige pagina",
+                status: "draft",
+                content: "",
+                meta: {}
+            }),
+            error =>
+                error.code === "WORDPRESS_PAYLOAD_INVALID" &&
+                error.errors.some(item => item.field === "content") &&
+                error.errors.some(item => item.field === "meta.rzd_camping_id")
+        );
+
+        assert.strictEqual(fetchCalls, 0);
+
+        fetchCalls = 0;
+
+        await assert.rejects(
+            () => postService.updateExisting(123, {
+                title: "Ongeldige update",
+                status: "draft",
+                content: "<p>Update.</p>",
+                meta: {}
+            }),
+            error =>
+                error.code === "WORDPRESS_PAYLOAD_INVALID" &&
+                error.errors.some(item => item.field === "meta.rzd_camping_id")
+        );
+
+        assert.strictEqual(fetchCalls, 0);
+
+        fetchCalls = 0;
+        const updateResult =
+            await postService.updateExisting(123, prepared.payload);
+
+        assert.strictEqual(updateResult.status, 201);
+        assert.strictEqual(fetchCalls, 1);
+        assert.strictEqual(capturedOptions.method, "POST");
+        assert.strictEqual(
+            JSON.parse(capturedOptions.body).status,
+            "draft"
+        );
+
         console.log("✓ WordPress Page-payload en /pages-endpoint zijn gemockt gecontroleerd.");
         console.log("✓ Geen echte externe request uitgevoerd.");
 

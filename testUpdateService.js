@@ -1,45 +1,43 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config = () => ({ parsed: {} });
 
-const airtable = require("./services/airtableAdapter");
+process.env.AIRTABLE_BASE_ID = "appTestBase";
+process.env.AIRTABLE_TOKEN = "test-placeholder";
+
+const assert = require("assert");
+const axios = require("axios");
 const updateService = require("./services/updateService");
 
 (async () => {
+    const originalPatch = axios.patch;
+    let patchCallCount = 0;
 
-    console.log("");
-    console.log("================================");
-    console.log("RZD UpdateService Test");
-    console.log("================================");
-    console.log("");
-
-    const table = await airtable.getTable("Accommodaties");
-
-    const field = table.fields.find(
-        f => f.name === "Description Test"
-    );
-
-    if (!field) {
-
-        console.log("❌ Veld 'Description Test' niet gevonden.");
-        return;
-
-    }
-
-    console.log("Table ID :", table.id);
-    console.log("Field ID :", field.id);
-    console.log("");
-
-    const payload = {
-        description: "Test description vanuit UpdateService"
+    axios.patch = async () => {
+        patchCallCount++;
     };
 
-    await updateService.updateField(
-        table.id,
-        field.id,
-        payload
-    );
+    try {
+        await assert.rejects(
+            () => updateService.updateField(
+                "tblTestTable",
+                "fldTestField",
+                { description: "Test description" }
+            ),
+            error =>
+                error.code === "METADATA_WRITE_AUTHORIZATION_REQUIRED"
+        );
 
-    console.log("");
-    console.log("✅ Test voltooid.");
-    console.log("");
+        assert.strictEqual(
+            patchCallCount,
+            0,
+            "Geblokkeerde metadata-write mag axios.patch niet aanroepen."
+        );
 
-})();
+        console.log("UpdateService fail-closed test passed.");
+    } finally {
+        axios.patch = originalPatch;
+    }
+})().catch(error => {
+    console.error(error);
+    process.exitCode = 1;
+});

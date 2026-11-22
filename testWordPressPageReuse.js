@@ -10,6 +10,7 @@ const postService =
 function buildPayload(id = "recCamping") {
 
     return publisher.preparePage({
+        title: "Camping Test",
         status: "draft",
         meta: {
             rzd_camping_id: id
@@ -18,7 +19,6 @@ function buildPayload(id = "recCamping") {
     }).payload;
 
 }
-
 
 async function runTests() {
 
@@ -179,12 +179,28 @@ async function runTests() {
         const genericPayload = {
             title: "Legacy page",
             status: "draft",
-            meta: {}
+            content: "<p>Legacy content.</p>",
+            meta: {
+                rzd_camping_id: "recLegacy"
+            }
         };
 
         let genericPostCalled = false;
         global.fetch = async (url, options) => {
             genericPostCalled = options.method === "POST";
+
+            if (options.method === "GET") {
+                return {
+                    ok: true,
+                    status: 200,
+                    statusText: "OK",
+                    headers: {
+                        get: name => name === "X-WP-TotalPages" ? "1" : null
+                    },
+                    json: async () => []
+                };
+            }
+
             return {
                 ok: true,
                 status: 201,
@@ -200,9 +216,36 @@ async function runTests() {
         assert.strictEqual(generic.status, 201);
 
         const compatibilityPayload = { title: "Compatibility" };
+        const genericCompatibility =
+            publisher.prepare(compatibilityPayload);
+
+        assert.strictEqual(genericCompatibility.ready, false);
         assert.deepStrictEqual(
-            publisher.prepare(compatibilityPayload),
-            publisher.preparePage(compatibilityPayload)
+            genericCompatibility.errors.map(error => ({
+                code: error.code,
+                field: error.field
+            })),
+            [
+                { code: "invalid_status", field: "status" },
+                { code: "required_field", field: "meta" }
+            ]
+        );
+
+        const pageCompatibility =
+            publisher.preparePage(compatibilityPayload);
+
+        assert.strictEqual(pageCompatibility.ready, false);
+        assert.deepStrictEqual(
+            pageCompatibility.errors.map(error => ({
+                code: error.code,
+                field: error.field
+            })),
+            [
+                { code: "invalid_status", field: "status" },
+                { code: "required_field", field: "meta" },
+                { code: "required_field", field: "content" },
+                { code: "required_field", field: "meta.rzd_camping_id" }
+            ]
         );
 
         console.log("WordPress page reuse tests passed.");
