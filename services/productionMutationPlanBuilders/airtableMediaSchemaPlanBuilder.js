@@ -64,6 +64,54 @@ const EXPECTED_SCHEMA = Object.freeze([
                 linkedTable: "Media-versies",
                 inverseField: "Media als actieve versie",
                 prefersSingleRecordLink: true
+            },
+            {
+                name: "Accommodaties",
+                type: "multipleRecordLinks",
+                linkedTable: "Accommodaties",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Voorzieningen",
+                type: "multipleRecordLinks",
+                linkedTable: "Voorzieningen",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Beoordelingspunten",
+                type: "multipleRecordLinks",
+                linkedTable: "Beoordelingspunten",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Accommodatie beoordelingen",
+                type: "multipleRecordLinks",
+                linkedTable: "Accommodatie beoordelingen",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Opmerkingen",
+                type: "multipleRecordLinks",
+                linkedTable: "Opmerkingen",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Reizigerservaringen",
+                type: "multipleRecordLinks",
+                linkedTable: "Reizigerservaringen",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
             }
         ]
     },
@@ -337,6 +385,10 @@ function desiredConfiguration(field) {
             field.prefersSingleRecordLink;
     }
 
+    if (field.preserveOnly === true) {
+        desired.preserveOnly = true;
+    }
+
     if (field.unresolved) {
         desired.unresolvedConfiguration = [...field.unresolved];
     }
@@ -574,6 +626,18 @@ function createAirtableMediaSchemaPlanBuilder({
                 };
 
                 differences.push(difference);
+
+                if (expectedField.preserveOnly === true) {
+                    blockedActions.push({
+                        status: "blocked",
+                        code: "PRESERVED_RELATIONSHIP_MISMATCH",
+                        table: tableComparison.table,
+                        field: expectedField.name,
+                        action: "validation-only",
+                        reason: "Deze bestaande RZD-relatie wordt uitsluitend gecontroleerd en nooit aangemaakt, gewijzigd of verwijderd."
+                    });
+                    continue;
+                }
 
                 const operation = {
                     system: "airtable-schema",
