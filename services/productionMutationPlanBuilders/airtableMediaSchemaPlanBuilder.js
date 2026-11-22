@@ -14,6 +14,15 @@ const TARGET_TABLE_NAMES = Object.freeze([
     "WordPress-koppelingen"
 ]);
 
+const PRESERVED_LINK_TARGET_TABLE_NAMES = Object.freeze([
+    "Accommodaties",
+    "Voorzieningen",
+    "Beoordelingspunten",
+    "Accommodatie beoordelingen",
+    "Opmerkingen",
+    "Reizigerservaringen"
+]);
+
 const EXPECTED_SCHEMA = Object.freeze([
     {
         name: "Media",
@@ -264,7 +273,7 @@ function projectField(field) {
 }
 
 
-function projectTargetTables(tables) {
+function projectTargetTables(tables, tableNames = TARGET_TABLE_NAMES) {
 
     if (!Array.isArray(tables)) {
         throw new TypeError("Airtable gaf geen geldige tabelmetadata terug.");
@@ -272,7 +281,7 @@ function projectTargetTables(tables) {
 
     const projected = [];
 
-    for (const name of TARGET_TABLE_NAMES) {
+    for (const name of tableNames) {
 
         const matches =
             tables.filter(table => table?.name === name);
@@ -512,11 +521,17 @@ function createAirtableMediaSchemaPlanBuilder({
         const currentSchema =
             projectTargetTables(sourceTables);
 
+        const linkTargetSchema =
+            projectTargetTables(sourceTables, [
+                ...TARGET_TABLE_NAMES,
+                ...PRESERVED_LINK_TARGET_TABLE_NAMES
+            ]);
+
         const currentTablesByName =
-            new Map(currentSchema.map(table => [table.name, table]));
+            new Map(linkTargetSchema.map(table => [table.name, table]));
 
         const currentTablesById =
-            new Map(currentSchema
+            new Map(linkTargetSchema
                 .filter(table => table.id)
                 .map(table => [table.id, table]));
 
