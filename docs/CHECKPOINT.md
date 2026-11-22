@@ -7,7 +7,7 @@
 | Document          | CHECKPOINT.md       |
 | Status            | Actief              |
 | Rol               | Sessieoverdracht    |
-| Laatste wijziging  | 06-11-2026         |
+| Laatste wijziging  | 10-11-2026         |
 | Eigenaar           | Pascalle Vroegop    |
 
 ---
@@ -32,7 +32,199 @@ Openstaande werkzaamheden staan in **BACKLOG.md**.
 
 ---
 
-# Actuele sessie
+# Actuele sessie — 10-11-2026 (A004)
+
+**Status**
+
+A004 — CampingAggregate-gegevensdekking en preview: GEPAUZEERD, GEDEELTELIJK
+UITGEVOERD. A002 blijft AFGEROND.
+
+## Opdracht en scope
+
+- Alleen bevestigde CampingAggregate-velden, mapping en preview controleren.
+- Geen Airtable- of WordPress-writes, publicatie, schema-sync, A005-werk of
+  A002-heropening.
+
+## Uitgevoerd en gecontroleerd
+
+- `campingReadService.buildCamping()` leest het volgens bestaande
+  schema-notities niet-bestaande `Foto's`-veld niet langer.
+- Mapper en preview laten whitespace-only waarden en lege reizigerservaringen
+  weg. Expliciete `false`, `0` en `Onbekend` blijven zichtbaar.
+- De vier geselecteerde lokale fixturetests zijn uitgevoerd en geslaagd:
+  `scripts/testCampingReadService.js`,
+  `tests/test-campingReadService-recordLinks.js`,
+  `scripts/testPreviewCamping.js` en
+  `testWordPressCampingAggregateMapper.js`.
+- De tests gebruikten mocks/fixtures. Geen actuele Airtable-data gelezen,
+  providerwrites uitgevoerd of previewrapporten geschreven.
+
+## Openstaand en laatst uitgevoerde stap
+
+- De beschikbare bronnen noemen de aanvullende toegankelijkheidsvelden niet
+  bij naam; er zijn geen nieuwe velden toegevoegd.
+- De lokale preview voegt `locatie.adres` aan de content toe; de directe
+  WordPress-mapper doet dat niet. De gewenste adresweergave is onbevestigd.
+- Laatste stap: alle vier geselecteerde tests opnieuw uitgevoerd; alle vier
+  geslaagd.
+
+## Eerstvolgende concrete stap en beperkingen
+
+- Wacht op beoordeling en een actuele goedgekeurde veldlijst/snapshot of
+  expliciete toestemming voor een read-only schema-controle. Bevestig ook de
+  gewenste adresweergave voordat de resterende A004-dekking wordt aangepast.
+- Geen externe reads/writes, WordPress-publicatie, schema-sync, A005- of
+  A002-werk, tests buiten de genoemde selectie, Git-commando's of commits.
+
+## Gewijzigde bestanden
+
+- `services/campingReadService.js`
+- `services/wordpressMapper.js`
+- `scripts/previewCamping.js`
+- `scripts/testCampingReadService.js`
+- `scripts/testPreviewCamping.js`
+- `testWordPressCampingAggregateMapper.js`
+- `docs/PROJECT_STATUS.md`
+- `docs/BACKLOG.md`
+- `docs/CHECKPOINT.md`
+- `docs/MASTER-WERKDOSSIER`
+
+---
+
+# Vorige sessie — 10-11-2026 (werkstatusprotocol)
+
+**Status**
+
+Het werkstatusprotocol uit §12.9 van het masterwerkdossier is verwerkt in de
+bestaande projectdocumentatie. Op dat moment bleef A002 AFGEROND en was er
+geen actieve technische opdracht.
+
+## Resultaat
+
+- `docs/AI_RULES.md` verwijst nu naar de verplichte werkstatus- en hervatstappen.
+- `docs/WERKWIJZE` beschrijft de dagelijkse hervatprocedure; de eerdere
+  overdrachtsregels zijn als historisch herkenbaar behouden.
+- `docs/WERKPLAN` is gemarkeerd als een historische momentopname. De oude
+  A002-status en vervolgstappen zijn niet herschreven.
+- Geen nieuwe technische opdracht aangemaakt en A002 niet heropend.
+
+## Validatie en grenzen
+
+- De vijf gevraagde documenten zijn gelezen: Master Werkdossier, Werkwijze,
+  Werkplan, AI-regels en Checkpoint.
+- Alleen documentatie gewijzigd. Geen code gewijzigd, tests uitgevoerd,
+  Git-commando’s uitgevoerd of externe acties verricht.
+
+## Pauzepunt en volgende stap
+
+Wacht op expliciete toestemming van Pascalle voordat een volgende opdracht
+wordt gestart. Geen technische taak was op dat moment geselecteerd.
+
+---
+
+# Vorige sessie — 10-11-2026 (A002-review)
+
+## Resultaat
+
+- De huidige `index.js build`-route is bevestigd: `BuilderKernel.buildModule()`
+  coördineert bootstrap, workflow, synchronisatie, rapportage en logging.
+- `builders/builder.js` is een dunne wrapper zonder gevonden huidige callsites.
+  De aparte validatorroute en de niet-actieve Compiler/Pipeline-route zijn
+  geïdentificeerd en beoordeeld.
+- De eerder succesvol uitgevoerde `scripts/testBuilderKernelMocked.js` dekt
+  alleen de lokale create/dry-run-casus. De oorspronkelijke afrondingsclaim is
+  historisch niet verifieerbaar; de huidige afronding berust op de actuele
+  review en de beschikbare testregistratie.
+- `PROJECT_STATUS.md`, `BACKLOG.md`, `CHECKPOINT.md` en `CHANGELOG.md` zijn
+  bijgewerkt voor A002. Geen broncode gewijzigd.
+- Oudere, gedateerde A002-open-notities in het Master Werkdossier en het
+  werkplan zijn als historische context behouden; zij behoren niet tot de
+  actieve documentatiesuite.
+
+## Validatie en grenzen
+
+- Deze sessie zijn geen tests of scripts uitgevoerd. De mocktest is eerder
+  succesvol uitgevoerd en niet opnieuw gedraaid.
+- Geen Git-commando’s, Airtable-, WordPress- of andere externe acties uitgevoerd.
+- Geen code gewijzigd.
+
+## Pauzepunt en volgende stap
+
+Wacht op expliciete toestemming voordat een volgende Builder 3.0-taak start.
+Er is geen werk aan A004 of A005 begonnen.
+
+---
+
+# Vorige sessie — 09-11-2026
+
+**Status**
+
+Na de documentatiesynchronisatie is de A007-adapter-preflight aangepast en met lokale tests gevalideerd. Er is geen productiecontext of autorisatie-architectuur toegevoegd.
+
+## Resultaat
+
+- `PROJECT_STATUS.md` bijgewerkt met PlanStore-/reviewwrite-status en de read-only bevindingen over accounts, helpers, modules en mappings.
+- `BACKLOG.md` bijgewerkt met A007 voor de nog ontbrekende vertrouwde productiecontext en H001 voor het tijdelijke helperformulier; beide wachten op besluit/goedkeuring.
+- `SESSION_STATE.md` expliciet als historische momentopname van 28-10-2026 gemarkeerd; de oorspronkelijke snapshotinhoud is behouden.
+- `CHECKPOINT.md` bijgewerkt met deze sessie; de overdracht van 08-11-2026 blijft hieronder als vorige sessie staan.
+- De reviewtable-adapter herhaalt nu vóór providerwrites de actuele matchcontrole; stale CREATE- en ambigue UPDATE-matches worden fail-closed geblokkeerd.
+- `PLANSTORE.md`, `SECURITY-REVIEW.md`, `PROJECT_STATUS.md`, `BACKLOG.md` en `CHANGELOG.md` bijgewerkt met de A007-aanvulling en de resterende race/contextbeperkingen.
+- De historische P0-prioriteiten zijn vergeleken: de master markeert nog oudere P0/P0-P3-items en MOBILE-01.2 t/m MOBILE-01.5 als open, terwijl de actieve backlog geen bevestigde P0's meldt en A006 P1 noemt. Dit verschil is vastgelegd maar niet inhoudelijk hergeprioriteerd.
+- `MASTER-WERKDOSSIER` versie 4 is ongewijzigd behouden binnen de opgegeven documentatiescope; de historische P0-prioriteitsdiscrepantie is in de actieve documenten vastgelegd en blijft onbeslist.
+- `ROADMAP.md` en `DOCUMENTATION_ARCHITECTURE.md` zijn gecontroleerd en bewust niet aangepast.
+
+## Kernstatus
+
+- De centrale reviewwriter en reviewtable-adapter vereisen PlanStore-autorisatie voor live reviewwrites, maar een vertrouwde productie-actor-/bevestigingscontext ontbreekt; live writes zonder permit blijven fail-closed geblokkeerd.
+- De adapter herhaalt de verse matchcontrole voor reviewwrites: CREATE vereist nul matches; UPDATE vereist precies één match met het geautoriseerde record-ID. Een concurrente wijziging na die read blijft een race.
+- Directe Axios-calls en niet-reviewmutaties vallen niet allemaal onder dezelfde beveiligingsgrens.
+- Er is geen productieaccount-, uitnodigings- of RZD-rechtenbeheer geïmplementeerd. Managed authenticatie met afzonderlijke RZD-rechtenopslag is alleen onderzocht; geen provider is gekozen.
+- De tijdelijke formulierdienst is niet gekozen of aangemaakt. H001 is uitgesteld totdat bestaand werk is afgehandeld.
+- De lokale contentcatalogus bevat alleen `Toegang & Entree`; drie punten blijven `NO_MATCH`. De overige mobiele modulecatalogi en actuele Airtable-records zijn niet extern geraadpleegd.
+- A002, A004, A005 en A006 blijven open/gedeeltelijk. A007 blijft open voor trusted production context, autorisatie en caller-scope; de adapter-preflight zelf is aangepast.
+
+## Validatie en grenzen
+
+- In de vorige A007-codewijziging geslaagd: `node scripts/testProductionMutationPlanService.js`, `node scripts/testReviewWriteService.js`, `node scripts/testReviewWriteServiceEntities.js` en `node scripts/testMappedReviewWritePreflight.js`. Deze documentatiesynchronisatie heeft geen tests uitgevoerd.
+- Geen Git-commando’s uitgevoerd.
+- Geen Airtable-, WordPress- of andere externe acties uitgevoerd.
+- Alleen de adapter, een bestaande PlanStore-test en direct gerelateerde documentatie gewijzigd; geen productieconfiguratie, account of formulier gewijzigd/aangemaakt.
+- Testwrites gebruikten lokale mocks/fixtures; geen live providerwrite uitgevoerd.
+
+## Pauzepunt en volgende veilige stap
+
+Laat Pascalle de A007-wijziging en resterende race beoordelen. Bepaal daarna, vóór productiepermit of live write, de vertrouwde actor-, autorisatie- en bevestigingsbron en de exacte caller-scope. Reconcileer ook de historische P0-labels met de actieve backlog zonder ze als opgelost of actueel kritisch aan te nemen. H001 blijft uitgesteld totdat bestaand werk is afgehandeld. Voor MOBILE-01 blijft eerst bevestiging nodig welke bestaande beveiligde HTTPS-endpoint zonder aankoop beschikbaar is.
+
+---
+
+# Vorige sessie — 08-11-2026
+
+**Status**
+
+MOBILE-01 is statisch onderzocht en toegevoegd aan het bestaande Master Werkdossier als versie 3. De mobiele toepassing is nog niet offline-first en de goedkeuringsflow ontbreekt.
+
+## Resultaat
+
+- Master Werkdossier: `MASTER-WERKDOSSIER`, nieuw hoofdstuk `MOBILE-01`; versie 2 is ongewijzigd bewaard in `docs/archive/MASTER-WERKDOSSIER-v2`.
+- `PROJECT_STATUS.md`: mobiele opslag/synchronisatie-status gecorrigeerd op basis van actuele code.
+- `BACKLOG.md`: A006 toegevoegd als analyse vastgelegd, uitvoering wacht op akkoord.
+- Geen applicatiecode gewijzigd; geen tests, Git, Airtable-/WordPress-calls, sync, import/export, Cloud86-controle of serverwijzigingen uitgevoerd.
+
+## Kernbevindingen
+
+- Reviews worden server-side in `data/mobile-reviews.json` opgeslagen; de telefoonbrowser heeft geen IndexedDB of service worker.
+- De browser probeert bij `online` de serverqueue te synchroniseren, maar dit is geen offline opslag op de telefoon.
+- De sync schrijft rechtstreeks via `upsertReview()` naar `Accommodatie beoordelingen`; aparte submissionopslag en Pascalle-approval ontbreken.
+- De queue herstelt stale `syncing` niet; Airtable-batches ontbreken.
+- Node luistert standaard alleen op `127.0.0.1:3000`; Cloud86/telefoonbereikbaarheid is onbekend.
+
+## Volgende stap
+
+Laat MOBILE-01 beoordelen en bevestig eerst welke bestaande beveiligde HTTPS-endpoint zonder aankoop beschikbaar is. Daarna kan een beperkte IndexedDB/offline-herstelimplementatie worden gepland; geen Airtable-sync of definitieve verwerking voordat de approval-architectuur is goedgekeurd.
+
+---
+
+# Vorige sessie — 06-11-2026
 
 **Datum**
 
@@ -84,7 +276,7 @@ Wacht op toestemming voordat de volgende documentatiegroep wordt aangepast.
 
 De onderstaande sessienotities en vervolgstappen zijn historisch.
 
-De actuele status en eerstvolgende stap staan in de overdracht van 06-11-2026 hierboven.
+Ten tijde van die overdracht stonden de toen actuele status en eerstvolgende stap in de overdracht van 06-11-2026 hierboven.
 
 ## A003 — Legacy Cleanup
 

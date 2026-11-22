@@ -6,7 +6,7 @@
 | Document | AI_RULES.md |
 | Status | Actief |
 | Rol | Leidend ontwikkelprotocol |
-| Laatste wijziging | 05-08-2026 |
+| Laatste wijziging | 10-11-2026 |
 | Eigenaar | Pascalle Vroegop |
 
 ---
@@ -280,3 +280,11 @@ Voorkeur gaat uit naar volledig afgeronde taken boven meerdere half afgeronde ta
 De AI trekt geen conclusies voordat alle gevraagde testresultaten, zoekresultaten of command-uitvoer beschikbaar zijn.
 
 Bij meerdere opdrachten wordt altijd gewacht op de volledige uitvoer voordat een conclusie of vervolgstap wordt gegeven.
+
+## 8. Actieve opdracht en hervatten
+
+- Lees vóór nieuw werk of hervatten eerst §12.9 van `docs/MASTER-WERKDOSSIER` en de nieuwste sessie in `docs/CHECKPOINT.md`.
+- Houd maximaal één actieve opdracht aan en volg de statusvelden en scope uit §12.9. Een backlogitem wordt niet automatisch een actieve opdracht.
+- Een nieuwe vraag, suggestie of bevinding vervangt of verruimt de actieve opdracht niet. Taakwisseling, pauzeren, afronden of heropenen vereist expliciete toestemming van Pascalle.
+- Hervat vanaf aantoonbare voortgang; onderscheid uitgevoerd, gecontroleerd, eerder uitgevoerd, voorgesteld en niet uitgevoerd. Bij tegenstrijdigheid of ontbrekend bewijs: benoem dit en stop voor verduidelijking.
+- Werk het checkpoint aan het einde van de sessie bij volgens §12.9. Start geen vervolgtaak automatisch.

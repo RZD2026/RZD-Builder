@@ -1,3 +1,6 @@
+Historische momentopname per 28-10-2026; dit document is geen actuele projectstatus of sessieoverdracht.
+Gebruik `PROJECT_STATUS.md`, `BACKLOG.md` en `CHECKPOINT.md` voor de actuele stand.
+
 Laatste controle
 ----------------
 28-10-2026

@@ -6,7 +6,7 @@
 | Document | PROJECT_STATUS.md |
 | Status | Actief |
 | Rol | Centraal projectdashboard |
-| Laatste wijziging | 06-11-2026 |
+| Laatste wijziging | 10-11-2026 |
 | Eigenaar | Pascalle Vroegop |
 
 ---
@@ -48,7 +48,9 @@ Airtable is één van de synchronisatiedoelen. Het Canon Model vormt het uitgang
 | Documentation Engine | Gevalideerd tot en met fase 3G |
 | CampingAggregate | Lokale preview en draft-flow aanwezig |
 | WordPress | Draft-flow; geen openbare publicatie aangetoond |
-| Mobiele review | Lokale reviewketen en handmatige synchronisatie aanwezig |
+| Mobiele review | Node-host JSON-queue aanwezig; telefoon offline-first en approval-gate ontbreken |
+| Review-write beveiliging | PlanStore-permit vereist voor centrale live reviewwrites; vertrouwde productiecontext ontbreekt, dus live writes blijven fail-closed |
+| Accounts en helpers | Geen RZD-accountbeheer of helperformulier geïmplementeerd; formulieronderzoek afgerond, dienstkeuze open |
 | Teststatus | Gerichte tests; geen actuele volledige suite |
 | Documentatie | Actief onderhouden |
 
@@ -66,6 +68,32 @@ De Canon-naar-RZD 5.1 tabelmapping is vastgesteld en in de Builder vastgelegd.
 
 De Documentation Engine is gevalideerd tot en met fase 3G.
 
+## Recente onderzoeken en wijzigingen — 09-11-2026
+
+### PlanStore en productieautorisatie
+
+- De centrale reviewwriter en reviewtable-adapter vereisen PlanStore-autorisatie voor live writes.
+- Er is geen vertrouwde productie-actor-, autorisatie- en bevestigingscontext vastgesteld. Live reviewwrites zonder geldige permit blijven geblokkeerd.
+- De adapter herhaalt nu vóór reviewwrites de actuele matchcontrole: CREATE vereist nul matches; UPDATE vereist precies één match met het geautoriseerde record-ID. Stale of ambigue matches en leesfouten blokkeren de providerwrite. Deze read-check is niet atomair met de write.
+- Dit is geen algemene mutatiegrens: directe Axios-calls, andere providers, schema-/delete-acties en andere mutatieroutes moeten afzonderlijk worden gecontroleerd. Zie `SECURITY-REVIEW.md`.
+- PlanStore blijft lokale plan-/uitvoeringsopslag en is geen centrale gebruikersdatabase.
+
+### Accounts en helperformulier
+
+- Productie-login, e-mailverificatie, wachtwoordherstel, uitnodigingen en centrale gebruikers-/rechtenadministratie zijn niet geïmplementeerd.
+- Managed authenticatie met afzonderlijke RZD-rechtenopslag is onderzocht als richting, maar er is geen provider- of implementatiebesluit genomen.
+- Een apart formulier voor tijdelijke gegevensverzameling is de voorlopige richting; Tally Free is slechts een kandidaat uit eerder onderzoek. Gratis limieten en privacyvoorwaarden zijn niet opnieuw geverifieerd; geen account of formulier is aangemaakt.
+- Helpers krijgen in het huidige ontwerp geen directe write-, goedkeurings- of publicatierechten. Pascalle blijft verantwoordelijk voor controle en verwerking.
+
+### Modulecatalogus en mappings
+
+- Lokaal is één volledige contentmodule aanwezig: `content/modules/toegang.js`, met acht optionele punten en invoertypen Ja/Nee, Meting of Tekst.
+- De mobiele route noemt zeven modulelabels, maar haalt de meeste puntdefinities dynamisch uit Airtable. Andere modules en hun volledige actuele catalogus zijn niet read-only extern gecontroleerd.
+- Vijf lokale punten zijn als exact gekoppeld beschreven; drie punten blijven `NO_MATCH`. De lokale mapping bevat vaste record-ID’s voor drie punten en module-/naamkoppelingen voor twee. Eerder opgeloste IDs voor die twee zijn niet opnieuw live geverifieerd.
+- Een gecontroleerde formulierexport/import naar de bestaande RZD-ID’s bestaat niet.
+
+De account-, helperformulier- en moduleonderzoeken waren read-only. In de A007-vervolgtaak is de adapter-preflight aangepast; vier gerichte lokale mocktests zijn geslaagd. Er zijn geen Git-commando’s, Airtable-/WordPress-acties, accounts of formulieren uitgevoerd/aangemaakt. De vertrouwde productiecontext blijft ontbreken.
+
 ## Actuele technische taken
 
 ### A001
@@ -74,17 +102,19 @@ Status: AFGEROND / COMPLETED
 
 ### A002 — Volledige review BuilderKernel
 
-Status: OPEN — HERBEVESTIGING NODIG
+Status: AFGEROND / COMPLETED
 
-De eerdere afrondingsclaim is niet opnieuw onderbouwd met actuele code- en testevidence.
+De huidige `index.js build`-route en de verantwoordelijkheden van de
+BuilderKernel zijn herbevestigd. De aparte validator- en Compiler/Pipeline-paden
+zijn als afzonderlijke routes beoordeeld; hun eventuele verwijdering valt niet
+onder A002.
 
-De taak blijft open totdat de huidige werkboom is gecontroleerd op:
-
-- verantwoordelijkheden;
-- afhankelijkheden;
-- resterende legacy;
-- actieve build-pipeline;
-- overeenstemming tussen eerdere afrondingsclaims en actuele code-/testevidence.
+De eerder succesvol uitgevoerde mocktest `scripts/testBuilderKernelMocked.js`
+dekt de echte `BuilderKernel.buildModule`-route voor een lokale create/dry-run-
+casus, niet de skip- of update-route. De test is tijdens deze afrondingsreview
+niet opnieuw uitgevoerd. De oorspronkelijke afrondingsclaim blijft historisch
+niet verifieerbaar; de huidige status berust op de actuele review en de
+beschikbare testregistratie.
 
 ### A003 — Legacy Cleanup
 
@@ -103,15 +133,20 @@ Status: GEDEELTELIJK GEREALISEERD — LOKALE PREVIEW EN DRAFT-FLOW; RESTANT OPEN
 - `services/campingReadService.js` levert het CampingAggregate.
 - `scripts/previewCamping.js` bevat een lokale HTML- en JSON-previewrunner.
 - `wordpressMapper.mapCampingAggregate()` en `wordpressPublisher.preparePage()` bereiden en valideren de WordPress-payload.
-- De inhoudelijke volledigheid van het aggregate en de actuele preview zijn niet opnieuw gevalideerd.
+- De inhoudelijke volledigheid van het aggregate en de actuele preview zijn niet opnieuw met actuele brongegevens gevalideerd.
 - De bestaande Airtable-tabel `Accommodaties` bevat aanvullende toegankelijkheidsvelden die nog niet allemaal door `buildCamping()` worden gelezen.
 - Het veld `Foto's` bestaat niet in de actuele metadata/schema van `Accommodaties`.
+- Op 10-11-2026 zijn de vier gerichte lokale aggregate-, relatie-, preview- en mappertests met fixtures geslaagd. Er zijn geen actuele Airtable-gegevens gelezen of providerwrites uitgevoerd.
+- `buildCamping()` leest het niet-bestaande veld `Foto's` niet langer. Mapper en preview laten whitespace-only waarden en lege ervaringen weg en behouden expliciete `false`, `0` en `Onbekend`.
+- De beschikbare documenten noemen de aanvullende toegankelijkheidsvelden niet bij naam; er zijn daarom geen nieuwe bronvelden toegevoegd.
+- De lokale preview voegt momenteel `locatie.adres` toe, terwijl de directe WordPress-mapper dit veld niet in de content opneemt. De bedoelde presentatie is niet bevestigd.
 - Er is geen openbare WordPress-publicatie aangetoond.
 
 Resterend:
 
-- gegevensdekking van het aggregate beoordelen;
-- preview-inhoud controleren met actuele gegevens;
+- de aanvullende toegankelijkheidsvelden met een actuele, goedgekeurde veldlijst of snapshot bevestigen;
+- de adresweergave tussen preview en directe mapper/payload beoordelen;
+- aggregate- en previewdekking met actuele, bevestigde gegevens controleren;
 - ontbrekende informatie niet invullen;
 - eventuele WordPress-uitbreidingen gecontroleerd als draft voorbereiden.
 
@@ -244,7 +279,7 @@ Dit zijn historische live-validatieclaims. Ze zijn tijdens deze documentatie-upd
 
 ## Status
 
-LOKALE REVIEWKETEN EN EENVOUDIGE MOBIELE BROWSER-UI GEBOUWD EN GETEST.
+LOKALE REVIEWKETEN EN EENVOUDIGE MOBIELE BROWSER-UI HISTORISCH GEBOUWD EN GETEST; IN DEZE STATUSUPDATE GEEN TESTS UITGEVOERD.
 
 GECOMBINEERDE PRODUCTIE-/AIRTABLE-E2E-FLOW NOG NIET AANWEZIG.
 
@@ -256,7 +291,7 @@ De technische mobiele reviewketen loopt momenteel van:
 
 - selectie van accommodatie, module en beoordelingspunt via `services/mobileReviewSelection.js` en bestaande selection viewmodels;
 - bestaande inputmodellen voor `Ja/Nee`, `Meting` en `Tekst`;
-- lokale review-opslag via `services/mobileReviewStorage.js`;
+- JSON-reviewopslag op de Node-host via `services/mobileReviewStorage.js`; dit is geen browser-/telefoonopslag;
 - unieke `localId` en standaard `pending`-opslag;
 - statusweergave en lijstitems;
 - eenvoudige browser-UI in `mobile-review.html` en `mobile-review.js`;
@@ -270,13 +305,23 @@ De technische mobiele reviewketen loopt momenteel van:
 - sequentiële synchronisatiequeue;
 - statusovergangen `syncing`, `synced`, `error` en `conflict`;
 - bestaande adapter naar `reviewWriteService.upsertReview()`;
-- handmatige synchronisatie via `POST /mobile-review/sync`;
+- handmatige synchronisatie via `POST /mobile-review/sync` en een syncpoging bij het browser-`online`-event;
 - opnieuw laden van de lokale reviewlijst na synchronisatie;
 - relevante browser-, opslag-, flow-, adapter- en synchronisatietests.
 
-De mobiele browserflow bewaart reviews lokaal.
+De huidige JSON-opslag staat op de Builder-host (`data/mobile-reviews.json`). Er is geen IndexedDB, `localStorage` of service worker aangetroffen; offline invoer op de telefoon is dus niet bewezen en niet geïmplementeerd.
 
-De browser voert geen automatische synchronisatie uit.
+De browser synchroniseert handmatig en start ook een serverqueue-sync bij een `online`-event. Dit bewaart geen review die nog niet succesvol naar de Node-server is gepost.
+
+## Actuele mobiele codecontrole — 08-11-2026
+
+- De Node-server bindt standaard aan `127.0.0.1:3000`; telefoonbereikbaarheid is hiermee niet aangetoond.
+- De serverqueue selecteert `pending` en `error`; stale `syncing` wordt niet hersteld. Retrylimiet/back-off is niet aangetroffen.
+- De mobiele adapter schrijft direct naar `Accommodatie beoordelingen`; er is geen aparte submissionopslag of server-side Pascalle-approval-gate aangetroffen.
+- CREATE/UPDATE/multiple-match-blocking bestaat op basis van accommodatie/voorziening en beoordelingspunt. De mobiele `localId` is geen Airtable-idempotency key.
+- De huidige mobiele pagina bevat geen aparte voorziening-, foto-, opmerking-, conceptbeheer- of expliciete reviewbevestigingsscherm.
+- Cloud86-capaciteiten en werkelijk Airtable-gebruik zijn niet vastgesteld.
+- Dit is een statische codecontrole; tests en live-integraties zijn niet uitgevoerd.
 
 De bestaande lijstitems bevatten geen `moduleId`. Een module-naam kan daarom niet betrouwbaar worden getoond zonder uitbreiding buiten de huidige lijstgegevens.
 
@@ -507,9 +552,10 @@ De volledige werking van alle exportdoelen is niet opnieuw gevalideerd tijdens d
 
 Actuele openstaande taken staan in `BACKLOG.md`.
 
-- A002 — BuilderKernel-review herbevestigen
 - A004 — CampingAggregate presentatie-/publicatielaag afronden
 - A005 — WordPress-publicatieflow afronden
+- A006 — mobiele offline-/approval-flow; uitvoering wacht op endpoint- en autorisatiebesluiten
+- A007 — vertrouwde productiecontext en caller-scope bepalen; adapter-preflight is aangepast, productiecontext blijft open
 
 A003 is afgerond in de huidige werkboom; commitstatus is niet bevestigd.
 
@@ -598,6 +644,7 @@ De bestaande RZD 5.1 Airtable-base blijft de actieve database.
 
 Er wordt geen nieuwe Airtable-base aangemaakt.
 
-De eerstvolgende technische stap is het herbevestigen van A002 en het verder afronden van A004/A005 volgens de actuele backlog.
+A002 is herbevestigd en afgerond. De resterende prioriteiten staan in
+`BACKLOG.md`; in deze sessie is geen A004- of A005-werk gestart.
 
 Historische statusnotities en testresultaten blijven herkenbaar als historisch en worden niet zonder actuele verificatie als huidige werking gepresenteerd.

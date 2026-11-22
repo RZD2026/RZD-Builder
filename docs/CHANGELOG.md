@@ -7,7 +7,7 @@
 | Document          | CHANGELOG.md                    |
 | Status            | Actief                         |
 | Rol               | Historisch wijzigingsoverzicht  |
-| Laatste wijziging | 06-11-2026                     |
+| Laatste wijziging | 10-11-2026                     |
 | Eigenaar           | Pascalle Vroegop                |
 
 ---
@@ -23,6 +23,105 @@ Iedere afgeronde ontwikkelingstaak wordt na voltooiing vanuit **BACKLOG.md** naa
 De changelog vormt daarmee de officiële historische registratie van de ontwikkeling van het project.
 
 Kleine experimenten, tussentijdse commits en tijdelijke wijzigingen blijven onderdeel van de Git-geschiedenis.
+
+## 2026-11-10
+
+### A002 — BuilderKernel-review herbevestigd
+
+**Type**
+
+Review / Statusbeheer
+
+**Resultaat**
+
+- De actieve `index.js build`-route, BuilderKernel-verantwoordelijkheden en
+  afhankelijkheden zijn herbevestigd.
+- De wrapper in `builders/builder.js`, de aparte validatorroute en de
+  Compiler/Pipeline-route zijn als afzonderlijke of niet-actieve routes
+  geïdentificeerd.
+- A002 is afgerond volgens de actuele criteria in `BACKLOG.md`. De historische
+  afrondingsclaim blijft niet verifieerbaar en is niet achteraf bewezen.
+- De beschikbare mocktest dekt alleen de lokale create/dry-run-casus; geen
+  skip- of update-route.
+
+**Validatie**
+
+- `scripts/testBuilderKernelMocked.js` was eerder succesvol uitgevoerd; deze
+  test is tijdens deze review niet opnieuw gedraaid.
+- Alleen documentatie bijgewerkt. Geen tests, scripts, Git-commando’s of
+  externe acties uitgevoerd.
+
+## 2026-11-09
+
+### A007 — Verse review-preflight in Airtable-adapter
+
+**Type**
+
+Beveiliging / PlanStore / Test
+
+**Wijziging**
+
+- `airtableAdapter` leest vóór een reviewwrite opnieuw de actuele reviewrecords.
+- CREATE wordt geblokkeerd zodra er een match bestaat; UPDATE vereist precies één match met het geautoriseerde record-ID.
+- Readfouten en gewijzigde of ambigue matches blokkeren de providerwrite.
+- De bestaande preflight in `reviewWriteService` en PlanStore-actie-, target- en payloadbinding blijven behouden.
+- `PLANSTORE.md`, `SECURITY-REVIEW.md`, `PROJECT_STATUS.md`, `BACKLOG.md` en `CHECKPOINT.md` bijgewerkt.
+
+**Validatie**
+
+- `node scripts/testProductionMutationPlanService.js` geslaagd.
+- `node scripts/testReviewWriteService.js` geslaagd.
+- `node scripts/testReviewWriteServiceEntities.js` geslaagd.
+- `node scripts/testMappedReviewWritePreflight.js` geslaagd.
+- Geen Airtable-, WordPress- of andere live writes uitgevoerd.
+
+**Resterend risico**
+
+- De actuele match-read en providerwrite zijn niet atomair; een concurrente wijziging na de read blijft mogelijk.
+- Trusted productie-actor-/bevestigingscontext ontbreekt nog; dit lost A007 niet volledig op en schakelt geen live writes in.
+
+### DOC — A007-status en historische P0-prioriteiten gesynchroniseerd
+
+**Type**
+
+Documentatie / Statusbeheer
+
+**Wijziging**
+
+- A007 is als gedeeltelijk afgerond beschreven: de adapter-preflight is geïmplementeerd; trusted productiecontext, autorisatie en caller-scope blijven open.
+- `PROJECT_STATUS.md` is bijgewerkt zodat de codewijziging en vier eerdere geslaagde tests niet meer worden omschreven als uitsluitend read-only onderzoek.
+- De actieve P1-samenvatting noemt nu ook A006 en A007.
+- De historische P0-labels uit `MASTER-WERKDOSSIER` zijn vergeleken met de actieve backlog en als onopgeloste prioriteitsdiscrepantie vastgelegd; geen historische status is als opgelost of actueel kritisch heringedeeld.
+- `PLANSTORE.md` en de A007-code/testregistratie waren al actueel en zijn gecontroleerd zonder verdere wijziging.
+
+**Validatie**
+
+- Alleen bestaande documentatie gelezen en bijgewerkt.
+- Geen tests, Git-commando’s, externe acties of live writes uitgevoerd.
+
+### DOC — Documentatie gesynchroniseerd met masterwerkdossier versie 4
+
+**Type**
+
+Documentatie / Statusbeheer
+
+**Wijziging**
+
+- `PROJECT_STATUS.md` bijgewerkt met de aantoonbare status van PlanStore-reviewwrites, accounts/autorisatie en het helperformulier-/moduleonderzoek.
+- `BACKLOG.md` bijgewerkt met A007 (vertrouwde productiecontext) en H001 (tijdelijk helperformulier); beide wachten op besluit/goedkeuring.
+- `SESSION_STATE.md` expliciet als historische momentopname van 28-10-2026 aangeduid; de historische inhoud is behouden.
+- `CHECKPOINT.md` bijgewerkt met de sessiestatus, validatiegrenzen en actuele pauzestand.
+- `MASTER-WERKDOSSIER` versie 4 gecontroleerd en ongewijzigd gelaten; geen concrete inconsistentie gevonden die een correctie vereiste.
+- `ROADMAP.md`, `PLANSTORE.md`, `DOCUMENTATION_ARCHITECTURE.md` en `SECURITY-REVIEW.md` gecontroleerd en ongewijzigd gelaten omdat zij niet in tegenspraak zijn met de vastgestelde status.
+- Geen codewijzigingen, tests, Git-commando’s, Airtable-/WordPress-acties, accounts of formulieren uitgevoerd/aangemaakt.
+
+**Resultaat**
+
+- De actuele projectstatus, backlog, sessieoverdracht en historische wijzigingsregistratie sluiten aan op masterwerkdossier versie 4.
+- De PlanStore-productiecontext en helperformulier-/providerkeuzes blijven open; er is geen implementatiebesluit vastgelegd.
+- De documentatiecontrole is geen nieuwe test-, live- of externe validatie.
+
+---
 
 ## 2026-11-06
 
@@ -546,4 +645,3 @@ Verwijderd:
 
 - Eén centrale uitvoeringslaag.
 - Minder afhankelijkheden.
-
