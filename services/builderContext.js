@@ -18,16 +18,21 @@ class BuilderContext {
 
     getAirtableName(field) {
 
-        return field.labels?.airtable || field.name;
+        if (typeof field === "string") {
+            return field;
+        }
+
+        return (
+            field?.labels?.airtable ??
+            field?.name ??
+            field?.id
+        );
 
     }
 
     getField(field) {
 
-        const fieldName =
-            typeof field === "string"
-                ? field
-                : this.getAirtableName(field);
+        const fieldName = this.getAirtableName(field);
 
         return this.airtableFields.find(
             airtableField => airtableField.name === fieldName

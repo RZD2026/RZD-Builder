@@ -11,6 +11,7 @@ const airtablePointResolver =
 const CAMPING_TABLE = "Accommodaties";
 const VOORZIENINGEN_TABLE = "Voorzieningen";
 const REVIEW_TABLE = "Accommodatie beoordelingen";
+const CHOICE_OPTIONS_TABLE = "Keuzeopties";
 const EXPERIENCES_TABLE = "Reizigerservaringen";
 const NOTES_TABLE = "Opmerkingen";
 
@@ -72,18 +73,37 @@ function firstLinkedId(fieldValue) {
 
 }
 
+function linkedIds(fieldValue) {
+
+    if (!Array.isArray(fieldValue)) {
+        return [];
+    }
+
+    return [...new Set(
+        fieldValue
+            .map(value => typeof value === "string" ? value : value?.id)
+            .filter(value => typeof value === "string" && value.length > 0)
+    )];
+
+}
+
+
+function choiceIds(fieldValue) {
+
+    if (!Array.isArray(fieldValue)) {
+        return [];
+    }
+
+    return fieldValue
+        .map(value => typeof value === "string" ? value : value?.id)
+        .filter(value => typeof value === "string" && value.length > 0);
+
+}
+
 
 function hasLinkedId(fieldValue, recordId) {
 
-    if (!Array.isArray(fieldValue)) {
-        return false;
-    }
-
-    return fieldValue.some(value =>
-        typeof value === "string"
-            ? value === recordId
-            : value?.id === recordId
-    );
+    return linkedIds(fieldValue).includes(recordId);
 
 }
 
@@ -96,8 +116,8 @@ function buildCamping(record) {
         id: record.id,
         naam: fields["Naam"],
         type: fields["Type accommodatie"],
-        fotos: fields["Foto's"] || [],
-        aandachtspunten: fields["Aandachtspunten"] || ""
+        aandachtspunten: fields["Aandachtspunten"] || "",
+        fotos: fields["Foto's"] || []
 
             };
 
@@ -128,14 +148,13 @@ function buildCamping(record) {
     camping.reizigerservaringen = [];
     camping.opmerkingen = [];
 
-    const accommodatieLaag = {
+    const accommodatieLaag = {};
 
-        aangepasteAccommodatieAanwezig:
-            fields["Aangepaste accommodatie aanwezig"] ?? "Onbekend",
-
-        volledigeBeoordeling: null
-
-    };
+    set(
+        accommodatieLaag,
+        "aangepasteAccommodatieAanwezig",
+        fields["Aangepaste accommodatie aanwezig"]
+    );
 
     set(
         accommodatieLaag,
@@ -149,7 +168,9 @@ function buildCamping(record) {
         fields["Opmerking aangepaste accommodatie"]
     );
 
-    camping.accommodatieLaag = accommodatieLaag;
+    if (Object.keys(accommodatieLaag).length > 0) {
+        camping.accommodatieLaag = accommodatieLaag;
+    }
 
     return camping;
 
@@ -215,7 +236,7 @@ function buildVoorziening(record) {
 }
 
 
-async function buildBeoordeling(record, ownerType, ownerId) {
+async function buildBeoordeling(record, ownerType, ownerId, choiceTextById) {
 
     const fields = record.fields || {};
 
@@ -233,6 +254,9 @@ async function buildBeoordeling(record, ownerType, ownerId) {
 
     set(beoordelingspunt, "naam", pointInfo?.naam);
     set(beoordelingspunt, "module", pointInfo?.module);
+    set(beoordelingspunt, "type", pointInfo?.type);
+    set(beoordelingspunt, "omschrijving", pointInfo?.omschrijving);
+    set(beoordelingspunt, "toelichting", pointInfo?.toelichting);
 
     const beoordeling = {
 
@@ -249,10 +273,57 @@ async function buildBeoordeling(record, ownerType, ownerId) {
     };
 
     set(beoordeling, "waarde", fields["Waarde / Resultaat"]);
-    set(beoordeling, "keuze", fields["Keuze"]);
+    if (Object.prototype.hasOwnProperty.call(fields, "Keuze")) {
+        beoordeling.keuze = fields["Keuze"];
+    }
+
+    const linkedChoiceIds = choiceIds(fields["Keuze"]);
+
+    if (linkedChoiceIds.length > 0) {
+        beoordeling.keuzeOpties = linkedChoiceIds.map(id => {
+            const text = choiceTextById.get(id);
+
+            return {
+                id,
+                tekst: typeof text === "string" && text.trim() !== ""
+                    ? text
+                    : null
+            };
+        });
+    }
+
     set(beoordeling, "opmerking", fields["Opmerking"]);
 
     return beoordeling;
+
+}
+
+
+async function loadChoiceTextById(reviewRecords) {
+
+    const choiceRecordIds = [
+        ...new Set(
+            reviewRecords.flatMap(record =>
+                choiceIds(record.fields?.["Keuze"])
+            )
+        )
+    ];
+
+    if (choiceRecordIds.length === 0) {
+        return new Map();
+    }
+
+    const choiceRecords =
+        await airtableAdapter.listRecords(CHOICE_OPTIONS_TABLE, {
+            fields: ["Keuze"]
+        });
+
+    return new Map(
+        choiceRecords.map(record => [
+            record.id,
+            record.fields?.["Keuze"]
+        ])
+    );
 
 }
 
@@ -321,7 +392,11 @@ async function getCampingAggregate(campingId) {
             filterByFormula: buildVoorzieningenFilter(camping.naam)
         });
 
-    const voorzieningen = voorzieningRecords.map(buildVoorziening);
+    const voorzieningen = voorzieningRecords
+        .filter(record =>
+            hasLinkedId(record.fields?.["Camping / park"], campingId)
+        )
+        .map(buildVoorziening);
 
     const voorzieningById =
         new Map(voorzieningen.map(v => [v.id, v]));
@@ -335,21 +410,28 @@ async function getCampingAggregate(campingId) {
             )
         });
 
+    const reviewsToBuild = [];
+
     for (const record of reviewRecords) {
 
         const fields = record.fields || {};
 
-        const voorzieningId = firstLinkedId(fields["Voorziening"]);
+        const voorzieningLinks = fields["Voorziening"];
+        const voorzieningIds = linkedIds(voorzieningLinks);
 
-        if (voorzieningId) {
+        if (voorzieningIds.length > 0) {
 
-            const voorziening = voorzieningById.get(voorzieningId);
+            for (const voorzieningId of voorzieningIds) {
 
-            if (voorziening) {
+                const voorziening = voorzieningById.get(voorzieningId);
 
-                voorziening.beoordelingen.push(
-                    await buildBeoordeling(record, "voorziening", voorzieningId)
-                );
+                if (voorziening) {
+                    reviewsToBuild.push({
+                        record,
+                        ownerType: "voorziening",
+                        ownerId: voorzieningId
+                    });
+                }
 
             }
 
@@ -357,14 +439,42 @@ async function getCampingAggregate(campingId) {
 
         }
 
-        const accommodatieId = firstLinkedId(fields["Accommodatie"]);
+        if (
+            Array.isArray(voorzieningLinks) &&
+            voorzieningLinks.length > 0
+        ) {
+            continue;
+        }
 
-        if (accommodatieId === campingId) {
+        if (hasLinkedId(fields["Accommodatie"], campingId)) {
+            reviewsToBuild.push({
+                record,
+                ownerType: "camping",
+                ownerId: campingId
+            });
 
-            camping.campingBeoordelingen.push(
-                await buildBeoordeling(record, "camping", campingId)
-            );
+        }
 
+    }
+
+    const choiceTextById =
+        await loadChoiceTextById(
+            reviewsToBuild.map(review => review.record)
+        );
+
+    for (const review of reviewsToBuild) {
+
+        const beoordeling = await buildBeoordeling(
+            review.record,
+            review.ownerType,
+            review.ownerId,
+            choiceTextById
+        );
+
+        if (review.ownerType === "camping") {
+            camping.campingBeoordelingen.push(beoordeling);
+        } else {
+            voorzieningById.get(review.ownerId).beoordelingen.push(beoordeling);
         }
 
     }

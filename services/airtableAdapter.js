@@ -5,8 +5,16 @@ const axios = require("axios");
 const FieldOptionsFactory =
     require("./fieldOptionsFactory");
 
+const {
+    canonicalize,
+    hashValue
+} = require("./productionMutationPlanCanonicalizer");
+
 const baseId =
     process.env.AIRTABLE_BASE_ID;
+
+const REVIEW_TABLE_NAME =
+    "Accommodatie beoordelingen";
 
 const token =
     process.env.AIRTABLE_TOKEN;
@@ -368,9 +376,156 @@ class AirtableAdapter {
     }
 
 
+    async assertReviewWriteAuthorization(
+        tableName,
+        recordId,
+        action,
+        fields,
+        authorization
+    ) {
+
+        let reviewTable;
+
+        if (tableName === REVIEW_TABLE_NAME) {
+            reviewTable =
+                await this.getTable(REVIEW_TABLE_NAME);
+        } else if (
+            typeof tableName === "string" &&
+            /^tbl[A-Za-z0-9]+$/.test(tableName)
+        ) {
+            const matches =
+                (await this.getTables()).filter(table =>
+                    table?.id === tableName
+                );
+
+            if (matches.length !== 1) {
+                throw new Error(
+                    "AirtableAdapter: tabel-ID kan niet veilig worden herkend."
+                );
+            }
+
+            if (matches[0].name !== REVIEW_TABLE_NAME) {
+                return;
+            }
+
+            reviewTable = matches[0];
+        } else {
+            return;
+        }
+
+        if (
+            !authorization ||
+            typeof authorization !== "object" ||
+            !authorization.planService ||
+            !authorization.permit ||
+            !authorization.operationId ||
+            !authorization.operation
+        ) {
+            const error =
+                new Error("AirtableAdapter: PlanStore-autorisatie is verplicht voor reviewwrites.");
+            error.code = "PLAN_PERMIT_REQUIRED";
+            throw error;
+        }
+
+        const {
+            assertActiveOperation
+        } = require("./productionMutationPlanService");
+
+        const operation =
+            assertActiveOperation(
+                authorization.planService,
+                authorization.permit,
+                authorization.operationId,
+                authorization.operation
+            );+
+        const target =
+            operation.target;
+        const payloadJson =
+            canonicalize(fields);
+
+        if (
+            operation.system !== "airtable" ||
+            operation.action !== action ||
+            operation.payloadHash !== hashValue("payload", fields) ||
+            canonicalize(operation.payload) !== payloadJson ||
+            target?.provider !== "airtable" ||
+            target.baseId !== baseId ||
+            target.tableId !== reviewTable.id ||
+            target.recordId !== (action === "update" ? recordId : null)
+        ) {
+            const error =
+                new Error("AirtableAdapter: reviewwrite wijkt af van de actieve PlanStore-operatie.");
+            error.code = "PLAN_OPERATION_MISMATCH";
+            throw error;
+        }
+
+        const entityFields =
+            reviewTable.fields.filter(field =>
+                field?.id === target.entity?.fieldId
+            );
+        const pointFields =
+            reviewTable.fields.filter(field =>
+                field?.id === target.point?.fieldId
+            );
+
+        if (
+            entityFields.length !== 1 ||
+            pointFields.length !== 1 ||
+            !target.entity?.recordId ||
+            !target.point?.recordId
+        ) {
+            const error =
+                new Error("AirtableAdapter: reviewwrite mist een eenduidig PlanStore-doel.");
+            error.code = "PLAN_OPERATION_MISMATCH";
+            throw error;
+        }
+
+        const entityFieldName =
+            entityFields[0].name;
+        const pointFieldName =
+            pointFields[0].name;
+        const currentRecords =
+            await this.listRecords(REVIEW_TABLE_NAME);
+        const matches =
+            currentRecords.filter(record => {
+                const hasLink = (value, recordId) =>
+                    Array.isArray(value) &&
+                    value.some(link =>
+                        link === recordId ||
+                        link?.id === recordId
+                    );
+
+                return (
+                    hasLink(
+                        record.fields?.[entityFieldName],
+                        target.entity.recordId
+                    ) &&
+                    hasLink(
+                        record.fields?.[pointFieldName],
+                        target.point.recordId
+                    )
+                );
+            });
+        const preflightMatches =
+            action === "create"
+                ? matches.length === 0
+                : matches.length === 1 &&
+                    matches[0]?.id === recordId;
+
+        if (!preflightMatches) {
+            const error =
+                new Error("AirtableAdapter: actuele reviewmatches wijken af van de actieve PlanStore-operatie.");
+            error.code = "PLAN_PREFLIGHT_MISMATCH";
+            throw error;
+        }
+
+    }
+
+
     async createRecord(
         tableName,
-        fields
+        fields,
+        authorization
     ) {
 
         if (!tableName) {
@@ -390,6 +545,28 @@ class AirtableAdapter {
                 "AirtableAdapter.createRecord: fields ontbreken."
             );
 
+        }
+
+        try {
+            await this.assertReviewWriteAuthorization(
+                tableName,
+                null,
+                "create",
+                fields,
+                authorization
+            );
+        } catch (error) {
+            const blocked =
+                new Error(
+                    error instanceof Error
+                        ? error.message
+                        : "Airtable reviewwrite is vóór de providerwrite geblokkeerd."
+                );
+            blocked.code =
+                error?.code || "ADAPTER_WRITE_BLOCKED";
+            blocked.adapterWriteStarted = false;
+            blocked.cause = error;
+            throw blocked;
         }
 
         const payload = {
@@ -443,7 +620,8 @@ class AirtableAdapter {
     async updateRecord(
         tableName,
         recordId,
-        fields
+        fields,
+        authorization
     ) {
 
         if (!tableName) {
@@ -473,6 +651,28 @@ class AirtableAdapter {
 
         }
 
+        try {
+            await this.assertReviewWriteAuthorization(
+                tableName,
+                recordId,
+                "update",
+                fields,
+                authorization
+            );
+        } catch (error) {
+            const blocked =
+                new Error(
+                    error instanceof Error
+                        ? error.message
+                        : "Airtable reviewwrite is vóór de providerwrite geblokkeerd."
+                );
+            blocked.code =
+                error?.code || "ADAPTER_WRITE_BLOCKED";
+            blocked.adapterWriteStarted = false;
+            blocked.cause = error;
+            throw blocked;
+        }
+
         const payload = {
             fields
         };
@@ -489,9 +689,77 @@ class AirtableAdapter {
     }
 
 
+    async assertDeleteWriteAuthorization(
+        tableName,
+        recordId,
+        authorization
+    ) {
+
+        if (
+            !authorization ||
+            typeof authorization !== "object" ||
+            !authorization.planService ||
+            !authorization.permit ||
+            !authorization.operationId ||
+            !authorization.operation
+        ) {
+            const error =
+                new Error("AirtableAdapter: PlanStore-autorisatie is verplicht voor recordverwijderingen.");
+            error.code = "PLAN_PERMIT_REQUIRED";
+            throw error;
+        }
+
+        const {
+            assertActiveOperation
+        } = require("./productionMutationPlanService");
+
+        const operation =
+            assertActiveOperation(
+                authorization.planService,
+                authorization.permit,
+                authorization.operationId,
+                authorization.operation
+            );
+
+        if (
+            operation.system !== "airtable" ||
+            operation.action !== "delete" ||
+            operation.target?.provider !== "airtable" ||
+            operation.target.baseId !== baseId ||
+            operation.target.recordId !== recordId
+        ) {
+            const error =
+                new Error("AirtableAdapter: delete wijkt af van de actieve PlanStore-operatie.");
+            error.code = "PLAN_OPERATION_MISMATCH";
+            throw error;
+        }
+
+        const tables =
+            await this.getTables();
+        const matches =
+            tables.filter(table =>
+                /^tbl[A-Za-z0-9]+$/.test(tableName)
+                    ? table?.id === tableName
+                    : table?.name === tableName
+            );
+
+        if (
+            matches.length !== 1 ||
+            operation.target.tableId !== matches[0].id
+        ) {
+            const error =
+                new Error("AirtableAdapter: delete-tabel wijkt af van de actieve PlanStore-operatie.");
+            error.code = "PLAN_OPERATION_MISMATCH";
+            throw error;
+        }
+
+    }
+
+
     async deleteRecord(
         tableName,
-        recordId
+        recordId,
+        authorization
     ) {
 
         if (!tableName) {
@@ -508,6 +776,26 @@ class AirtableAdapter {
                 "AirtableAdapter.deleteRecord: recordId ontbreekt."
             );
 
+        }
+
+        try {
+            await this.assertDeleteWriteAuthorization(
+                tableName,
+                recordId,
+                authorization
+            );
+        } catch (error) {
+            const blocked =
+                new Error(
+                    error instanceof Error
+                        ? error.message
+                        : "Airtable recordverwijdering is vóór de providerwrite geblokkeerd."
+                );
+            blocked.code =
+                error?.code || "ADAPTER_WRITE_BLOCKED";
+            blocked.adapterWriteStarted = false;
+            blocked.cause = error;
+            throw blocked;
         }
 
         const response =

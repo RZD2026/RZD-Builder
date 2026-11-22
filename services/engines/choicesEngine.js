@@ -23,6 +23,12 @@ async function updateChoices(baseId, tableId, fieldId, choices) {
         }
     };
 
+    const error = new Error(
+        "Airtable choice write geblokkeerd: betrouwbare autorisatie ontbreekt."
+    );
+    error.code = "CHOICES_WRITE_AUTHORIZATION_REQUIRED";
+    throw error;
+
     await axios.patch(url, payload, {
         headers: {
             Authorization: `Bearer ${AIRTABLE_TOKEN}`,
