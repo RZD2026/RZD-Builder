@@ -59,93 +59,9 @@ const fields = [
     },
 
     {
-        id: "parking_distance",
-
-        order: 30,
-
-        labels: {
-            airtable: "Afstand",
-            app: "Afstand parkeerplaats",
-            website: "Afstand parkeerplaats tot ingang"
-        },
-
-        description: "Afstand van de parkeerplaats tot de ingang.",
-        helpText: "",
-
-        type: FieldTypes.NUMBER,
-
-        required: false,
-        readonly: false,
-        hidden: false,
-
-        defaultValue: null,
-        unit: "meter",
-
-        options: {},
-
-        validation: {}
-    },
-
-    {
-        id: "parking_surface",
-
-        order: 40,
-
-        labels: {
-            airtable: "Ondergrond",
-            app: "Ondergrond",
-            website: "Ondergrond parkeerplaats"
-        },
-
-        description: "Type ondergrond van de parkeerplaats.",
-        helpText: "",
-
-        type: FieldTypes.TEXT,
-
-        required: false,
-        readonly: false,
-        hidden: false,
-
-        defaultValue: null,
-        unit: null,
-
-        options: {},
-
-        validation: {}
-    },
-
-    {
-        id: "route_to_entrance",
-
-        order: 50,
-
-        labels: {
-            airtable: "Route",
-            app: "Route ingang",
-            website: "Route naar ingang"
-        },
-
-        description: "Beschrijving van de route naar de ingang.",
-        helpText: "",
-
-        type: FieldTypes.TEXT,
-
-        required: false,
-        readonly: false,
-        hidden: false,
-
-        defaultValue: null,
-        unit: null,
-
-        options: {},
-
-        validation: {}
-    },
-
-    {
         id: "route_slope",
 
-        order: 60,
+        order: 30,
 
         labels: {
             airtable: "Helling %",
@@ -173,7 +89,7 @@ const fields = [
     {
         id: "entrance_threshold",
 
-        order: 70,
+        order: 40,
 
         labels: {
             airtable: "Drempel",
@@ -201,7 +117,7 @@ const fields = [
     {
         id: "main_entrance_accessible",
 
-        order: 80,
+        order: 50,
 
         labels: {
             airtable: "Hoofding.",
@@ -229,7 +145,7 @@ const fields = [
     {
         id: "automatic_door",
 
-        order: 90,
+        order: 60,
 
         labels: {
             airtable: "Auto deur",
@@ -257,7 +173,7 @@ const fields = [
     {
         id: "turning_circle",
 
-        order: 100,
+        order: 70,
 
         labels: {
             airtable: "Draaicirkel",

@@ -3,11 +3,18 @@
 Bijgewerkt: 05-11-2026\
 Status: Documentatiegroep 4 beoordeeld
 
+De status hieronder is een eerdere momentopname. Voor de actuele opdrachtstatus
+en het hervatten gelden §12.9 van `docs/MASTER-WERKDOSSIER` en de nieuwste
+`docs/CHECKPOINT.md`. De A002-vermelding "Openstaand" hieronder is historisch;
+A002 is inmiddels afgerond en wordt niet zonder expliciete toestemming van
+Pascalle heropend.
+
 ## 1. Werkwijze
 
 - We behandelen documenten één voor één.
 - Eerst beoordelen, daarna pas aanpassen.
 - Alleen noodzakelijke wijzigingen uitvoeren.
+- Voor de actieve opdracht, scope en hervatting volgen we §12.9 van `docs/MASTER-WERKDOSSIER`.
 - Geen tests, externe Airtable-/WordPress-aanroepen of Git-mutaties zonder expliciete toestemming.
 - Aanwezigheid van een testbestand betekent niet dat de test is uitgevoerd.
 - Documentstructuur en nummering behouden.
@@ -142,6 +149,21 @@ Gedeeltelijk uitgevoerd.
 
 ## 10. Hervatten
 
-Laatste beoordeelde document: `docs/DOCUMENTATION_ARCHITECTURE.md`
+1. Lees §12.9 van `docs/MASTER-WERKDOSSIER` en de nieuwste sessie in
+   `docs/CHECKPOINT.md`.
+2. Stel vast welke opdracht expliciet actief of gepauzeerd is en wat
+   aantoonbaar uitgevoerd, gecontroleerd, eerder uitgevoerd, voorgesteld of
+   niet uitgevoerd is.
+3. Hervat uitsluitend binnen die opdracht en vanaf de vastgelegde volgende
+   stap. Een backlogitem of nieuwe vraag activeert of vervangt geen opdracht.
+4. Meld ontbrekend bewijs of tegenstrijdige statusinformatie en stop voor
+   verduidelijking. Wijzig status of scope alleen na expliciete toestemming
+   van Pascalle.
 
-Volgende actie: upload het volgende document voor afzonderlijke beoordeling. Daarna wordt de centrale overdracht bijgewerkt op basis van de daadwerkelijk beoordeelde documenten.
+### Historische overdracht
+
+De onderstaande regels zijn behouden als eerdere overdracht en zijn geen
+actuele opdracht:
+
+- Laatste beoordeelde document: `docs/DOCUMENTATION_ARCHITECTURE.md`
+- Volgende actie: upload het volgende document voor afzonderlijke beoordeling.

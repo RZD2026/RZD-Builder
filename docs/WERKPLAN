@@ -2,6 +2,13 @@
 
 Versie 1.0 · 5 november 2026
 
+> Dit werkplan is een conceptuele momentopname van 5 november 2026. De daarin
+> opgenomen A002-status en vervolgstappen beschrijven die eerdere stand en
+> activeren geen opdracht. Voor de actuele opdrachtstatus en hervatting zijn
+> §12.9 van `docs/MASTER-WERKDOSSIER` en de nieuwste `docs/CHECKPOINT.md`
+> leidend. A002 is afgerond en wordt niet opnieuw geopend zonder expliciete
+> toestemming van Pascalle.
+
 ## 1. Doel van het ontwikkelplan
 
 Dit document beschrijft de verdere ontwikkeling van RZD Builder: waar het project momenteel staat, welke onderdelen nog ontwikkeld moeten worden en welke stappen nodig zijn om tot een werkende, betrouwbare toepassing te komen.

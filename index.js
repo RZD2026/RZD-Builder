@@ -1,8 +1,5 @@
 
-require("dotenv").config();
-
-const builder = require("./core/kernel/BuilderKernel");
-const validator = require("./builders/validator");
+require("dotenv").config({ quiet: true });
 
 const args = process.argv.slice(2);
 
@@ -16,7 +13,53 @@ const dryRun = args.includes("--dry-run");
 
         switch (command) {
 
-            case "build":
+            case "mcp": {
+
+                const Protocol =
+                    require("./mcp/protocol");
+
+                const router =
+                    require("./mcp/router");
+
+                const protocol = new Protocol();
+
+                protocol.onRequest(async request => {
+
+                    const requestId =
+                        request?.id ?? null;
+
+                    try {
+
+                        const result =
+                            await router.handle(request);
+
+                        if (request?.id !== undefined) {
+                            protocol.reply(
+                                requestId,
+                                result ?? null
+                            );
+                        }
+
+                    } catch (error) {
+
+                        protocol.error(
+                            requestId,
+                            error instanceof Error
+                                ? error.message
+                                : String(error)
+                        );
+
+                    }
+
+                });
+
+                protocol.listen();
+
+                break;
+
+            }
+
+            case "build": {
 
                 if (!moduleName) {
 
@@ -31,17 +74,38 @@ const dryRun = args.includes("--dry-run");
 
                 }
 
-                await builder.buildModule(moduleName, {
-                    dryRun
-                });
+                const builder =
+                    require("./core/kernel/BuilderKernel");
+
+                const mcpService =
+                    require("./services/mcpService");
+
+                try {
+
+                    await builder.buildModule(moduleName, {
+                        dryRun
+                    });
+
+                } finally {
+
+                    await mcpService.disconnect();
+
+                }
 
                 break;
 
-            case "validate":
+            }
+
+            case "validate": {
+
+                const validator =
+                    require("./builders/validator");
 
                 await validator.validateModules(moduleName);
 
                 break;
+
+            }
 
             default:
 

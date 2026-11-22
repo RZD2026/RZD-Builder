@@ -59,29 +59,21 @@ async function run() {
             pointMappings
         );
 
-    const writable =
-        mappings.filter(
-            mapping =>
-                mapping.status !== "NO_MATCH"
-        );
-
     console.log(
         `Aantal modulepunten: ${module.points.length}`
     );
 
     console.log(
-        `Aantal schrijfbaar: ${writable.length}`
+        `Aantal mappingresultaten: ${mappings.length}`
     );
 
     console.log(
-        `Aantal NO_MATCH: ${
-            mappings.length - writable.length
-        }`
+        `Aantal NO_MATCH: ${mappings.filter(mapping => mapping.status === "NO_MATCH").length}`
     );
 
     console.log("");
 
-    for (const mapping of writable) {
+    for (const mapping of mappings) {
 
         const fields = {
 
@@ -104,6 +96,11 @@ async function run() {
         );
 
         console.log(
+            "Mappingstatus:",
+            mapping.status ?? "(ontbreekt)"
+        );
+
+        console.log(
             "Beoordelingspunt:",
             mapping.point.name
         );
@@ -123,10 +120,11 @@ async function run() {
         );
 
         // Delegate create/update/duplicate logic to reviewWriteService.
-        const upsert = await reviewWriteService.upsertReview({
+        const upsert = await reviewWriteService.upsertMappedReview({
             accommodationId: accommodationId,
             pointId: mapping.point.recordId,
             fields: fields,
+            mapping: mapping,
             dryRun: !execute
         });
 
@@ -135,6 +133,10 @@ async function run() {
             upsert.action,
             upsert.recordId ? `(${upsert.recordId})` : ""
         );
+
+        if (upsert.fieldErrors?.length > 0) {
+            console.error("Preflight-fouten:", upsert.fieldErrors.join("; "));
+        }
 
     }
 

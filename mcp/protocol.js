@@ -37,6 +37,8 @@ class Protocol {
 
             } catch {
 
+                this.error(null, "Ongeldig JSON-RPC-verzoek.");
+
                 return;
 
             }

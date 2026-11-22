@@ -80,25 +80,16 @@ async function run() {
         );
 
 
-    const writable =
-        mappings.filter(
-            mapping =>
-                mapping.status !== "NO_MATCH"
-        );
-
-
     console.log(
         `Aantal modulepunten: ${module.points.length}`
     );
 
     console.log(
-        `Aantal schrijfbaar: ${writable.length}`
+        `Aantal mappingresultaten: ${mappings.length}`
     );
 
     console.log(
-        `Aantal NO_MATCH: ${
-            mappings.length - writable.length
-        }`
+        `Aantal NO_MATCH: ${mappings.filter(mapping => mapping.status === "NO_MATCH").length}`
     );
 
     console.log("");
@@ -107,9 +98,12 @@ async function run() {
     let creates = 0;
     let updates = 0;
     let duplicates = 0;
+    let skippedNoMatch = 0;
+    let blockedMappings = 0;
+    let blockedPreflight = 0;
 
 
-    for (const mapping of writable) {
+    for (const mapping of mappings) {
 
         const pointId =
             mapping.point.recordId;
@@ -120,10 +114,10 @@ async function run() {
 
         const fields = {
 
-            "Accommodatie":
+            [mapping.review.links.accommodation]:
                 [accommodationId],
 
-            "Beoordelingspunt":
+            [mapping.review.links.point]:
                 [pointId],
 
             "Beoordeling naam":
@@ -140,6 +134,11 @@ async function run() {
         );
 
         console.log(
+            "Mappingstatus:",
+            mapping.status ?? "(ontbreekt)"
+        );
+
+        console.log(
             "Beoordelingspunt:",
             pointName
         );
@@ -151,10 +150,11 @@ async function run() {
 
         console.dir(fields, { depth: null });
 
-        const upsert = await reviewWriteService.upsertReview({
+        const upsert = await reviewWriteService.upsertMappedReview({
             accommodationId: accommodationId,
             pointId: pointId,
             fields: fields,
+            mapping: mapping,
             dryRun: !execute
         });
 
@@ -164,6 +164,12 @@ async function run() {
             updates++;
         } else if (upsert.action === "BLOCKED_MULTIPLE_MATCHES") {
             duplicates++;
+        } else if (upsert.action === "SKIPPED_NO_MATCH") {
+            skippedNoMatch++;
+        } else if (upsert.action === "BLOCKED_MAPPING_STATUS") {
+            blockedMappings++;
+        } else if (upsert.action === "BLOCKED_INVALID_MAPPED_REVIEW") {
+            blockedPreflight++;
         }
 
         console.log(
@@ -171,6 +177,10 @@ async function run() {
             upsert.action,
             upsert.recordId ? `(${upsert.recordId})` : ""
         );
+
+        if (upsert.fieldErrors?.length > 0) {
+            console.error("Preflight-fouten:", upsert.fieldErrors.join("; "));
+        }
 
     }
 
@@ -193,6 +203,20 @@ async function run() {
     console.log(
         "DUBBEL:",
         duplicates
+    );
+
+    console.log(
+        "NO_MATCH overgeslagen:",
+        skippedNoMatch
+    );
+
+    console.log(
+        "Mapping geblokkeerd:",
+        blockedMappings
+    );+
+    console.log(
+        "Preflight geblokkeerd:",
+        blockedPreflight
     );
 
     console.log("");
