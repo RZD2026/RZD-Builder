@@ -2,7 +2,7 @@ name: Media schema validation
 
 on:
   push:
-    branches: [feature/media-schema-rzd-links-validation]
+    branches: [master, feature/media-schema-rzd-links-validation]
     paths:
       - "services/productionMutationPlanBuilders/airtableMediaSchemaPlanBuilder.js"
       - "scripts/testAirtableMediaSchemaPlanBuilder.js"
