@@ -1043,6 +1043,35 @@ async function runTests() {
         preservedLinkNames.includes(difference.field)
     ), "correcte RZD-relaties leveren geen afwijkingen op");
 
+    const mismatchedPreservedTables =
+        makeTables();
+    mismatchedPreservedTables
+        .find(table => table.name === "Media")
+        .fields.find(field => field.name === "Accommodaties")
+        .options.linkedTableId = tableIds["Media"];
+
+    const mismatchedPreservedResult =
+        await createAirtableMediaSchemaPlanBuilder({
+            sources: { getTables: () => mismatchedPreservedTables }
+        }).build(intent);
+
+    assert.ok(
+        mismatchedPreservedResult.blocked.some(item =>
+            item.code === "PRESERVED_RELATIONSHIP_MISMATCH" &&
+            item.table === "Media" &&
+            item.field === "Accommodaties" &&
+            item.action === "validation-only"
+        ),
+        "een afwijkende bestaande RZD-relatie wordt geblokkeerd als validation-only"
+    );
+    assert.ok(
+        !mismatchedPreservedResult.operations.some(operation =>
+            operation.target.tableName === "Media" &&
+            operation.target.fieldName === "Accommodaties"
+        ),
+        "een afwijkende bestaande RZD-relatie genereert nooit een schema-mutatieoperatie"
+    );
+
     assert.equal(initial.operations.length, 7);
     assert.deepEqual(
         initial.operations.map(operation =>
