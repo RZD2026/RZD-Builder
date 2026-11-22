@@ -353,17 +353,44 @@ function makeTables() {
             })
         }));
 
-    tables.find(table => table.name === "Media").fields.push({
-        id: fieldId("Media", "Accommodaties"),
-        name: "Accommodaties",
-        type: "multipleRecordLinks",
-        options: {
-            linkedTableId: "tblAccommodations",
-            isReversed: false,
-            prefersSingleRecordLink: false,
-            inverseLinkFieldId: "fldAccommodationMedia"
-        }
-    });
+    const preservedRelationships = [
+        ["Accommodaties", "Accommodaties", "tblAccommodations", "fldAccommodationMedia"],
+        ["Voorzieningen", "Voorzieningen", "tblFacilities", "fldFacilitiesMedia"],
+        ["Beoordelingspunten", "Beoordelingspunten", "tblAssessmentPoints", "fldAssessmentMedia"],
+        ["Accommodatie beoordelingen", "Accommodatie beoordelingen", "tblAccommodationReviews", "fldReviewsMedia"],
+        ["Opmerkingen", "Opmerkingen", "tblComments", "fldCommentsMedia"],
+        ["Reizigerservaringen", "Reizigerservaringen", "tblExperiences", "fldExperiencesMedia"]
+    ];
+
+    for (const [fieldName, tableName, linkedTableId, inverseFieldId] of preservedRelationships) {
+        tables.find(table => table.name === "Media").fields.push({
+            id: fieldId("Media", fieldName),
+            name: fieldName,
+            type: "multipleRecordLinks",
+            options: {
+                linkedTableId,
+                isReversed: false,
+                prefersSingleRecordLink: false,
+                inverseLinkFieldId: inverseFieldId
+            }
+        });
+
+        tables.push({
+            id: linkedTableId,
+            name: tableName,
+            fields: [{
+                id: inverseFieldId,
+                name: "Media",
+                type: "multipleRecordLinks",
+                options: {
+                    linkedTableId: tableIds.Media,
+                    isReversed: true,
+                    prefersSingleRecordLink: false,
+                    inverseLinkFieldId: fieldId("Media", fieldName)
+                }
+            }]
+        });
+    }
 
     tables.push({
         id: "tblNotInScope",
@@ -993,6 +1020,58 @@ async function runTests() {
         TARGET_TABLE_NAMES,
         "de analyse beperkt de schema-output tot de drie opgegeven tabellen"
     );
+    const preservedLinkNames = [
+        "Accommodaties",
+        "Voorzieningen",
+        "Beoordelingspunten",
+        "Accommodatie beoordelingen",
+        "Opmerkingen",
+        "Reizigerservaringen"
+    ];
+    const desiredPreservedLinks = desiredMedia.fields.filter(field =>
+        preservedLinkNames.includes(field.name)
+    );
+    assert.equal(desiredPreservedLinks.length, 6);
+    assert.ok(desiredPreservedLinks.every(field =>
+        field.preserveOnly === true &&
+        field.options.prefersSingleRecordLink === false
+    ), "de zes bestaande RZD-relaties zijn expliciet validation-only en blijven meervoudig");
+    assert.ok(!initial.operations.some(operation =>
+        preservedLinkNames.includes(operation.target.fieldName)
+    ), "validation-only RZD-relaties genereren nooit schema-mutatieoperaties");
+    assert.ok(!initial.summary.differences.some(difference =>
+        preservedLinkNames.includes(difference.field)
+    ), "correcte RZD-relaties leveren geen afwijkingen op");
+
+    const mismatchedPreservedTables =
+        makeTables();
+    mismatchedPreservedTables
+        .find(table => table.name === "Media")
+        .fields.find(field => field.name === "Accommodaties")
+        .options.linkedTableId = tableIds["Media"];
+
+    const mismatchedPreservedResult =
+        await createAirtableMediaSchemaPlanBuilder({
+            sources: { getTables: () => mismatchedPreservedTables }
+        }).build(intent);
+
+    assert.ok(
+        mismatchedPreservedResult.blocked.some(item =>
+            item.code === "PRESERVED_RELATIONSHIP_MISMATCH" &&
+            item.table === "Media" &&
+            item.field === "Accommodaties" &&
+            item.action === "validation-only"
+        ),
+        "een afwijkende bestaande RZD-relatie wordt geblokkeerd als validation-only"
+    );
+    assert.ok(
+        !mismatchedPreservedResult.operations.some(operation =>
+            operation.target.tableName === "Media" &&
+            operation.target.fieldName === "Accommodaties"
+        ),
+        "een afwijkende bestaande RZD-relatie genereert nooit een schema-mutatieoperatie"
+    );
+
     assert.equal(initial.operations.length, 7);
     assert.deepEqual(
         initial.operations.map(operation =>
@@ -1423,3 +1502,4 @@ runTests().catch(error => {
         force: true
     });
 });
+

@@ -14,6 +14,15 @@ const TARGET_TABLE_NAMES = Object.freeze([
     "WordPress-koppelingen"
 ]);
 
+const PRESERVED_LINK_TARGET_TABLE_NAMES = Object.freeze([
+    "Accommodaties",
+    "Voorzieningen",
+    "Beoordelingspunten",
+    "Accommodatie beoordelingen",
+    "Opmerkingen",
+    "Reizigerservaringen"
+]);
+
 const EXPECTED_SCHEMA = Object.freeze([
     {
         name: "Media",
@@ -64,6 +73,54 @@ const EXPECTED_SCHEMA = Object.freeze([
                 linkedTable: "Media-versies",
                 inverseField: "Media als actieve versie",
                 prefersSingleRecordLink: true
+            },
+            {
+                name: "Accommodaties",
+                type: "multipleRecordLinks",
+                linkedTable: "Accommodaties",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Voorzieningen",
+                type: "multipleRecordLinks",
+                linkedTable: "Voorzieningen",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Beoordelingspunten",
+                type: "multipleRecordLinks",
+                linkedTable: "Beoordelingspunten",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Accommodatie beoordelingen",
+                type: "multipleRecordLinks",
+                linkedTable: "Accommodatie beoordelingen",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Opmerkingen",
+                type: "multipleRecordLinks",
+                linkedTable: "Opmerkingen",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
+            },
+            {
+                name: "Reizigerservaringen",
+                type: "multipleRecordLinks",
+                linkedTable: "Reizigerservaringen",
+                inverseField: "Media",
+                prefersSingleRecordLink: false,
+                preserveOnly: true
             }
         ]
     },
@@ -216,7 +273,7 @@ function projectField(field) {
 }
 
 
-function projectTargetTables(tables) {
+function projectTargetTables(tables, tableNames = TARGET_TABLE_NAMES) {
 
     if (!Array.isArray(tables)) {
         throw new TypeError("Airtable gaf geen geldige tabelmetadata terug.");
@@ -224,7 +281,7 @@ function projectTargetTables(tables) {
 
     const projected = [];
 
-    for (const name of TARGET_TABLE_NAMES) {
+    for (const name of tableNames) {
 
         const matches =
             tables.filter(table => table?.name === name);
@@ -335,6 +392,10 @@ function desiredConfiguration(field) {
     if (field.prefersSingleRecordLink !== undefined) {
         desired.options.prefersSingleRecordLink =
             field.prefersSingleRecordLink;
+    }
+
+    if (field.preserveOnly === true) {
+        desired.preserveOnly = true;
     }
 
     if (field.unresolved) {
@@ -460,11 +521,17 @@ function createAirtableMediaSchemaPlanBuilder({
         const currentSchema =
             projectTargetTables(sourceTables);
 
+        const linkTargetSchema =
+            projectTargetTables(sourceTables, [
+                ...TARGET_TABLE_NAMES,
+                ...PRESERVED_LINK_TARGET_TABLE_NAMES
+            ]);
+
         const currentTablesByName =
-            new Map(currentSchema.map(table => [table.name, table]));
+            new Map(linkTargetSchema.map(table => [table.name, table]));
 
         const currentTablesById =
-            new Map(currentSchema
+            new Map(linkTargetSchema
                 .filter(table => table.id)
                 .map(table => [table.id, table]));
 
@@ -574,6 +641,18 @@ function createAirtableMediaSchemaPlanBuilder({
                 };
 
                 differences.push(difference);
+
+                if (expectedField.preserveOnly === true) {
+                    blockedActions.push({
+                        status: "blocked",
+                        code: "PRESERVED_RELATIONSHIP_MISMATCH",
+                        table: tableComparison.table,
+                        field: expectedField.name,
+                        action: "validation-only",
+                        reason: "Deze bestaande RZD-relatie wordt uitsluitend gecontroleerd en nooit aangemaakt, gewijzigd of verwijderd."
+                    });
+                    continue;
+                }
 
                 const operation = {
                     system: "airtable-schema",
