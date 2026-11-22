@@ -8,6 +8,7 @@ on:
       - "scripts/testAirtableMediaSchemaPlanBuilder.js"
       - "package.json"
       - "package-lock.json"
+      - ".github/workflows/media-schema-validation.yml"
   pull_request:
     branches: [master]
     paths:
