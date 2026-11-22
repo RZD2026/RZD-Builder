@@ -1,6 +1,14 @@
 name: Media schema validation
 
 on:
+  push:
+    branches: [feature/media-schema-rzd-links-validation]
+    paths:
+      - "services/productionMutationPlanBuilders/airtableMediaSchemaPlanBuilder.js"
+      - "scripts/testAirtableMediaSchemaPlanBuilder.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/media-schema-validation.yml"
   pull_request:
     branches: [master]
     paths:
@@ -8,6 +16,7 @@ on:
       - "scripts/testAirtableMediaSchemaPlanBuilder.js"
       - "package.json"
       - "package-lock.json"
+      - ".github/workflows/media-schema-validation.yml"
 
 permissions:
   contents: read
