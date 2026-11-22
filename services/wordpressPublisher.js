@@ -1,19 +1,44 @@
+const {
+    validateWordPressPayload
+} = require("./wordpressPayloadValidator");
+
+
 class WordPressPublisher {
 
     prepare(post = {}) {
 
-        return this.preparePage(post);
+        const errors =
+            validateWordPressPayload(post, {
+                mode: "generic"
+            });
+
+        return {
+
+            ready: errors.length === 0,
+
+            payload: post,
+
+            errors
+
+        };
 
     }
 
 
     preparePage(page = {}) {
 
+        const errors =
+            validateWordPressPayload(page, {
+                mode: "campingPage"
+            });
+
         return {
 
-            ready: true,
+            ready: errors.length === 0,
 
-            payload: page
+            payload: page,
+
+            errors
 
         };
 

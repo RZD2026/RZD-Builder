@@ -13,6 +13,11 @@ const headers = {
 class UpdateService {
 
     async updateField(tableId, fieldId, payload) {
+        const error = new Error(
+            "Airtable metadata-write geblokkeerd: betrouwbare autorisatie ontbreekt."
+        );
+        error.code = "METADATA_WRITE_AUTHORIZATION_REQUIRED";
+        throw error;
 
         console.log("");
         console.log("================================");

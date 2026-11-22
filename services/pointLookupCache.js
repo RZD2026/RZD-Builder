@@ -14,7 +14,7 @@ const pointMappings =
 let loadPromise = null;
 let moduleNameById = null;
 let pointById = null;
-let canonicalTypeByPointId = null;
+let canonicalPointInfoById = null;
 
 
 function firstLinkedId(fieldValue) {
@@ -30,7 +30,28 @@ function firstLinkedId(fieldValue) {
 }
 
 
-async function loadCanonicalTypes() {
+function hasValue(value) {
+
+    return value !== undefined && value !== null && value !== "";
+
+}
+
+
+// Prioriteit: canoniek type, dan Airtable-veld "Type beoordeling", anders undefined.
+function resolveAssessmentType(canonicalType, fields) {
+
+    if (hasValue(canonicalType)) {
+        return canonicalType;
+    }
+
+    const airtableType = fields?.["Type beoordeling"];
+
+    return hasValue(airtableType) ? airtableType : undefined;
+
+}
+
+
+async function loadCanonicalPointInfo(modules, points) {
 
     const contentModule =
         await contentModuleLoader.load("toegang");
@@ -38,7 +59,8 @@ async function loadCanonicalTypes() {
     const mappings =
         await airtableMapping.createMany(
             contentModule.points,
-            pointMappings
+            pointMappings,
+            { modules, points }
         );
 
     return new Map(
@@ -50,7 +72,10 @@ async function loadCanonicalTypes() {
             )
             .map(mapping => [
                 mapping.point.recordId,
-                mapping.point.type
+                {
+                    naam: mapping.point.name,
+                    type: mapping.point.type
+                }
             ])
     );
 
@@ -59,11 +84,13 @@ async function loadCanonicalTypes() {
 
 async function loadCache() {
 
-    const [modules, points, canonicalTypes] = await Promise.all([
+    const [modules, points] = await Promise.all([
         airtablePointResolver.getModules(),
-        airtablePointResolver.getPoints(),
-        loadCanonicalTypes()
+        airtablePointResolver.getPoints()
     ]);
+
+    const canonicalPointInfo =
+        await loadCanonicalPointInfo(modules, points);
 
     // Beperking: getModules()/getPoints() pagineren niet (zie airtablePointResolver.js).
     // Bij >100 records in één van beide tabellen worden records gemist. Nu bewust niet opgelost.
@@ -76,7 +103,7 @@ async function loadCache() {
         points.map(record => [record.id, record])
     );
 
-    canonicalTypeByPointId = canonicalTypes;
+    canonicalPointInfoById = canonicalPointInfo;
 
 }
 
@@ -111,13 +138,18 @@ async function getPointInfo(recordId) {
     }
 
     const moduleId = firstLinkedId(point.fields["Module"]);
+    const canonicalPointInfo =
+        canonicalPointInfoById.get(recordId);
 
     return {
-        naam: point.fields["Beoordelingspunt"],
+        naam: point.fields["Beoordelingspunt"] || canonicalPointInfo?.naam,
         module: moduleId ? moduleNameById.get(moduleId) : undefined,
-        type:
-            canonicalTypeByPointId.get(recordId) ??
-            point.fields["Type"]
+        type: resolveAssessmentType(
+            canonicalPointInfo?.type,
+            point.fields
+        ),
+        omschrijving: point.fields["Omschrijving"],
+        toelichting: point.fields["Toelichting bij beoordelingspunt"]
     };
 
 }
@@ -128,12 +160,13 @@ function reset() {
     loadPromise = null;
     moduleNameById = null;
     pointById = null;
-    canonicalTypeByPointId = null;
+    canonicalPointInfoById = null;
 
 }
 
 
 module.exports = {
     getPointInfo,
+    resolveAssessmentType,
     reset
 };

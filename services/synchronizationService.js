@@ -10,6 +10,32 @@ class SynchronizationService {
 
         const dryRun = options.dryRun === true;
 
+        if (!dryRun) {
+            const message =
+                "Live synchronisatie geblokkeerd: betrouwbare autorisatie voor Builder-schemawrites ontbreekt.";
+            const error = new Error(message);
+            const summary = {
+                created: 0,
+                updated: 0,
+                skipped: 0,
+                warnings: 0,
+                errors: 1
+            };
+
+            error.code = "LIVE_SYNC_AUTHORIZATION_REQUIRED";
+            error.executionStatus = "failed";
+            error.summary = summary;
+
+            auditService.add({
+                action: "error",
+                message
+            });
+            auditService.finishRun();
+            auditService.printSummary();
+
+            throw error;
+        }
+
         const table = await airtable.getTable(tableName);
 
         const summary = {
@@ -144,7 +170,7 @@ class SynchronizationService {
 
                             await updateChoices(
 
-                                table.id,
+                                process.env.AIRTABLE_BASE_ID,
                                 table.id,
                                 item.airtableField.id,
                                 item.update.metadata.options.choices

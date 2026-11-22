@@ -2,6 +2,39 @@
 const config =
     require("./wordpressConfig");
 
+const {
+    validateWordPressPayload
+} = require("./wordpressPayloadValidator");
+
+
+function assertValidPayload(payload, operation) {
+
+    const errors =
+        validateWordPressPayload(payload, {
+            mode: "campingPage"
+        });
+
+    if (errors.length === 0) {
+        return;
+    }
+
+    const details =
+        errors
+            .map(item => `${item.field}: ${item.message}`)
+            .join("; ");
+
+    const validationError =
+        new Error(
+            `Ongeldige WordPress-payload voor ${operation}: ${details}`
+        );
+
+    validationError.code = "WORDPRESS_PAYLOAD_INVALID";
+    validationError.errors = errors;
+
+    throw validationError;
+
+}
+
 class WordPressPostService {
 
     buildHeaders(settings) {
@@ -99,6 +132,8 @@ class WordPressPostService {
 
     async create(post) {
 
+        assertValidPayload(post, "create");
+
         const settings =
             config.get();
 
@@ -173,6 +208,50 @@ class WordPressPostService {
                     headers,
 
                     body: JSON.stringify(post)
+
+                }
+
+            );
+
+        return {
+
+            ok: response.ok,
+
+            status: response.status,
+
+            statusText: response.statusText,
+
+            body: await response.json()
+
+        };
+
+    }
+
+
+    async updateExisting(pageId, post) {
+
+        assertValidPayload(post, "updateExisting");
+
+        const settings =
+            config.get();
+
+        const payload = {
+            ...post,
+            status: "draft"
+        };
+
+        const response =
+            await fetch(
+
+                `${settings.url}${settings.api}/pages/${pageId}`,
+
+                {
+
+                    method: "POST",
+
+                    headers: this.buildHeaders(settings),
+
+                    body: JSON.stringify(payload)
 
                 }
 
